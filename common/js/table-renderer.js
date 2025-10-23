@@ -1,0 +1,514 @@
+// tableRenderer.js
+
+// Helper functions for file modal
+function openFileModal(type, id, statusId, role) {
+  const modal = document.getElementById('fileModal');
+  const fileList = document.getElementById('fileList');
+  const fileModalTitle = document.getElementById('fileModalTitle');
+  const uploadFileBtn = document.getElementById('uploadFileBtn');
+  const fileInput = document.getElementById('fileInput');
+
+  let currentPrId = id;
+  let currentType = type;
+  let currentUrls = {
+    fetch: `../fetch/fetch-files.php?id=${id}&type=${type}`,
+    upload: '../api/update-files.php',
+    delete: '../api/delete-files.php'
+  };
+
+  // Check permissions for upload/delete (viewing is always allowed)
+  let uploadAllowed = false;
+  let deleteAllowed = false;
+  if (type === 'proforma') {
+    uploadAllowed = [1, 5].includes(parseInt(statusId));
+    deleteAllowed = uploadAllowed;
+  } else if (type === 'po') {
+    uploadAllowed = parseInt(statusId) === 7 && ['pohead', 'poteammember'].includes(role);
+    deleteAllowed = uploadAllowed;
+  } else if (type === 'product') {
+    uploadAllowed = [1, 2, 3, 4, 5].includes(parseInt(statusId));
+    deleteAllowed = uploadAllowed;
+  }
+
+  fileModalTitle.textContent = type === 'proforma' ? 'Proforma Files' : type === 'po' ? 'PO Files' : 'Product Files';
+  fileInput.value = '';
+
+  // Load files
+  fileList.innerHTML = `<div class="flex justify-center"><span class="loading loading-spinner loading-md"></span></div>`;
+
+  fetch(currentUrls.fetch)
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === 'success' && data.data && data.data.length) {
+        renderFileList(data.data, currentUrls, currentType, uploadAllowed, deleteAllowed);
+      } else {
+        fileList.innerHTML = `<p class="text-sm text-gray-500 text-center">No files found.</p>`;
+      }
+    })
+    .catch(err => {
+      console.error('Error loading files:', err);
+      fileList.innerHTML = `<p class="text-error text-sm text-center">Failed to fetch files.</p>`;
+    });
+
+  // Show modal
+  if (modal && typeof modal.showModal === 'function') {
+    modal.showModal();
+  }
+}
+
+function renderFileList(files, currentUrls, currentType, uploadAllowed, deleteAllowed) {
+  if (!files || files.length === 0) {
+    fileList.innerHTML = `<p class="text-sm text-gray-500 text-center">No files found.</p>`;
+    return;
+  }
+
+  fileList.innerHTML = files.map(file => `
+    <div class="flex items-center justify-between bg-base-200 p-3 rounded-lg">
+      <div class="flex items-center gap-3 flex-1">
+        <div class="flex-shrink-0">
+          ${getFileIcon(file.url)}
+        </div>
+        <div class="flex-1 min-w-0">
+          <a href="../${file.url}" target="_blank" class="link link-hover text-sm truncate block" title="${getFileName(file.url)}">
+            ${getFileName(file.url)}
+          </a>
+          <div class="text-xs text-gray-500">
+            ${file.uploaded_at ? new Date(file.uploaded_at).toLocaleDateString() : ''}
+          </div>
+        </div>
+      </div>
+      ${deleteAllowed ? `<button class="btn btn-xs btn-error delete-file ml-2 flex-shrink-0"
+              data-id="${file.id}"
+              data-url="${currentUrls.delete}">
+        Delete
+      </button>` : ''}
+    </div>
+  `).join('');
+
+  // Add delete event listeners
+  fileList.querySelectorAll('.delete-file').forEach(delBtn => {
+    delBtn.addEventListener('click', async (e) => {
+      e.preventDefault();
+      const fileId = delBtn.dataset.id;
+      if (!confirm('Are you sure you want to delete this file?')) return;
+
+      try {
+        delBtn.disabled = true;
+        delBtn.textContent = 'Deleting...';
+        const res = await fetch(`${currentUrls.delete}?id=${fileId}&type=${currentType}`);
+        const result = await res.json();
+
+        if (result.status === 'success') {
+          showAlert('File deleted successfully!', 'success');
+          // Reload files
+          openFileModal(currentType, currentPrId);
+        } else {
+          showAlert(result.message || 'Failed to delete file', 'error');
+        }
+      } catch (err) {
+        showAlert('Delete failed. Please try again.', 'error');
+      } finally {
+        delBtn.disabled = false;
+        delBtn.textContent = 'Delete';
+      }
+    });
+  });
+}
+
+function getFileName(url) {
+  if (!url) return 'Unknown file';
+  return url.split('/').pop() || 'Unknown file';
+}
+
+function getFileIcon(fileUrl) {
+  const extension = fileUrl.split('.').pop()?.toLowerCase();
+  const iconClass = "w-5 h-5";
+  
+  if (['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(extension)) {
+    return `<svg class="${iconClass} text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+    </svg>`;
+  } else if (['pdf'].includes(extension)) {
+    return `<svg class="${iconClass} text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+    </svg>`;
+  } else {
+    return `<svg class="${iconClass} text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+    </svg>`;
+  }
+}
+
+function showAlert(message, type = 'info') {
+  if (typeof Swal !== 'undefined') {
+    Swal.fire({
+      icon: type,
+      title: message,
+      toast: true,
+      position: 'top-end',
+      showConfirmButton: false,
+      timer: 3000,
+      timerProgressBar: true,
+    });
+  } else {
+    alert(message);
+  }
+}
+
+// Table configurations
+const TableConfigs = {
+  // Buyer role table configuration
+  buyer: {
+    role: "buyer",
+    columns: [
+      { key: "id", label: "Ref ID", sortable: true },
+      { key: "po_status", label: "Status", sortable: true },
+      { key: "supplier", label: "Supplier", sortable: true },
+      { key: "b_head", label: "B Head", sortable: true },
+      { key: "buyer", label: "Buyer", sortable: true },
+      { key: "category", label: "Category", sortable: true },
+      { key: "qty", label: "Quantity", sortable: true },
+      { key: "images", label: "Pic", sortable: true },
+      { key: "created_by", label: "Created", sortable: true },
+      { key: "created_at", label: "Created", sortable: true },
+      { key: "actions", label: "Actions", sortable: false },
+    ],
+    showButtons: { edit: true, proforma: true, po: true },
+  },
+
+  // Admin role table configuration
+  admin: {
+    role: "admin",
+    columns: [
+      { key: "id", label: "Ref ID", sortable: true },
+      { key: "po_status", label: "Status", sortable: true },
+      { key: "supplier", label: "Supplier", sortable: true },
+      { key: "b_head", label: "B Head", sortable: true },
+      { key: "buyer", label: "Buyer", sortable: true },
+      { key: "category", label: "Category", sortable: true },
+      { key: "qty", label: "Quantity", sortable: true },
+      { key: "images", label: "Pic", sortable: true },
+      { key: "created_by", label: "Created", sortable: true },
+      { key: "created_at", label: "Created", sortable: true },
+      { key: "actions", label: "Actions", sortable: false },
+    ],
+    showButtons: { edit: true, proforma: true, po: true },
+  },
+
+  // Buyer Head role table configuration
+  bhead: {
+    role: "bhead",
+    tableClasses: "table table-hover table-striped",
+    columns: [
+      { key: "id", label: "Ref ID", sortable: true },
+      { key: "po_status", label: "Status", sortable: true },
+      { key: "supplier", label: "Supplier", sortable: true },
+      { key: "b_head", label: "B Head", sortable: true },
+      { key: "buyer", label: "Buyer", sortable: true },
+      { key: "category", label: "Category", sortable: true },
+      { key: "qty", label: "Quantity", sortable: true },
+      { key: "images", label: "Pic", sortable: true },
+      { key: "created_by", label: "Created", sortable: true },
+      { key: "created_at", label: "Created", sortable: true },
+      { key: "actions", label: "Actions", sortable: false },
+    ],
+    showButtons: { edit: true, proforma: true, po: true },
+  },
+
+  // PO Team role table configuration
+  pohead: {
+    role: "pohead",
+    columns: [
+      { key: "id", label: "Ref ID", sortable: true },
+      { key: "po_status", label: "Status", sortable: true },
+      { key: "supplier", label: "Supplier", sortable: true },
+      { key: "b_head", label: "B Head", sortable: true },
+      { key: "buyer", label: "Buyer", sortable: true },
+      { key: "category", label: "Category", sortable: true },
+      { key: "qty", label: "Quantity", sortable: true },
+      { key: "images", label: "Pic", sortable: true },
+      { key: "created_by", label: "Created", sortable: true },
+      { key: "created_at", label: "Created", sortable: true },
+      { key: "actions", label: "Actions", sortable: false },
+    ],
+    showButtons: { edit: false, proforma: true, po: true },
+  },
+
+  // PO Team Member role table configuration
+  poteammember: {
+    role: "poteammember",
+    columns: [
+      { key: "id", label: "Ref ID", sortable: true },
+      { key: "po_status", label: "Status", sortable: true },
+      { key: "supplier", label: "Supplier", sortable: true },
+      { key: "b_head", label: "B Head", sortable: true },
+      { key: "buyer", label: "Buyer", sortable: true },
+      { key: "category", label: "Category", sortable: true },
+      { key: "qty", label: "Quantity", sortable: true },
+      { key: "images", label: "Pic", sortable: true },
+      { key: "created_by", label: "Created", sortable: true },
+      { key: "created_at", label: "Created", sortable: true },
+      { key: "actions", label: "Actions", sortable: false },
+    ],
+    showButtons: { edit: false, proforma: true, po: true },
+  },
+
+  // Dashboard view table configuration
+  dashboard: {
+    role: "dashboard",
+    columns: [
+      { key: "id", label: "Ref ID", sortable: true },
+      { key: "po_status", label: "Status", sortable: true },
+      { key: "supplier", label: "Supplier", sortable: true },
+      { key: "b_head", label: "B Head", sortable: true },
+      { key: "buyer", label: "Buyer", sortable: true },
+      { key: "category", label: "Category", sortable: true },
+      { key: "qty", label: "Quantity", sortable: true },
+      { key: "images", label: "Pic", sortable: true },
+      { key: "created_by", label: "Created", sortable: true },
+      { key: "created_at", label: "Created", sortable: true },
+      { key: "actions", label: "Actions", sortable: false },
+    ],
+    showButtons: { edit: false, proforma: true, po: true },
+  },
+};
+
+// Get table config by role
+function getTableConfig(role) {
+  return TableConfigs[role] || TableConfigs.buyer;
+}
+
+// TableRenderer class
+class TableRenderer {
+  constructor(containerId, role = "buyer") {
+    this.containerId = containerId;
+    const config = getTableConfig(role);
+    this.config = {
+      columns: config.columns,
+      tableClasses: "table table-zebra w-full",
+      showButtons: config.showButtons,
+      role: role,
+      statusBadges: {
+        1: '<span class="badge badge-success">Open</span>',
+        2: '<span class="badge badge-info">Forwarded</span>',
+        3: '<span class="badge badge-warning">Awaiting PO</span>',
+        4: '<span class="badge badge-primary">Proforma</span>',
+        5: '<span class="badge badge-error">To Buyer Head</span>',
+        6: '<span class="badge badge-neutral">To PO Team</span>',
+        7: '<span class="badge badge-success">PO Generated</span>',
+        8: '<span class="badge badge-error">Rejected</span>',
+        9: '<span class="badge badge-success">Forwarded to PO Members</span>',
+      },
+    };
+    this.data = [];
+    this.init();
+  }
+
+  init() {
+    this.createTable();
+    this.bindSorting();
+    this.observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('opacity-100');
+        }
+      });
+    }, { threshold: 0.1 });
+  }
+
+  createTable() {
+    const container = document.getElementById(this.containerId);
+    if (!container) return;
+
+    const headers = this.config.columns.map(
+      (col, index) =>
+        `<th class="${
+          col.sortable ? "sortable-header" : ""
+        }" data-column="${col.key}"${index === 0 ? ' ' : ''}>${col.label}</th>`
+    ).join("");
+
+    const html = `
+            <div class="overflow-x-auto">
+                <table class="${this.config.tableClasses}" id="dataTable">
+                    <thead>
+                        <tr>
+                            ${headers}
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        `;
+    container.innerHTML = html;
+  }
+
+  renderRows(data) {
+    this.data = data || this.data;
+    const tbody = document.querySelector("#dataTable tbody");
+    if (!tbody) return;
+
+    tbody.innerHTML = this.data.map((row) => this.createRow(row)).join("");
+    document.querySelectorAll('#dataTable tbody tr').forEach(row => this.observer.observe(row));
+    // Attach edit button listeners
+    document.querySelectorAll('.openEditPRBtn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.prId;
+        if (typeof openPRModal === 'function') {
+          openPRModal(id);
+        }
+      });
+    });
+  }
+
+  appendRows(newData) {
+    this.data = [...this.data, ...newData];
+    const tbody = document.querySelector("#dataTable tbody");
+    if (!tbody) return;
+
+    tbody.insertAdjacentHTML(
+      "beforeend",
+      newData.map((row) => this.createRow(row)).join("")
+    );
+    for (let i = 0; i < newData.length; i++) {
+      this.observer.observe(tbody.children[tbody.children.length - newData.length + i]);
+    }
+    // Attach edit button listeners for new rows
+    const newButtons = tbody.querySelectorAll('.openEditPRBtn');
+    newButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.dataset.prId;
+        if (typeof openPRModal === 'function') {
+          openPRModal(id);
+        }
+      });
+    });
+  }
+
+  createRow(row) {
+    console.log(row);
+
+    const cells = this.config.columns.map((col, index) =>
+      `<td${index === 0 ? ' ' : ''}>${this.formatCell(row, col)}</td>`
+    ).join("");
+
+    return `<tr data-id="${row.id}" class="opacity-0 transition-opacity duration-500">
+            ${cells}
+        </tr>`;
+  }
+
+formatCell(row, column) {
+    switch (column.key) {
+        case "id":
+            return row.id || "-";
+        case "po_status":
+            return (
+                this.config.statusBadges[String(row.po_status)] ||
+                '<span class="badge badge-secondary">Unknown</span>'
+            );
+        case "supplier":
+            return row.supplier || "-";
+        case "b_head":
+            return row.b_head || "-";
+        case "buyer":
+            return row.buyer || "-";
+        case "category":
+            return row.category_name || "-";
+        case "qty":
+            return row.qty || "-";
+        case "images":
+            return row.images && row.images.length > 0 
+                ? `<span class="text-green-500">✓ (${row.images.length})</span>`
+                : '<span class="text-gray-400">✗</span>';
+        case "created_by":
+            return row.created_by || "-";
+        case "created_at":
+            return row.created_at ? new Date(row.created_at).toLocaleDateString() : "-";
+        case "actions":
+            let buttons = '<div class="flex gap-1">';
+            buttons += `<button class="btn btn-sm btn-outline read-more-toggle" data-id='${row.id}'>remarks</button>`;
+            if (this.config.showButtons.edit && row.po_status === 1) buttons += `<button class="btn btn-sm btn-outline openEditPRBtn" data-pr-id='${row.id}'>Edit</button>`;
+           
+            if (this.config.showButtons.proforma && ((this.config.role === 'bhead' && [1, 5].includes(row.po_status)) || this.config.role === 'admin')) {
+    const hasProforma = row.proforma_ids && row.proforma_ids[0] ? true : false;
+    buttons += `
+        <button class="btn btn-sm btn-primary proforma" data-pr-id='${row.id}' data-status-id='${row.po_status}' data-role='${this.config.role}'>
+            Proforma
+            ${hasProforma ? `<span class="text-success">&#10003;</span>` : ''}
+        </button>
+    `;
+}
+
+// PO button
+if (this.config.showButtons.po && row.po_status === 7) {
+    const hasPO = row.po_url ? true : false;
+    buttons += `
+        <button class="btn btn-sm btn-secondary po" data-pr-id='${row.id}' data-status-id='${row.po_status}' data-role='${this.config.role}'>
+            PO
+            ${hasPO ? `<span class="text-success">&#10003;</span>` : ''}
+        </button>
+    `;
+}
+            if (this.config.role === 'admin' ? [1].includes(row.po_status) :
+               this.config.role === 'bhead' ? [1, 5].includes(row.po_status) :
+               this.config.role === 'buyer' ? [2, 3, 4].includes(row.po_status) :
+               this.config.role === 'pohead' || this.config.role === 'poteam' ? [6].includes(row.po_status) :
+               false) buttons += `<button class="btn btn-sm btn-outline update-status" data-id='${row.id}' data-status='${row.po_status}'>--></button>`;
+            if (this.config.role === 'poteammember' && row.po_status === 9) buttons += `<button class="btn btn-sm btn-info insert-po" data-id='${row.id}'>Insert PO</button>`;
+
+            buttons += "</div>";
+            return buttons;
+
+        default:
+            return row[column.key] || "-";
+    }
+}
+
+  bindSorting() {
+    const headers = document.querySelectorAll(".sortable-header");
+    headers.forEach((header) => {
+      header.addEventListener("click", () => {
+        const col = header.dataset.column;
+        const direction = header.dataset.sort === "asc" ? "desc" : "asc";
+        headers.forEach((h) => {
+          h.dataset.sort = "";
+          h.classList.remove("sort-asc", "sort-desc");
+        });
+        header.dataset.sort = direction;
+        header.classList.add(`sort-${direction}`);
+        this.sortData(col, direction);
+      });
+    });
+  }
+
+  sortData(column, direction) {
+    this.data.sort((a, b) => {
+      const aValue = a[column] || "";
+      const bValue = b[column] || "";
+      if (direction === "asc")
+        return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
+      return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
+    });
+    this.renderRows(this.data);
+  }
+
+  changeRole(role) {
+    const config = getTableConfig(role);
+    this.config.columns = config.columns;
+    this.config.showButtons = config.showButtons;
+    this.config.role = role;
+    this.createTable();
+    if (this.data.length) this.renderRows(this.data);
+  }
+
+  filterRows(searchTerm) {
+    const term = (searchTerm || "").toLowerCase();
+    document.querySelectorAll("#dataTable tbody tr").forEach((row) => {
+      row.style.display = row.textContent.toLowerCase().includes(term)
+        ? ""
+        : "none";
+    });
+  }
+}
+
+// Make globally available
+window.TableRenderer = TableRenderer;

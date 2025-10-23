@@ -1,0 +1,61 @@
+<body>
+    
+<?php
+include '../common/header.php';
+include '../common/adminheader.php'; ?>
+
+<div id="view-container"></div>
+
+    <?php include '../common/create-pr-modal.php'; ?>
+    <!-- Button to open modal -->
+    <div class="flex justify-center mb-4">
+        <button class="btn btn-primary" id="openCreatePRBtn" >Open Create PR Modal</button>
+    </div>
+        <div class="flex justify-center mb-4">
+        <!-- <button class="btn btn-primary openEditPRBtn">Open Create PR Modal</button> -->
+        <button class="btn btn-primary openEditPRBtn" data-pr-id="23">Edit PR</button>
+
+    </div>
+<!-- Include card-renderer.js first -->
+ <script src="../common/js/table-renderer.js"></script>
+<script src="../common/js/card-renderer.js"></script>
+<script src="../common/js/view-mode.js"></script>
+<script src="../common/js/create-pr.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize window.state for view mode
+    window.state = {
+        offset: 0,
+        limit: 9,
+        loading: false,
+        noMoreData: false,
+        statusFilter: localStorage.getItem("filter") || 1,
+        search: '',
+        from: '',
+        to: '',
+        user_id: <?php echo $_SESSION['user_id'] ?? 0; ?>,
+        role: 'admin'
+    };
+
+    initViewMode({
+        containerId: 'view-container',
+        toggleContainerId: 'filterbar',
+        role: 'admin'
+    });
+});
+    const openBtn = document.getElementById('openCreatePRBtn');
+    const modal = document.getElementById('create_modal');
+    const editPRBtns = document.querySelectorAll('.openEditPRBtn');
+
+    if (openBtn && modal) {
+        openBtn.addEventListener('click', () => openPRModal());
+        }
+        editPRBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+        const prId = btn.dataset.prId; // assuming each button has data-pr-id attribute
+        openPRModal(prId);
+    });
+});
+</script>
+
+</body>
