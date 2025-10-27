@@ -1,15 +1,15 @@
-<?php
-session_start();
-if (!isset($_SESSION["user_id"]) && $_SESSION["role"] !== "buyer") {
-        header("Location: ../index.php");
-    exit;
-}
- ?>
 <?php include '../common/header.php'; ?>
+
 <body>
 
     <?php include '../common/nav.php'; ?>
-
+    <?php
+    // session_start();
+    if (!isset($_SESSION["user_id"]) && $_SESSION["role"] !== "buyer") {
+        header("Location: ../index.php");
+        exit;
+    }
+    ?>
     <!-- Filter bar for view toggle buttons -->
     <div class="p-4 bg-base-200 rounded-xl shadow">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -89,7 +89,7 @@ if (!isset($_SESSION["user_id"]) && $_SESSION["role"] !== "buyer") {
                 initCountBoxComponent({
                     role: 'buyer',
                     buyer_id: <?php echo $_SESSION['user_id'] ?? 0; ?>,
-                    onStatusClick: function(statusId, statusKey) {
+                    onStatusClick: function (statusId, statusKey) {
                         window.state.statusFilter = statusId;
                         localStorage.setItem("filter", statusId);
                         // Refresh the view with the new filter

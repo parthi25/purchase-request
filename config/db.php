@@ -2,7 +2,7 @@
 // Load environment variables
 require_once __DIR__ . '/env.php';
 
-$host = $_ENV['DB_HOST'] ?? 'localhost';
+$host = $_ENV['DB_HOST'] ?? '127.0.0.1';
 $user = $_ENV['DB_USER'] ?? 'root';
 $pass = $_ENV['DB_PASS'] ?? '';
 $dbname = $_ENV['DB_NAME'] ?? 'jcrc';

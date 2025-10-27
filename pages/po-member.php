@@ -1,15 +1,15 @@
-<?php
-session_start();
-if (!isset($_SESSION["user_id"]) && $_SESSION["role"] !== "PO_Team_Member") {
-        header("Location: ../index.php");
-    exit;
-}
- ?>
-<?php  include '../common/header.php'; ?>
+<?php include '../common/header.php'; ?>
+
 <body>
 
     <?php include '../common/nav.php'; ?>
-
+    <?php
+    // session_start();
+    if (!isset($_SESSION["user_id"]) && $_SESSION["role"] !== "PO_Team_Member") {
+        header("Location: ../index.php");
+        exit;
+    }
+    ?>
     <!-- Filter bar for view toggle buttons -->
     <div class="p-4 bg-base-200 rounded-xl shadow">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -89,16 +89,16 @@ if (!isset($_SESSION["user_id"]) && $_SESSION["role"] !== "PO_Team_Member") {
                 };
 
                 initCountBoxComponent({
-                        role: 'poteam',
-                        buyer_id: this.value || <?php echo $_SESSION['user_id'] ?? 0; ?>,
-                        apiEndpoint: '../fetch/fetch-status-count-poteam.php',
-                        onStatusClick: function(statusId, statusKey) {
-                            console.log('Count box status clicked:', statusId);
-                            window.state.statusFilter = statusId;
-                            localStorage.setItem("filter", statusId);
-                            window.ViewMode.refreshView();
-                        }
-                    });
+                    role: 'poteam',
+                    buyer_id: this.value || <?php echo $_SESSION['user_id'] ?? 0; ?>,
+                    apiEndpoint: '../fetch/fetch-status-count-poteam.php',
+                    onStatusClick: function (statusId, statusKey) {
+                        console.log('Count box status clicked:', statusId);
+                        window.state.statusFilter = statusId;
+                        localStorage.setItem("filter", statusId);
+                        window.ViewMode.refreshView();
+                    }
+                });
 
                 initViewMode({
                     containerId: 'view-container',

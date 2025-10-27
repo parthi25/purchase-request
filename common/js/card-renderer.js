@@ -185,11 +185,11 @@ if (config.showButtons.po && item.po_status === 7) {
         const cardHtml = `
             <div class="card max-w-xs min-w-90 bg-base-100 shadow-md border border-gray-200 mb-4 opacity-0 transition-opacity duration-500">
                 <div class="card-body">
-                <div class="avatar absolute translate-x-[220px] product" data-pr-id='${mappedItem.refId}' data-status-id='${item.po_status}' data-role='${config.role}'>
-  <div class="w-24 rounded flex justify-center items-center">
-    <img src="../${mappedItem.product}" alt="product"/>
-  </div>
-</div>
+                    <div class="avatar absolute translate-x-[220px] translate-y-[30px] product" data-pr-id='${mappedItem.refId}' data-status-id='${item.po_status}' data-role='${config.role}'>
+                        <div class="w-24 rounded flex justify-center items-center">
+                            <img src="../${mappedItem.product}" alt="product" onerror="this.onerror=null; this.src='../assets/brand/no-image.png';"/>
+                        </div>
+                    </div>
                     <!-- Header -->
                     <div class="mb-4">
                         <h2 class="text-lg font-bold mb-2 truncate">Buyer Head: ${mappedItem.buyerHead}</h2>
@@ -204,7 +204,7 @@ if (config.showButtons.po && item.po_status === 7) {
 
                     <!-- Footer Actions -->
                     <div class="flex justify-between items-center gap-1">
-${buttonsHtml}
+                    ${buttonsHtml}
                     </div>
                 </div>
             </div>

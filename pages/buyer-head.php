@@ -1,15 +1,15 @@
-<?php
-session_start();
-if (!isset($_SESSION["user_id"]) && $_SESSION["role"] !== "B_Head") {
-        header("Location: ../index.php");
-    exit;
-}
- ?>
 <?php include '../common/header.php'; ?>
+
 <body>
 
     <?php include '../common/nav.php'; ?>
-
+    <?php
+    // session_start();
+    if (!isset($_SESSION["user_id"]) && $_SESSION["role"] !== "B_Head") {
+        header("Location: ../index.php");
+        exit;
+    }
+    ?>
     <!-- Filter bar for view toggle buttons -->
     <div class="p-4 bg-base-200 rounded-xl shadow">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -107,17 +107,17 @@ if (!isset($_SESSION["user_id"]) && $_SESSION["role"] !== "B_Head") {
                     .catch(error => console.error('Error loading buyers:', error));
 
                 // Handle buyer selection
-                document.getElementById('buyerSelect').addEventListener('change', function() {
+                document.getElementById('buyerSelect').addEventListener('change', function () {
                     window.state.selectedBuyerId = this.value;
                     window.state.offset = 0;
                     window.state.noMoreData = false;
-                    
+
                     console.log('Buyer changed to:', this.value);
-                    
+
                     initCountBoxComponent({
                         role: 'bhead',
                         buyer_id: this.value || <?php echo $_SESSION['user_id'] ?? 0; ?>,
-                        onStatusClick: function(statusId, statusKey) {
+                        onStatusClick: function (statusId, statusKey) {
                             console.log('Count box status clicked:', statusId);
                             window.state.statusFilter = statusId;
                             localStorage.setItem("filter", statusId);
@@ -130,7 +130,7 @@ if (!isset($_SESSION["user_id"]) && $_SESSION["role"] !== "B_Head") {
                 initCountBoxComponent({
                     role: 'bhead',
                     buyer_id: <?php echo $_SESSION['user_id'] ?? 0; ?>,
-                    onStatusClick: function(statusId, statusKey) {
+                    onStatusClick: function (statusId, statusKey) {
                         console.log('Initial count box status clicked:', statusId);
                         window.state.statusFilter = statusId;
                         localStorage.setItem("filter", statusId);

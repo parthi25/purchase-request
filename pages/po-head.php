@@ -1,15 +1,15 @@
-<?php
-session_start();
-if (!isset($_SESSION["user_id"]) && $_SESSION["role"] !== "PO_Head") {
-        header("Location: ../index.php");
-    exit;
-}
- ?>
-<?php     include '../common/header.php'; ?>
+<?php include '../common/header.php'; ?>
+
 <body>
 
     <?php include '../common/nav.php'; ?>
-
+    <?php
+    // session_start();
+    if (!isset($_SESSION["user_id"]) && $_SESSION["role"] !== "PO_Head") {
+        header("Location: ../index.php");
+        exit;
+    }
+    ?>
     <!-- Filter bar for view toggle buttons -->
     <div class="p-4 bg-base-200 rounded-xl shadow">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
@@ -107,26 +107,26 @@ if (!isset($_SESSION["user_id"]) && $_SESSION["role"] !== "PO_Head") {
                     .catch(error => console.error('Error loading PO members:', error));
 
                 // Handle PO member selection
-                document.getElementById('poMemberSelect').addEventListener('change', function() {
+                document.getElementById('poMemberSelect').addEventListener('change', function () {
                     window.state.selectedPoMemberId = this.value;
                     window.state.offset = 0;
                     window.state.noMoreData = false;
-                    
+
                     console.log('PO Member changed to:', this.value);
-                    
+
                     // Update count box with selected PO member
                     initCountBoxComponent({
                         role: 'pohead',
                         buyer_id: this.value || <?php echo $_SESSION['user_id'] ?? 0; ?>,
                         apiEndpoint: '../fetch/fetch-status-count-poteam.php',
-                        onStatusClick: function(statusId, statusKey) {
+                        onStatusClick: function (statusId, statusKey) {
                             console.log('Count box status clicked:', statusId);
                             window.state.statusFilter = statusId;
                             localStorage.setItem("filter", statusId);
                             window.ViewMode.refreshView();
                         }
                     });
-                    
+
                     // Refresh the view with new filter
                     window.ViewMode.refreshView();
                 });
@@ -135,7 +135,7 @@ if (!isset($_SESSION["user_id"]) && $_SESSION["role"] !== "PO_Head") {
                     role: 'pohead',
                     buyer_id: <?php echo $_SESSION['user_id'] ?? 0; ?>,
                     apiEndpoint: '../fetch/fetch-status-count-poteam.php',
-                    onStatusClick: function(statusId, statusKey) {
+                    onStatusClick: function (statusId, statusKey) {
                         console.log('Initial count box status clicked:', statusId);
                         window.state.statusFilter = statusId;
                         localStorage.setItem("filter", statusId);

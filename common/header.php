@@ -12,4 +12,5 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2/dist/sweetalert2.all.min.js"></script>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<link rel="shortcut icon" href="/p_r/assets/brand/favicon.ico" type="image/x-icon">
 </head>

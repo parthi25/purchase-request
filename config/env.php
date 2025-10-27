@@ -11,7 +11,7 @@ if (!function_exists('loadEnv')) {
                 'DB_HOST' => '127.0.0.1',
                 'DB_USER' => 'root',
                 'DB_PASS' => '',
-                'DB_NAME' => 'jcrc_ch',
+                'DB_NAME' => 'jcrc',
                 'DB_PORT' => '3307',
                 'PROXY_API' => '',
                 'BACKUP_API' => '',
