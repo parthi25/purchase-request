@@ -18,6 +18,8 @@ $status = intval($_POST['status']);
 $remark = isset($_POST['remarkInput']) ? $_POST['remarkInput'] : null;
 $po_team = $_POST['poTeamInput'] ?? 37;
 $statusDate = (new DateTime())->format('Y-m-d H:i:s');
+$buyer_id = isset($_POST['buyerInput']) ? intval($_POST['buyerInput']) : null;
+
 
 // Prepare statements
 $selectQuery = "SELECT b_head,created_by FROM po_tracking WHERE id = ?";
@@ -59,29 +61,12 @@ foreach ($ids as $id) {
 
     $created_by = $row['created_by'];
     $head = $row['b_head'];
-    $buyer_id = null;
 
     // Check if created_by user exists and is a buyer
     $checkBuyerStmt->bind_param("i", $created_by);
     $checkBuyerStmt->execute();
     $buyerResult = $checkBuyerStmt->get_result();
 
-    if ($buyerResult->num_rows) {
-        $user = $buyerResult->fetch_assoc();
-        if ($user['role'] === 'buyer') {
-            $buyer_id = $created_by;
-        }
-    } else if ($buyerResult->num_rows) {
-        $user = $buyerResult->fetch_assoc();
-        if ($user['role'] === 'B_Head') {
-            $buyer_id = $created_by;
-        }
-    } else if ($buyerResult->num_rows) {
-        $user = $buyerResult->fetch_assoc();
-        if ($user['role'] === 'admin') {
-            $buyer_id = $head;
-        }
-    }
 
     $stmt->bind_param(
         "isssssisii",
@@ -92,7 +77,7 @@ foreach ($ids as $id) {
         $statusDate,
         $statusDate,
         $status,
-        $pocmd,
+        $remark,
         $buyer_id,
         $id
     );
@@ -107,5 +92,5 @@ $checkBuyerStmt->close();
 $stmt->close();
 $conn->close();
 
-sendResponse(200, "success", "Status updated successfully", ["header" => $head, "created_by" => $created_by]);
+sendResponse(200, "success", "Status updated successfully", ["buyer_id" => $buyer_id, "created_by" => $created_by]);
 ?>

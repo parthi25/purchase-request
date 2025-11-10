@@ -29,7 +29,7 @@ try {
     // Update po_tracking
     $updateQuery = "UPDATE po_tracking 
                     SET po_status = ?, 
-                        po_team_rm = ?, 
+                        rrm = ?, 
                         status_6 = ?
                     WHERE id = ?";
     $updateStmt = $conn->prepare($updateQuery);
@@ -39,6 +39,16 @@ try {
     $updateStmt->bind_param("sssi", $status, $remark, $statusDate, $id);
     if (!$updateStmt->execute())
         throw new Exception('Failed to update po_tracking: ' . $updateStmt->error);
+
+    // Fetch buyer from po_tracking
+    $buyerStmt = $conn->prepare("SELECT buyer FROM po_tracking WHERE id = ?");
+    if (!$buyerStmt)
+        throw new Exception('Failed to prepare buyer fetch query');
+    $buyerStmt->bind_param("i", $id);
+    $buyerStmt->execute();
+    $buyerStmt->bind_result($buyer);
+    $buyerStmt->fetch();
+    $buyerStmt->close();
 
     // Check if record exists in po_team_member
     $checkStmt = $conn->prepare("SELECT id FROM po_team_member WHERE ord_id = ?");
@@ -51,21 +61,21 @@ try {
     if ($checkStmt->num_rows > 0) {
         // Update existing record
         $updateMemberStmt = $conn->prepare("UPDATE po_team_member 
-                                            SET created_by = ?, po_team_member = ?, updated_at = ? 
+                                            SET created_by = ?, po_team_member = ?, buyer = ?, updated_at = ? 
                                             WHERE ord_id = ?");
         if (!$updateMemberStmt)
             throw new Exception('Failed to prepare po_team_member update query');
-        $updateMemberStmt->bind_param("iisi", $created_by, $po_team_member, $updated_at, $id);
+        $updateMemberStmt->bind_param("iissi", $created_by, $po_team_member, $buyer, $updated_at, $id);
         if (!$updateMemberStmt->execute())
             throw new Exception('Failed to update po_team_member: ' . $updateMemberStmt->error);
     } else {
         // Insert new record
         $insertStmt = $conn->prepare("INSERT INTO po_team_member 
-                                      (created_by, po_team_member, created_at, updated_at, ord_id) 
-                                      VALUES (?, ?, ?, ?, ?)");
+                                      (created_by, po_team_member, buyer, created_at, updated_at, ord_id) 
+                                      VALUES (?, ?, ?, ?, ?, ?)");
         if (!$insertStmt)
             throw new Exception('Failed to prepare po_team_member insert query');
-        $insertStmt->bind_param("iissi", $created_by, $po_team_member, $created_at, $updated_at, $id);
+        $insertStmt->bind_param("iisssi", $created_by, $po_team_member, $buyer, $created_at, $updated_at, $id);
         if (!$insertStmt->execute())
             throw new Exception('Failed to insert po_team_member: ' . $insertStmt->error);
     }
@@ -75,7 +85,8 @@ try {
     sendResponse(200, "success", 'PO assignment completed successfully', [
         'id' => $id,
         'status' => $status,
-        'po_team_member' => $po_team_member
+        'po_team_member' => $po_team_member,
+        'buyer' => $buyer
     ]);
 
 } catch (Exception $e) {

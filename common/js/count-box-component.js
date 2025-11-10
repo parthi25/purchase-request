@@ -51,7 +51,21 @@ async function loadCountData() {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        const countData = Array.isArray(data) ? data : (data.data || []);
+        // Handle new response structure with counts and query
+        let countData = [];
+        if (data.data) {
+            if (Array.isArray(data.data)) {
+                countData = data.data;
+            } else if (data.data.counts && Array.isArray(data.data.counts)) {
+                countData = data.data.counts;
+                // Log the executed query if available
+                if (data.data.query) {
+                    console.log('Executed Query:', data.data.query);
+                }
+            }
+        } else if (Array.isArray(data)) {
+            countData = data;
+        }
         renderCountBox(countData);
     } catch (error) {
         console.error('Error loading count data:', error);

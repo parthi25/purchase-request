@@ -131,9 +131,10 @@
                     window.ViewMode.refreshView();
                 });
 
+                // Initial load - show all team counts (pass 0 or null to indicate no specific member)
                 initCountBoxComponent({
                     role: 'pohead',
-                    buyer_id: <?php echo $_SESSION['user_id'] ?? 0; ?>,
+                    buyer_id: 0, // Pass 0 to indicate show all team counts
                     apiEndpoint: '../fetch/fetch-status-count-poteam.php',
                     onStatusClick: function (statusId, statusKey) {
                         console.log('Initial count box status clicked:', statusId);

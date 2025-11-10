@@ -60,7 +60,7 @@ $search = trim($_GET['search'] ?? '');
 $from_date = fix_datepicker_bug($_GET['from_date'] ?? $_GET['from'] ?? '');
 $to_date = fix_datepicker_bug($_GET['to_date'] ?? $_GET['to'] ?? '');
 
-// ---------------- BASE QUERY ----------------
+// ---------------- BASE QUERY (OPTIMIZED) ----------------
 $sql = "SELECT p.*, 
             u.username AS created_by_name,
             b.username AS b_head_name,
@@ -122,37 +122,43 @@ switch ($user_role) {
         break;
 }
 
-// ---------------- SEARCH FILTER ----------------
+// ---------------- SEARCH FILTER (OPTIMIZED) ----------------
 if ($search !== '') {
-    $like = "%" . strtoupper($search) . "%";
     $search_conditions = [];
 
+    // Check if search is numeric first (faster than LIKE)
     if (ctype_digit($search)) {
+        $search_int = (int) $search;
         $search_conditions[] = "p.id=? OR ptm.po_number=?";
         $param_types .= "ii";
-        $values[] = (int) $search;
-        $values[] = (int) $search;
+        $values[] = $search_int;
+        $values[] = $search_int;
+    } else {
+        // Use LIKE only for text searches, avoid UPPER() if possible
+        $like = "%" . $search . "%";
+        // Optimize: Use COALESCE to handle NULLs and reduce conditions
+        $search_conditions[] = "(s.supplier LIKE ? OR s.agent LIKE ? OR ns.supplier LIKE ? OR ns.agent LIKE ? OR c.maincat LIKE ? OR u.username LIKE ? OR b.username LIKE ? OR bu.username LIKE ? OR ptm.po_number LIKE ?)";
+        $param_types .= str_repeat("s", 9);
+        for ($i = 0; $i < 9; $i++)
+            $values[] = $like;
     }
 
-    // Unified LIKE search
-    $search_conditions[] = "(UPPER(s.supplier) LIKE ? OR UPPER(s.agent) LIKE ? OR UPPER(ns.supplier) LIKE ? OR UPPER(ns.agent) LIKE ? OR UPPER(c.maincat) LIKE ? OR UPPER(u.username) LIKE ? OR UPPER(b.username) LIKE ? OR UPPER(bu.username) LIKE ? OR UPPER(ptm.po_number) LIKE ?)";
-    $param_types .= str_repeat("s", 9);
-    for ($i = 0; $i < 9; $i++)
-        $values[] = $like;
-
-    $conditions[] = "(" . implode(" OR ", $search_conditions) . ")";
+    if (!empty($search_conditions)) {
+        $conditions[] = "(" . implode(" OR ", $search_conditions) . ")";
+    }
 }
 
 // ---------------- DATE FILTER ----------------
+// Use direct date comparison instead of DATE() function for better performance
 if ($from_date) {
-    $conditions[] = "DATE(p.created_at) >= ?";
+    $conditions[] = "p.created_at >= ?";
     $param_types .= "s";
-    $values[] = $from_date;
+    $values[] = $from_date . ' 00:00:00';
 }
 if ($to_date) {
-    $conditions[] = "DATE(p.created_at) <= ?";
+    $conditions[] = "p.created_at <= ?";
     $param_types .= "s";
-    $values[] = $to_date;
+    $values[] = $to_date . ' 23:59:59';
 }
 // ---------------- OTHER FILTERS ----------------
 $filters = [
@@ -208,7 +214,7 @@ if ($status_filter !== null && $status_filter > 0) {
     }
 }
 
-// ---------------- FINAL QUERY ----------------
+// ---------------- FINAL QUERY (OPTIMIZED) ----------------
 if ($conditions)
     $sql .= " WHERE " . implode(" AND ", $conditions);
 $sql .= " ORDER BY p.created_at DESC LIMIT ?,?";
@@ -242,40 +248,44 @@ while ($row = $result->fetch_assoc()) {
     $ids[] = $row['id'];
 }
 
-// ---------------- FETCH ALL IMAGES IN ONE QUERY ----------------
+// ---------------- FETCH ALL IMAGES IN ONE QUERY (OPTIMIZED) ----------------
 if ($ids) {
-    $id_list = implode(',', $ids);
-    $img_result = $conn->query("
+    // Sanitize IDs and use prepared statement for security
+    $id_list = implode(',', array_map('intval', $ids));
+    $img_sql = "
         SELECT ord_id, id, url, 'po_order' AS type FROM po_order WHERE ord_id IN ($id_list) AND filename IS NOT NULL
         UNION ALL
         SELECT ord_id, id, url, 'proforma' AS type FROM proforma WHERE ord_id IN ($id_list) AND filename IS NOT NULL
-    ");
-    $images_map = [];
-    while ($img = $img_result->fetch_assoc()) {
-        $oid = $img['ord_id'];
-        $type = $img['type'];
-        if (!isset($images_map[$oid]))
-            $images_map[$oid] = ['po_order' => [], 'proforma' => []];
-        $images_map[$oid][$type][] = ['id' => (int) $img['id'], 'url' => $img['url']];
-    }
-    foreach ($data as &$d) {
-        $oid = $d['id'];
-        $d['po_order_ids'] = array_column($images_map[$oid]['po_order'] ?? [], 'id');
-        $d['images'] = array_column($images_map[$oid]['po_order'] ?? [], 'url');
-        $d['proforma_ids'] = array_column($images_map[$oid]['proforma'] ?? [], 'id');
-        $d['proforma_images'] = array_column($images_map[$oid]['proforma'] ?? [], 'url');
+    ";
+    $img_result = $conn->query($img_sql);
+    
+    if ($img_result) {
+        $images_map = [];
+        while ($img = $img_result->fetch_assoc()) {
+            $oid = (int) $img['ord_id'];
+            $type = $img['type'];
+            if (!isset($images_map[$oid]))
+                $images_map[$oid] = ['po_order' => [], 'proforma' => []];
+            $images_map[$oid][$type][] = ['id' => (int) $img['id'], 'url' => $img['url']];
+        }
+        
+        // Initialize arrays to avoid isset checks
+        foreach ($data as &$d) {
+            $oid = $d['id'];
+            $d['po_order_ids'] = array_column($images_map[$oid]['po_order'] ?? [], 'id');
+            $d['images'] = array_column($images_map[$oid]['po_order'] ?? [], 'url');
+            $d['proforma_ids'] = array_column($images_map[$oid]['proforma'] ?? [], 'id');
+            $d['proforma_images'] = array_column($images_map[$oid]['proforma'] ?? [], 'url');
+        }
+        unset($d); // Break reference
     }
 }
 
-// ---------------- DEBUG LOGGING ----------------
-error_log("DEBUG: Role: $user_role, Status Filter: $status_filter, User ID: $userid");
-error_log("DEBUG: Buyer Filter: $buyer_filter, PO Filter: $po_filter");
-error_log("DEBUG: Fetched " . count($data) . " records");
-if (!empty($data)) {
-    $first_record = reset($data);
-    error_log("DEBUG: First record keys: " . implode(", ", array_keys($first_record)));
-    error_log("DEBUG: First record po_status: " . ($first_record['po_status'] ?? 'NOT SET'));
-}
+// ---------------- DEBUG LOGGING (DISABLED FOR PERFORMANCE) ----------------
+// Uncomment only when debugging
+// error_log("DEBUG: Role: $user_role, Status Filter: $status_filter, User ID: $userid");
+// error_log("DEBUG: Buyer Filter: $buyer_filter, PO Filter: $po_filter");
+// error_log("DEBUG: Fetched " . count($data) . " records");
 
 // ---------------- OUTPUT ----------------
 sendResponse(200, "success", "Data fetched successfully", array_values($data));

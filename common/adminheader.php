@@ -1,5 +1,7 @@
 <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 if (!isset($_SESSION["user_id"]) && $_SESSION["role"] !== "admin") {
         header("Location: ../index.php");
     exit;
@@ -11,9 +13,14 @@ if (!isset($_SESSION["user_id"]) && $_SESSION["role"] !== "admin") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Purchase Tracker</title>
-    <link rel="shortcut icon" href="/p_r/assets/brand/favicon.ico" type="image/x-icon">
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
-    <script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
+<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+<link href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2/dist/sweetalert2.all.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<link rel="shortcut icon" href="/p_r/assets/brand/favicon.ico" type="image/x-icon">
 </head>
 <body>
     <nav class="navbar bg-base-100 shadow-md px-4 py-3">
@@ -177,7 +184,7 @@ if (!isset($_SESSION["user_id"]) && $_SESSION["role"] !== "admin") {
     </nav>
 
     <!-- Demo Content -->
-    <main class="container mx-auto px-4 py-8">
+    <!-- <main class="container mx-auto px-4 py-8">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
             <div class="stat bg-base-200 rounded-lg px-6 py-4">
                 <div class="stat-figure text-error">
@@ -213,7 +220,7 @@ if (!isset($_SESSION["user_id"]) && $_SESSION["role"] !== "admin") {
             </div>
         </div>
         
-        <!-- <div class="card bg-base-100 shadow-md">
+        <div class="card bg-base-100 shadow-md">
             <div class="card-body">
                 <h2 class="card-title">Purchase Overview</h2>
                 <p>This is a demonstration of the improved navigation bar with proper styling for desktop view.</p>
@@ -221,8 +228,8 @@ if (!isset($_SESSION["user_id"]) && $_SESSION["role"] !== "admin") {
                     <button class="btn btn-primary">View Details</button>
                 </div>
             </div>
-        </div> -->
-    </main>
+        </div>
+    </main> -->
 
     <script>
         // Theme management with localStorage

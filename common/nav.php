@@ -1,5 +1,7 @@
    <?php
-session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 $role = $_SESSION['role'] ?? 'PO_Head'; // default role
 
 // Map roles to URLs

@@ -26,7 +26,8 @@ if (!isset($_POST['csrf_token']) || !Security::validateCSRFToken($_POST['csrf_to
 }
 
 $uploadConfig = getUploadConfig();
-$uploadDir = '../' . $uploadConfig['dir'] . '/';
+$uploadDir = '../' . $uploadConfig['dir'] . '/';  // filesystem path for move_uploaded_file
+$uploadUrl = $uploadConfig['dir'] . '/';           // URL path to store in DB
 
 // Ensure upload directory exists with secure permissions
 if (!is_dir($uploadDir) && !mkdir($uploadDir, 0755, true)) {
@@ -70,7 +71,6 @@ try {
         sendResponse(400, 'error', $validator->getFirstError());
     }
 
-
     // Get category_id
     $stmt = $conn->prepare("SELECT id FROM cat WHERE maincat = ? LIMIT 1");
     $stmt->bind_param("s", $categoryName);
@@ -78,8 +78,9 @@ try {
     $category = $stmt->get_result()->fetch_assoc();
     $stmt->close();
 
-    if (!$category)
+    if (!$category) {
         sendResponse(400, 'error', "Category '{$categoryName}' not found.");
+    }
     $categoryId = (int) $category['id'];
 
     // Handle NEW SUPPLIER with validation
@@ -89,7 +90,6 @@ try {
         $agent = Security::sanitizeInput(trim($_POST['agent'] ?? ''));
         $city = Security::sanitizeInput(trim($_POST['city'] ?? ''));
         
-        // Validate new supplier data
         if (!$validator->validateNewSupplier(['supplier' => $newsupplier, 'agent' => $agent, 'city' => $city])) {
             sendResponse(400, 'error', $validator->getFirstError());
         }
@@ -125,7 +125,7 @@ try {
     $poId = $stmt->insert_id;
     $stmt->close();
 
-    // Handle file uploads with enhanced security
+    // Handle file uploads
     if (!empty($_FILES['files']['name'][0])) {
         $allowedTypes = $uploadConfig['allowed_types'];
         $maxFileSize = $uploadConfig['max_size'];
@@ -138,7 +138,6 @@ try {
                 sendResponse(400, 'error', "File upload error (code {$errorCode}) for '{$originalName}'.");
             }
 
-            // Create file array for Security validation
             $fileArray = [
                 'name' => $originalName,
                 'type' => $_FILES['files']['type'][$index],
@@ -147,25 +146,22 @@ try {
                 'size' => $_FILES['files']['size'][$index]
             ];
 
-            // Validate file using Security class
             $fileErrors = Security::validateFile($fileArray, $allowedTypes, $maxFileSize);
             if (!empty($fileErrors)) {
                 sendResponse(400, 'error', "File validation failed for '{$originalName}': " . implode(', ', $fileErrors));
             }
 
-            // Generate secure filename
             $secureFileName = Security::generateSecureFilename($originalName);
-            $filePath = $uploadDir . $secureFileName;
+            $filePath = $uploadDir . $secureFileName;   // filesystem path
+            $fileUrl = $uploadUrl . $secureFileName;    // store in DB
 
             if (!move_uploaded_file($tmpPath, $filePath)) {
                 sendResponse(500, 'error', "Failed to move uploaded file '{$originalName}'.");
             }
-
-            // Set proper file permissions
             chmod($filePath, 0644);
 
             $stmt = $conn->prepare("INSERT INTO po_order (ord_id, url, filename) VALUES (?, ?, ?)");
-            $stmt->bind_param("iss", $poId, $filePath, $secureFileName);
+            $stmt->bind_param("iss", $poId, $fileUrl, $secureFileName);
             $stmt->execute();
             $stmt->close();
         }
