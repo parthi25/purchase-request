@@ -245,7 +245,10 @@ document.addEventListener('DOMContentLoaded', () => {
       if (uploadData.status === 'success') {
         showAlert('File uploaded successfully!', 'success');
         fileInput.value = ''; // Clear input
-        await loadFiles(); // Refresh file list
+        // Reload page after successful upload
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
       } else {
         showAlert(uploadData.message || 'Upload failed', 'error');
       }

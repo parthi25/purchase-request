@@ -1,60 +1,49 @@
-<?php include '../common/header.php'; ?>
+<?php include '../common/layout.php'; ?>
+    <!-- Filter bar and count box sticky container -->
+    <div class="sticky top-16 z-40 bg-base-100">
+        <!-- Filter bar for view toggle buttons -->
+        <div class="p-4 bg-base-200 rounded-xl shadow">
+            <div class="flex flex-wrap items-center justify-between gap-3">
 
-<body>
+                <!-- Buyer Dropdown + Search + Date Range -->
+                <div class="flex flex-wrap items-center gap-3">
+                    <select id="buyerSelect" class="select select-bordered w-48">
+                        <option value="">Select Buyer</option>
+                    </select>
+                    <input type="text" id="searchInput" placeholder="Search..." class="input input-bordered w-48 md:w-64" />
+                    <input type="text" id="dateRange" placeholder="Select Date Range" class="input input-bordered w-64" />
+                </div>
 
-    <?php include '../common/nav.php'; ?>
-    <?php
-    // session_start();
-    if (!isset($_SESSION["user_id"]) && $_SESSION["role"] !== "B_Head") {
-        header("Location: ../index.php");
-        exit;
-    }
-    ?>
-    <!-- Filter bar for view toggle buttons -->
-    <div class="p-4 bg-base-200 rounded-xl shadow">
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-
-            <!-- Buyer Dropdown + Search + Dates -->
-            <div class="flex flex-wrap items-center gap-3">
-                <select id="buyerSelect" class="select select-bordered w-48">
-                    <option value="">Select Buyer</option>
-                </select>
-                <input type="text" id="searchInput" placeholder="Search..." class="input input-bordered w-48 md:w-64" />
-                <input type="date" id="fromDate" class="input input-bordered w-36" />
-                <input type="date" id="toDate" class="input input-bordered w-36" />
-            </div>
-
-            <!-- Buttons -->
-            <div class="flex flex-wrap items-center gap-3">
-                <button id="applyFilters" class="btn btn-primary">Apply</button>
-                <button id="clearFilters" class="btn btn-outline btn-secondary">Clear</button>
-                <button id="openCreatePRBtn" class="btn btn-accent">Create PR</button>
-            </div>
-
-            <div class="flex gap-2 w-full md:w-auto">
-                <div class="btn-group">
-                    <button class="btn btn-outline view-toggle-btn active" data-view="table">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                        </svg>
-                        Table
-                    </button>
-                    <button class="btn btn-outline view-toggle-btn" data-view="cards">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                            stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                        </svg>
-                        Cards
-                    </button>
+                <!-- Buttons -->
+                <div class="flex flex-wrap items-center gap-3">
+                    <button id="applyFilters" class="btn btn-outline btn-primary">Apply</button>
+                    <button id="clearFilters" class="btn btn-outline btn-secondary">Clear</button>
+                    <button id="openCreatePRBtn" class="btn btn-outline btn-accent">Create PR</button>
+                    <div class="btn-group">
+                        <button class="btn btn-outline view-toggle-btn active" data-view="table">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                            </svg>
+                            Table
+                        </button>
+                        <button class="btn btn-outline view-toggle-btn" data-view="cards">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                            </svg>
+                            Cards
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <div id="statusCounts" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 m-4"></div>
+        <div id="statusCounts" class="flex flex-wrap justify-around items-center gap-4 m-4 bg-base-100 py-2"></div>
         <div id="activeStatus" class="text-center text-sm text-gray-500 mb-2"></div>
+    </div>
 
         <div id="view-container" class="p-4"></div>
         <?php include '../common/read-more-modal.php'; ?>
@@ -139,6 +128,24 @@
                     }
                 });
 
+                // Initialize Flatpickr date range picker
+                const dateRangeInput = document.getElementById('dateRange');
+                if (dateRangeInput) {
+                    flatpickr(dateRangeInput, {
+                        mode: "range",
+                        dateFormat: "Y-m-d",
+                        onChange: function(selectedDates, dateStr, instance) {
+                            if (selectedDates.length === 2) {
+                                window.state.from = selectedDates[0].toISOString().split('T')[0];
+                                window.state.to = selectedDates[1].toISOString().split('T')[0];
+                            } else if (selectedDates.length === 0) {
+                                window.state.from = '';
+                                window.state.to = '';
+                            }
+                        }
+                    });
+                }
+
                 initViewMode({
                     containerId: 'view-container',
                     toggleContainerId: 'filterbar',
@@ -172,6 +179,4 @@
             });
 
         </script>
-    </div>
-    <?php include '../common/footer.php' ?>
-</body>
+<?php include '../common/layout-footer.php'; ?>

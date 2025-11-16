@@ -9,9 +9,9 @@
     <!-- Fav Icon -->
     <link rel="icon" type="image/x-icon" href="./assets/brand/favicon.ico">
     <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="./assets/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="./assets/css/font-awesome.min.css">
 
     <style>
         body {
@@ -127,10 +127,10 @@
 
                 <form id="login-form">
                     <div class="mb-3">
-                        <label for="id_username" class="form-label">Username <span class="text-danger">*</span></label>
+                        <label for="id_username" class="form-label">Username or Email <span class="text-danger">*</span></label>
                         <div class="input-group">
                             <span class="input-group-text"><i class="fas fa-user"></i></span>
-                            <input type="text" id="id_username" class="form-control" placeholder="Enter your username" required>
+                            <input type="text" id="id_username" class="form-control" placeholder="Enter your username or email" required>
                         </div>
                     </div>
 
@@ -198,7 +198,7 @@
         });
     </script>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="./assets/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

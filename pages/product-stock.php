@@ -1,13 +1,4 @@
-<!DOCTYPE html>
-<html lang="en" data-theme="light">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Supplier & Product Dashboard</title>
-  <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
-  <script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="min-h-screen bg-base-200 p-6">
+<?php include '../common/layout.php'; ?>
   <div class="max-w-6xl mx-auto">
 
     <!-- Header -->
@@ -83,5 +74,4 @@
 
   </div>
     <script src="../common/js/product-stock.js"></script>
-</body>
-</html>
+<?php include '../common/layout-footer.php'; ?>

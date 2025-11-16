@@ -3,7 +3,7 @@
 const CardConfigs = {
     buyer: {
         role: 'buyer',
-        showFields: { refId:true, poNumber:true, poTeam:true, supplier:true, category:true, purchType:false, qty:true, createdBy:true, createdOn:true, remarks:true },
+        showFields: { refId:true, poNumber:true, poTeam:true, supplier:true, category:true, purchType:false, qty:true, createdBy:true, createdOn:true, remarks:false },
         showButtons: { edit:true, proforma:true, po:true },
         statusBadges: {
             "1": '<span class="text-sm font-semibold text-green-600">Open</span>',
@@ -19,7 +19,7 @@ const CardConfigs = {
     },
     admin: {
         role: 'admin',
-        showFields: { refId:true, poNumber:true, poTeam:true, supplier:true, category:true, purchType:true, qty:true, createdBy:true, createdOn:true, remarks:true },
+        showFields: { refId:true, poNumber:true, poTeam:true, supplier:true, category:true, purchType:true, qty:true, createdBy:true, createdOn:true, remarks:false },
         showButtons: { edit:true, proforma:true, po:true },
         statusBadges: {
             "1": '<span class="text-sm font-semibold text-green-600">Open</span>',
@@ -35,7 +35,7 @@ const CardConfigs = {
     },
     bhead: {
         role: 'bhead',
-        showFields: { refId:true, poNumber:true, poTeam:true, supplier:true, category:true, purchType:false, qty:true, createdBy:true, createdOn:true, remarks:true },
+        showFields: { refId:true, poNumber:true, poTeam:true, supplier:true, category:true, purchType:false, qty:true, createdBy:true, createdOn:true, remarks:false },
         showButtons: { edit:true, proforma:true, po:true },
         statusBadges: {
             "1": '<span class="text-sm font-semibold text-green-600">Open</span>',
@@ -51,7 +51,7 @@ const CardConfigs = {
     },
     pohead: {
         role: 'pohead',
-        showFields: { refId:true, poNumber:true, poTeam:true, supplier:true, category:true, purchType:true, qty:true, createdBy:true, createdOn:true, remarks:true },
+        showFields: { refId:true, poNumber:true, poTeam:true, supplier:true, category:true, purchType:true, qty:true, createdBy:true, createdOn:true, remarks:false },
         showButtons: { edit:false, proforma:true, po:true },
         statusBadges: {
             "1": '<span class="text-sm font-semibold text-green-600">Open</span>',
@@ -67,7 +67,7 @@ const CardConfigs = {
     },
     poteammember: {
         role: 'poteammember',
-        showFields: { refId:true, poNumber:true, poTeam:false, supplier:true, category:true, purchType:true, qty:true, createdBy:true, createdOn:true, remarks:true },
+        showFields: { refId:true, poNumber:true, poTeam:false, supplier:true, category:true, purchType:true, qty:true, createdBy:true, createdOn:true, remarks:false },
         showButtons: { edit:false, proforma:true, po:true },
         statusBadges: {
             "1": '<span class="text-sm font-semibold text-green-600">Open</span>',
@@ -158,7 +158,7 @@ function renderCards(dataArray, role = 'buyer', containerId = 'cardContainer') {
         if (config.showButtons.proforma) {
     const hasProforma = item.proforma_ids && item.proforma_ids[0] ? true : false;
     buttonsHtml += `
-        <button class="btn btn-sm btn-primary proforma" data-pr-id='${mappedItem.refId}' data-status-id='${item.po_status}' data-role='${config.role}'>
+        <button class="btn btn-sm btn-outline proforma" data-pr-id='${mappedItem.refId}' data-status-id='${item.po_status}' data-role='${config.role}'>
             Proforma
             ${hasProforma ? `<span class="text-success">&#10003;</span>` : ''}
         </button>
@@ -169,7 +169,7 @@ function renderCards(dataArray, role = 'buyer', containerId = 'cardContainer') {
 if (config.showButtons.po && item.po_status === 7) {
     const hasPO = item.po_url ? true : false;
     buttonsHtml += `
-        <button class="btn btn-sm btn-secondary po" data-pr-id='${mappedItem.refId}' data-status-id='${item.po_status}' data-role='${config.role}'>
+        <button class="btn btn-sm btn-outline po" data-pr-id='${mappedItem.refId}' data-status-id='${item.po_status}' data-role='${config.role}'>
             PO
             ${hasPO ? `<span class="text-success">&#10003;</span>` : ''}
         </button>
@@ -183,24 +183,24 @@ if (config.showButtons.po && item.po_status === 7) {
         if (config.role === 'poteammember' && item.po_status === 9) buttonsHtml += `<button class="btn btn-sm btn-info insert-po" data-id='${mappedItem.refId}'>Insert PO</button>`;
 
         const cardHtml = `
-            <div class="card max-w-xs min-w-90 bg-base-100 shadow-md border border-gray-200 mb-4 opacity-0 transition-opacity duration-500">
-                <div class="card-body">
-                    <div class="avatar absolute translate-x-[220px] translate-y-[30px] product" data-pr-id='${mappedItem.refId}' data-status-id='${item.po_status}' data-role='${config.role}'>
+            <div class="card max-w-[300px] min-w-[280px] bg-base-100 shadow-md border border-gray-200 mb-4 opacity-0 translate-y-4 scale-95 transition-all duration-500 ease-in-out hover:shadow-lg hover:scale-105 rounded-2xl">
+                <div class="card-body p-4">
+                    <div class="avatar absolute translate-x-[170px] translate-y-[14px] product cursor-pointer" data-pr-id='${mappedItem.refId}' data-status-id='${item.po_status}' data-role='${config.role}'>
                         <div class="w-24 rounded flex justify-center items-center">
-                            <img src="../${mappedItem.product}" alt="product" onerror="this.onerror=null; this.src='../assets/brand/no-image.png';"/>
+                            <img src="../${mappedItem.product}" alt="product" class="cursor-pointer" onerror="this.onerror=null; this.src='../assets/brand/no-image.png';"/>
                         </div>
                     </div>
                     <!-- Header -->
-                    <div class="mb-4">
-                        <h2 class="text-lg font-bold mb-2 truncate">Buyer Head: ${mappedItem.buyerHead}</h2>
+                    <div class="mb-3">
+                        <h2 class="text-base font-bold mb-1 truncate">Buyer Head: ${mappedItem.buyerHead}</h2>
                         ${statusBadge}
                     </div>
 
                     <!-- Content -->
-                    <div class="space-y-2 text-sm">${fieldsHtml}</div>
+                    <div class="space-y-1.5 text-sm">${fieldsHtml}</div>
 
                     <!-- Divider -->
-                    <div class="divider my-4"></div>
+                    <div class="divider my-3"></div>
 
                     <!-- Footer Actions -->
                     <div class="flex justify-between items-center gap-1">
@@ -223,15 +223,20 @@ if (config.showButtons.po && item.po_status === 7) {
             });
         }
 
-        // Set up Intersection Observer for scroll animation
+        // Set up Intersection Observer for scroll animation with scale effect
         if (!window.cardObserver) {
             window.cardObserver = new IntersectionObserver((entries) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        entry.target.classList.add('opacity-100');
+                        entry.target.classList.add('opacity-100', 'translate-y-0', 'scale-100');
+                        entry.target.classList.remove('translate-y-4', 'scale-95');
+                    } else {
+                        // Scale down when leaving viewport
+                        entry.target.classList.add('scale-95');
+                        entry.target.classList.remove('scale-100');
                     }
                 });
-            }, { threshold: 0 });
+            }, { threshold: 0.1 });
         }
         window.cardObserver.observe(container.lastElementChild);
     });

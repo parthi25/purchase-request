@@ -151,7 +151,7 @@ class Security {
         header('X-XSS-Protection: 1; mode=block');
         
         // Content Security Policy
-        header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data:; font-src 'self' https://cdn.jsdelivr.net;");
+        header("Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:;");
         
         // HTTPS enforcement (uncomment in production)
         // header('Strict-Transport-Security: max-age=31536000; includeSubDomains');

@@ -13,13 +13,13 @@ if (!isset($_SESSION["user_id"]) && $_SESSION["role"] !== "admin") {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Purchase Tracker</title>
-<link href="https://cdn.jsdelivr.net/npm/daisyui@5" rel="stylesheet" type="text/css" />
-<script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-<link href="https://cdn.jsdelivr.net/npm/daisyui@5/themes.css" rel="stylesheet" type="text/css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2/dist/sweetalert2.min.css">
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2/dist/sweetalert2.all.min.js"></script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<link href="../assets/css/daisyui@5.css" rel="stylesheet" type="text/css" />
+<script src="../assets/js/browser@4.js"></script>
+<link href="../assets/css/themes.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" href="../assets/css/sweetalert2.min.css">
+<script src="../assets/js/sweetalert2.all.min.js"></script>
+<link rel="stylesheet" href="../assets/css/flatpickr.min.css">
+<script src="../assets/js/flatpickr.min.js"></script>
 <link rel="shortcut icon" href="/p_r/assets/brand/favicon.ico" type="image/x-icon">
 </head>
 <body>

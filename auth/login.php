@@ -19,33 +19,35 @@ $clientIP = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
 // }
 
 $data = json_decode(file_get_contents("php://input"), true);
-$username = strtolower(trim($data['username'] ?? ''));
+$usernameOrEmail = strtolower(trim($data['username'] ?? ''));
 $password = $data['password'] ?? '';
 
 // Input validation
 $validator = new Validator();
-if (!$validator->validateLogin(['username' => $username, 'password' => $password])) {
+if (!$validator->validateLogin(['username' => $usernameOrEmail, 'password' => $password])) {
     sendResponse(400, "error", $validator->getFirstError());
 }
 
 // Sanitize input
-$username = Security::sanitizeInput($username);
+$usernameOrEmail = Security::sanitizeInput($usernameOrEmail);
 
 try {
-    $sql = "SELECT id, username, fullname, password, role, is_active FROM users WHERE LOWER(TRIM(username)) = ?";
+    // Query to check both username and email in a single query
+    $sql = "SELECT id, username, fullname, password, role, is_active FROM users WHERE LOWER(TRIM(username)) = ? OR LOWER(TRIM(email)) = ?";
+    
     $stmt = $conn->prepare($sql);
     if (!$stmt) {
         sendResponse(500, "error", "Database query preparation failed");
     }
     
-    $stmt->bind_param("s", $username);
+    $stmt->bind_param("ss", $usernameOrEmail, $usernameOrEmail);
     $stmt->execute();
     $result = $stmt->get_result();
     $user = $result->fetch_assoc();
     $stmt->close();
 
     if (!$user) {
-        sendResponse(404, "error", "No account found with this username");
+        sendResponse(404, "error", "No account found with this username or email");
     }
 
     if ($user['is_active'] != 1) {

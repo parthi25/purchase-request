@@ -1,14 +1,4 @@
-<?php
-session_start();
-if (!isset($_SESSION["user_id"])) {
-        header("Location: ../index.php");
-    exit;
-}
- ?>
-<?php     include '../common/header.php'; ?>
-<body>
-
-    <?php include '../common/nav.php'; ?>
+<?php include '../common/layout.php'; ?>
 
 <div class="h-screen flex justify-center items-center">
         <div class="card w-full max-w-md shadow-2xl bg-base-100">
@@ -131,5 +121,4 @@ if (!isset($_SESSION["user_id"])) {
             `;
         }
     </script>
-    <?php include '../common/footer.php' ?>
-</body>
+<?php include '../common/layout-footer.php'; ?>

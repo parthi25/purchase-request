@@ -149,6 +149,10 @@ if (form) {
                 alert((currentPRId ? 'PR updated' : 'PR created') + ' successfully (ID: ' + json.data.po_id + ')');
                 document.getElementById('create_modal')?.close();
                 currentPRId = null;
+                // Reload page after successful create/update
+                setTimeout(() => {
+                  window.location.reload();
+                }, 1000);
             } else {
                 alert('Error: ' + json.message);
             }

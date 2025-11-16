@@ -283,7 +283,8 @@ try {
                 (SELECT GROUP_CONCAT(DISTINCT c.maincat SEPARATOR ', ') 
                  FROM catbasbh cb
                  JOIN cat c ON c.maincat = cb.cat
-                 WHERE cb.user_id = pt.b_head) AS categories
+                 WHERE cb.user_id = pt.b_head
+                 LIMIT 50) AS categories
             FROM po_tracking pt
             LEFT JOIN users bh ON pt.b_head = bh.id
             LEFT JOIN users b ON pt.buyer = b.id
@@ -313,207 +314,195 @@ try {
     }
     $dataStmt->close();
 
-    // Get ALL filtered data (without pagination) for charts
-    $allDataSql = "SELECT DISTINCT
-                    pt.id,
-                    pt.created_at,
-                    pt.status_1, pt.status_2, pt.status_3, pt.status_4, pt.status_5, pt.status_6,
-                    pt.po_status,
-                    bh.username AS b_head,
-                    b.username AS buyer,
-                    CASE 
-    WHEN pt.supplier_id = 99999 THEN ns.supplier 
-    ELSE s.supplier 
-END AS supplier_name,
-                    s.id as supplier_id,
-                    st.status AS status,
-                    ptm.buyername,
-                    pt.po_date as status_7,
-                    pt.po_date,
-                    po.username AS po_team_member,
-                    poh.username AS pohead,
-                    ptm.po_number,
-                    pm.name as purch_type
-                FROM po_tracking pt
-                LEFT JOIN users bh ON pt.b_head = bh.id
-                LEFT JOIN users b ON pt.buyer = b.id
-                LEFT JOIN suppliers s ON pt.supplier_id = s.id
-                LEFT JOIN status st ON pt.po_status = st.id
-                LEFT JOIN new_supplier ns ON pt.new_supplier = ns.id 
-                LEFT JOIN po_team_member ptm ON ptm.ord_id = pt.id
-                LEFT JOIN users po ON po.id = ptm.po_team_member
-                LEFT JOIN users poh ON poh.id = pt.po_team
-                LEFT JOIN purchase_master pm ON pm.id = pt.purch_id
-                $where
-                ORDER BY pt.created_at DESC";
-
-    $allDataStmt = $conn->prepare($allDataSql);
-    if (!empty($params)) {
-        $allDataStmt->bind_param($types, ...$params);
-    }
-    $allDataStmt->execute();
-    $allDataResult = $allDataStmt->get_result();
-
+    // Get ALL filtered data (without pagination) for charts - only if needed
+    $includeAllData = filter_input(INPUT_GET, 'include_all_data', FILTER_VALIDATE_BOOLEAN);
     $allFilteredData = [];
-    while ($row = $allDataResult->fetch_assoc()) {
-        $allFilteredData[] = $row;
-    }
-    $allDataStmt->close();
+    
+    if ($includeAllData) {
+        // Optimized query - removed unnecessary fields for charts
+        $allDataSql = "SELECT DISTINCT
+                        pt.id,
+                        pt.created_at,
+                        pt.po_status,
+                        st.status AS status,
+                        pt.po_date
+                    FROM po_tracking pt
+                    LEFT JOIN status st ON pt.po_status = st.id
+                    $where
+                    ORDER BY pt.created_at DESC";
 
-    // Get status options from database
-    $statusStmt = $conn->query("SELECT DISTINCT status FROM status ORDER BY status ASC");
-    $statusOptions = [];
-    while ($row = $statusStmt->fetch_assoc()) {
-        $statusOptions[] = $row['status'];
+        $allDataStmt = $conn->prepare($allDataSql);
+        if (!empty($params)) {
+            $allDataStmt->bind_param($types, ...$params);
+        }
+        $allDataStmt->execute();
+        $allDataResult = $allDataStmt->get_result();
+
+        while ($row = $allDataResult->fetch_assoc()) {
+            $allFilteredData[] = $row;
+        }
+        $allDataStmt->close();
     }
 
-    // Get filter options based on user role
+    // Skip filter options if requested (for performance)
+    $skipFilters = filter_input(INPUT_GET, 'skip_filters', FILTER_VALIDATE_BOOLEAN);
     $options = [];
 
-    // Suppliers (available to all roles)
-    $supplierResult = $conn->query("SELECT id, supplier FROM suppliers ORDER BY supplier ASC");
-    $options['supplier_options'] = [];
-    while ($row = $supplierResult->fetch_assoc()) {
-        $options['supplier_options'][] = $row;
-    }
-
-    $purchFilterresult = $conn->query("SELECT id, name FROM purchase_master ORDER BY name ASC");
-    $options['purch_options'] = [];
-    if ($purchFilterresult && $purchFilterresult->num_rows > 0) {
-        while ($row = $purchFilterresult->fetch_assoc()) {
-            $options['purch_options'][] = $row;
-        }
-    }
-
-    if ($role == 'buyer') {
-        if (!isset($bheadId)) {
-            $bheadQuery = "SELECT b_head FROM buyers_info WHERE buyer = $userid LIMIT 1";
-            $bheadResult = $conn->query($bheadQuery);
-            $bheadRow = $bheadResult->fetch_assoc();
-            $bheadId = $bheadRow['b_head'] ?? 0;
+    if (!$skipFilters) {
+        // Get status options from database
+        $statusStmt = $conn->query("SELECT DISTINCT status FROM status ORDER BY status ASC");
+        $statusOptions = [];
+        while ($row = $statusStmt->fetch_assoc()) {
+            $statusOptions[] = $row['status'];
         }
 
-        // Categories mapped to this buyer through catbasbh
-        $catQuery = "SELECT c.id, c.maincat FROM catbasbh cb
-                     JOIN cat c ON c.maincat = cb.cat 
-                     WHERE cb.user_id = $bheadId
-                     ORDER BY c.maincat ASC";
-        $catResult = $conn->query($catQuery);
-        $options['category_options'] = [];
-        while ($row = $catResult->fetch_assoc()) {
-            $options['category_options'][] = $row;
+        // Get filter options based on user role
+
+        // Suppliers (available to all roles)
+        $supplierResult = $conn->query("SELECT id, supplier FROM suppliers ORDER BY supplier ASC");
+        $options['supplier_options'] = [];
+        while ($row = $supplierResult->fetch_assoc()) {
+            $options['supplier_options'][] = $row;
         }
 
-        // Get buyer head details using the ID we found
-        $options['buyer_head_options'] = [];
-        if ($bheadId > 0) {
-            $bheadDetailsQuery = "SELECT id, username FROM users WHERE id = $bheadId";
-            $bheadDetailsResult = $conn->query($bheadDetailsQuery);
-            while ($row = $bheadDetailsResult->fetch_assoc()) {
-                $options['buyer_head_options'][] = $row;
+        $purchFilterresult = $conn->query("SELECT id, name FROM purchase_master ORDER BY name ASC");
+        $options['purch_options'] = [];
+        if ($purchFilterresult && $purchFilterresult->num_rows > 0) {
+            while ($row = $purchFilterresult->fetch_assoc()) {
+                $options['purch_options'][] = $row;
             }
         }
 
-        // PO Team Members (all)
-        $poTeamResult = $conn->query("SELECT id, username FROM users WHERE role = 'PO_Team_Member' ORDER BY username ASC");
-        $options['po_team_member_options'] = [];
-        while ($row = $poTeamResult->fetch_assoc()) {
-            $options['po_team_member_options'][] = $row;
-        }
-    } elseif ($role == 'B_Head') {
-        // All categories assigned to this buyer head
-        $catQuery = "SELECT c.id, c.maincat FROM catbasbh cb
-                     JOIN cat c ON c.maincat = cb.cat 
-                     WHERE cb.user_id = $userid
-                     ORDER BY c.maincat ASC";
-        $catResult = $conn->query($catQuery);
-        $options['category_options'] = [];
-        while ($row = $catResult->fetch_assoc()) {
-            $options['category_options'][] = $row;
+        if ($role == 'buyer') {
+            if (!isset($bheadId)) {
+                $bheadQuery = "SELECT b_head FROM buyers_info WHERE buyer = $userid LIMIT 1";
+                $bheadResult = $conn->query($bheadQuery);
+                $bheadRow = $bheadResult->fetch_assoc();
+                $bheadId = $bheadRow['b_head'] ?? 0;
+            }
+
+            // Categories mapped to this buyer through catbasbh
+            $catQuery = "SELECT c.id, c.maincat FROM catbasbh cb
+                         JOIN cat c ON c.maincat = cb.cat 
+                         WHERE cb.user_id = $bheadId
+                         ORDER BY c.maincat ASC";
+            $catResult = $conn->query($catQuery);
+            $options['category_options'] = [];
+            while ($row = $catResult->fetch_assoc()) {
+                $options['category_options'][] = $row;
+            }
+
+            // Get buyer head details using the ID we found
+            $options['buyer_head_options'] = [];
+            if ($bheadId > 0) {
+                $bheadDetailsQuery = "SELECT id, username FROM users WHERE id = $bheadId";
+                $bheadDetailsResult = $conn->query($bheadDetailsQuery);
+                while ($row = $bheadDetailsResult->fetch_assoc()) {
+                    $options['buyer_head_options'][] = $row;
+                }
+            }
+
+            // PO Team Members (all)
+            $poTeamResult = $conn->query("SELECT id, username FROM users WHERE role = 'PO_Team_Member' ORDER BY username ASC");
+            $options['po_team_member_options'] = [];
+            while ($row = $poTeamResult->fetch_assoc()) {
+                $options['po_team_member_options'][] = $row;
+            }
+        } elseif ($role == 'B_Head') {
+            // All categories assigned to this buyer head
+            $catQuery = "SELECT c.id, c.maincat FROM catbasbh cb
+                         JOIN cat c ON c.maincat = cb.cat 
+                         WHERE cb.user_id = $userid
+                         ORDER BY c.maincat ASC";
+            $catResult = $conn->query($catQuery);
+            $options['category_options'] = [];
+            while ($row = $catResult->fetch_assoc()) {
+                $options['category_options'][] = $row;
+            }
+
+            // Buyers under this buyer head (from buyers_info table)
+            $buyerQuery = "SELECT u.username, u.id FROM `buyers_info` bi 
+                           LEFT JOIN users u on u.id = bi.buyer 
+                           WHERE bi.b_head= $userid
+                           ORDER BY u.username ASC";
+            $buyerResult = $conn->query($buyerQuery);
+            $options['buyer_options'] = [];
+            while ($row = $buyerResult->fetch_assoc()) {
+                $options['buyer_options'][] = $row;
+            }
+
+            // Show only self in buyer heads
+            $selfQuery = "SELECT id, username FROM users WHERE id = $userid";
+            $selfResult = $conn->query($selfQuery);
+            $options['buyer_head_options'] = [];
+            while ($row = $selfResult->fetch_assoc()) {
+                $options['buyer_head_options'][] = $row;
+            }
+
+            // PO Team Members (all)
+            $poTeamResult = $conn->query("SELECT id, username FROM users WHERE role = 'PO_Team_Member' ORDER BY username ASC");
+            $options['po_team_member_options'] = [];
+            while ($row = $poTeamResult->fetch_assoc()) {
+                $options['po_team_member_options'][] = $row;
+            }
+        } elseif ($role == 'PO_Team_Member') {
+            // All categories
+            $catResult = $conn->query("SELECT id, maincat FROM cat ORDER BY maincat ASC");
+            $options['category_options'] = [];
+            while ($row = $catResult->fetch_assoc()) {
+                $options['category_options'][] = $row;
+            }
+
+            // All buyers
+            $buyerResult = $conn->query("SELECT id, username FROM users WHERE role = 'buyer' ORDER BY username ASC");
+            $options['buyer_options'] = [];
+            while ($row = $buyerResult->fetch_assoc()) {
+                $options['buyer_options'][] = $row;
+            }
+
+            // All buyer heads
+            $bheadResult = $conn->query("SELECT id, username FROM users WHERE role = 'B_Head' ORDER BY username ASC");
+            $options['buyer_head_options'] = [];
+            while ($row = $bheadResult->fetch_assoc()) {
+                $options['buyer_head_options'][] = $row;
+            }
+
+            // PO Team Members (only self)
+            $selfQuery = "SELECT id, username FROM users WHERE id = $userid";
+            $selfResult = $conn->query($selfQuery);
+            $options['po_team_member_options'] = [];
+            while ($row = $selfResult->fetch_assoc()) {
+                $options['po_team_member_options'][] = $row;
+            }
+        } elseif ($role == 'admin' || $role == 'PO_Team') {
+            // For admin, show everything
+            $catResult = $conn->query("SELECT id, maincat FROM cat ORDER BY maincat ASC");
+            $options['category_options'] = [];
+            while ($row = $catResult->fetch_assoc()) {
+                $options['category_options'][] = $row;
+            }
+
+            $buyerResult = $conn->query("SELECT id, username FROM users WHERE role = 'buyer' ORDER BY username ASC");
+            $options['buyer_options'] = [];
+            while ($row = $buyerResult->fetch_assoc()) {
+                $options['buyer_options'][] = $row;
+            }
+
+            $bheadResult = $conn->query("SELECT id, username FROM users WHERE role = 'B_Head' ORDER BY username ASC");
+            $options['buyer_head_options'] = [];
+            while ($row = $bheadResult->fetch_assoc()) {
+                $options['buyer_head_options'][] = $row;
+            }
+
+            $poTeamResult = $conn->query("SELECT id, username FROM users WHERE role = 'PO_Team_Member' ORDER BY username ASC");
+            $options['po_team_member_options'] = [];
+            while ($row = $poTeamResult->fetch_assoc()) {
+                $options['po_team_member_options'][] = $row;
+            }
         }
 
-        // Buyers under this buyer head (from buyers_info table)
-        $buyerQuery = "SELECT u.username, u.id FROM `buyers_info` bi 
-                       LEFT JOIN users u on u.id = bi.buyer 
-                       WHERE bi.b_head= $userid
-                       ORDER BY u.username ASC";
-        $buyerResult = $conn->query($buyerQuery);
-        $options['buyer_options'] = [];
-        while ($row = $buyerResult->fetch_assoc()) {
-            $options['buyer_options'][] = $row;
-        }
-
-        // Show only self in buyer heads
-        $selfQuery = "SELECT id, username FROM users WHERE id = $userid";
-        $selfResult = $conn->query($selfQuery);
-        $options['buyer_head_options'] = [];
-        while ($row = $selfResult->fetch_assoc()) {
-            $options['buyer_head_options'][] = $row;
-        }
-
-        // PO Team Members (all)
-        $poTeamResult = $conn->query("SELECT id, username FROM users WHERE role = 'PO_Team_Member' ORDER BY username ASC");
-        $options['po_team_member_options'] = [];
-        while ($row = $poTeamResult->fetch_assoc()) {
-            $options['po_team_member_options'][] = $row;
-        }
-    } elseif ($role == 'PO_Team_Member') {
-        // All categories
-        $catResult = $conn->query("SELECT id, maincat FROM cat ORDER BY maincat ASC");
-        $options['category_options'] = [];
-        while ($row = $catResult->fetch_assoc()) {
-            $options['category_options'][] = $row;
-        }
-
-        // All buyers
-        $buyerResult = $conn->query("SELECT id, username FROM users WHERE role = 'buyer' ORDER BY username ASC");
-        $options['buyer_options'] = [];
-        while ($row = $buyerResult->fetch_assoc()) {
-            $options['buyer_options'][] = $row;
-        }
-
-        // All buyer heads
-        $bheadResult = $conn->query("SELECT id, username FROM users WHERE role = 'B_Head' ORDER BY username ASC");
-        $options['buyer_head_options'] = [];
-        while ($row = $bheadResult->fetch_assoc()) {
-            $options['buyer_head_options'][] = $row;
-        }
-
-        // PO Team Members (only self)
-        $selfQuery = "SELECT id, username FROM users WHERE id = $userid";
-        $selfResult = $conn->query($selfQuery);
-        $options['po_team_member_options'] = [];
-        while ($row = $selfResult->fetch_assoc()) {
-            $options['po_team_member_options'][] = $row;
-        }
-    } elseif ($role == 'admin' || $role == 'PO_Team') {
-        // For admin, show everything
-        $catResult = $conn->query("SELECT id, maincat FROM cat ORDER BY maincat ASC");
-        $options['category_options'] = [];
-        while ($row = $catResult->fetch_assoc()) {
-            $options['category_options'][] = $row;
-        }
-
-        $buyerResult = $conn->query("SELECT id, username FROM users WHERE role = 'buyer' ORDER BY username ASC");
-        $options['buyer_options'] = [];
-        while ($row = $buyerResult->fetch_assoc()) {
-            $options['buyer_options'][] = $row;
-        }
-
-        $bheadResult = $conn->query("SELECT id, username FROM users WHERE role = 'B_Head' ORDER BY username ASC");
-        $options['buyer_head_options'] = [];
-        while ($row = $bheadResult->fetch_assoc()) {
-            $options['buyer_head_options'][] = $row;
-        }
-
-        $poTeamResult = $conn->query("SELECT id, username FROM users WHERE role = 'PO_Team_Member' ORDER BY username ASC");
-        $options['po_team_member_options'] = [];
-        while ($row = $poTeamResult->fetch_assoc()) {
-            $options['po_team_member_options'][] = $row;
-        }
+        $options['status_options'] = $statusOptions;
     }
-
-    $options['status_options'] = $statusOptions;
 
     // Calculate statistics with time buckets
     $stats = [
@@ -542,57 +531,53 @@ END AS supplier_name,
         $completedCount = 0;
         $statusCounts = [];
 
+        // Optimize date parsing by using strtotime instead of DateTime
         foreach ($allFilteredData as $row) {
             $status = $row['status'] ?? 'Unknown';
             $statusCounts[$status] = ($statusCounts[$status] ?? 0) + 1;
 
-            if (!empty($row['status_7']) && !empty($row['created_at'])) {
-                try {
-                    $createdAt = new DateTime($row['created_at']);
-                    $completedAt = new DateTime($row['status_7']);
-                    
-                    if ($completedAt > $createdAt) {
-                        $interval = $createdAt->diff($completedAt);
-                        $minutes = $interval->days * 1440 + $interval->h * 60 + $interval->i;
-                        $totalMinutes += $minutes;
-                        $completedCount++;
+            if (!empty($row['po_date']) && !empty($row['created_at'])) {
+                // Use strtotime for faster date parsing
+                $createdTimestamp = strtotime($row['created_at']);
+                $completedTimestamp = strtotime($row['po_date']);
+                
+                if ($completedTimestamp !== false && $createdTimestamp !== false && $completedTimestamp > $createdTimestamp) {
+                    $minutes = ($completedTimestamp - $createdTimestamp) / 60;
+                    $totalMinutes += $minutes;
+                    $completedCount++;
 
-                        // Determine time bucket
-                        if ($minutes <= 30) {
-                            $bucket = '0-30 mins';
-                        } elseif ($minutes <= 60) {
-                            $bucket = '30-60 mins';
-                        } elseif ($minutes <= 180) {
-                            $bucket = '1-3 hours';
-                        } elseif ($minutes <= 360) {
-                            $bucket = '3-6 hours';
-                        } elseif ($minutes <= 720) {
-                            $bucket = '6-12 hours';
-                        } elseif ($minutes <= 1440) {
-                            $bucket = '12-24 hours';
-                        } elseif ($minutes <= 2880) {
-                            $bucket = '1-2 days';
-                        } elseif ($minutes <= 4320) {
-                            $bucket = '2-3 days';
-                        } elseif ($minutes <= 10080) {
-                            $bucket = '3-7 days';
-                        } elseif ($minutes <= 20160) {
-                            $bucket = '1-2 weeks';
-                        } else {
-                            $bucket = '2+ weeks';
-                        }
-                        
-                        $stats['time_buckets'][$bucket]++;
-                        
-                        // Group by status
-                        if (!isset($stats['status_time_buckets'][$status])) {
-                            $stats['status_time_buckets'][$status] = array_fill_keys(array_keys($stats['time_buckets']), 0);
-                        }
-                        $stats['status_time_buckets'][$status][$bucket]++;
+                    // Determine time bucket - optimized with early returns
+                    if ($minutes <= 30) {
+                        $bucket = '0-30 mins';
+                    } elseif ($minutes <= 60) {
+                        $bucket = '30-60 mins';
+                    } elseif ($minutes <= 180) {
+                        $bucket = '1-3 hours';
+                    } elseif ($minutes <= 360) {
+                        $bucket = '3-6 hours';
+                    } elseif ($minutes <= 720) {
+                        $bucket = '6-12 hours';
+                    } elseif ($minutes <= 1440) {
+                        $bucket = '12-24 hours';
+                    } elseif ($minutes <= 2880) {
+                        $bucket = '1-2 days';
+                    } elseif ($minutes <= 4320) {
+                        $bucket = '2-3 days';
+                    } elseif ($minutes <= 10080) {
+                        $bucket = '3-7 days';
+                    } elseif ($minutes <= 20160) {
+                        $bucket = '1-2 weeks';
+                    } else {
+                        $bucket = '2+ weeks';
                     }
-                } catch (Exception $e) {
-                    error_log("Date parsing error: " . $e->getMessage());
-                    continue;
+                    
+                    $stats['time_buckets'][$bucket]++;
+                    
+                    // Group by status - lazy initialization
+                    if (!isset($stats['status_time_buckets'][$status])) {
+                        $stats['status_time_buckets'][$status] = array_fill_keys(array_keys($stats['time_buckets']), 0);
+                    }
+                    $stats['status_time_buckets'][$status][$bucket]++;
                 }
             }
         }

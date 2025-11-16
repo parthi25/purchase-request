@@ -289,15 +289,15 @@ class TableRenderer {
       showButtons: config.showButtons,
       role: role,
       statusBadges: {
-        1: '<span class="badge badge-success">Open</span>',
-        2: '<span class="badge badge-info">Forwarded</span>',
-        3: '<span class="badge badge-warning">Awaiting PO</span>',
-        4: '<span class="badge badge-primary">Proforma</span>',
-        5: '<span class="badge badge-error">To Buyer Head</span>',
-        6: '<span class="badge badge-neutral">To PO Team</span>',
-        7: '<span class="badge badge-success">PO Generated</span>',
-        8: '<span class="badge badge-error">Rejected</span>',
-        9: '<span class="badge badge-success">Forwarded to PO Members</span>',
+        1: '<span class="text-success">Open</span>',
+        2: '<span class="text-info">Forwarded</span>',
+        3: '<span class="text-warning">Awaiting PO</span>',
+        4: '<span class="text-primary">Proforma</span>',
+        5: '<span class="text-error">To Buyer Head</span>',
+        6: '<span class="text-base-content/70">To PO Team</span>',
+        7: '<span class="text-success">PO Generated</span>',
+        8: '<span class="text-error">Rejected</span>',
+        9: '<span class="text-success">Forwarded to PO Members</span>',
       },
     };
     this.data = [];
@@ -403,7 +403,7 @@ formatCell(row, column) {
         case "po_status":
             return (
                 this.config.statusBadges[String(row.po_status)] ||
-                '<span class="badge badge-secondary">Unknown</span>'
+                '<span class="text-base-content/50">Unknown</span>'
             );
         case "supplier":
             return row.supplier || "-";
@@ -431,7 +431,7 @@ formatCell(row, column) {
             if (this.config.showButtons.proforma && ((this.config.role === 'bhead' && [1, 5].includes(row.po_status)) || this.config.role === 'admin')) {
     const hasProforma = row.proforma_ids && row.proforma_ids[0] ? true : false;
     buttons += `
-        <button class="btn btn-sm btn-primary proforma" data-pr-id='${row.id}' data-status-id='${row.po_status}' data-role='${this.config.role}'>
+        <button class="btn btn-sm btn-outline proforma" data-pr-id='${row.id}' data-status-id='${row.po_status}' data-role='${this.config.role}'>
             Proforma
             ${hasProforma ? `<span class="text-success">&#10003;</span>` : ''}
         </button>
@@ -442,7 +442,7 @@ formatCell(row, column) {
 if (this.config.showButtons.po && row.po_status === 7) {
     const hasPO = row.po_url ? true : false;
     buttons += `
-        <button class="btn btn-sm btn-secondary po" data-pr-id='${row.id}' data-status-id='${row.po_status}' data-role='${this.config.role}'>
+        <button class="btn btn-sm btn-outline po" data-pr-id='${row.id}' data-status-id='${row.po_status}' data-role='${this.config.role}'>
             PO
             ${hasPO ? `<span class="text-success">&#10003;</span>` : ''}
         </button>

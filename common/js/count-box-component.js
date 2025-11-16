@@ -9,7 +9,8 @@ let countBoxConfig = {
     role: 'buyer',
     buyer_id: null,
     onStatusClick: null,
-    activeStatus: null
+    activeStatus: null,
+    countData: [] // Store count data for display
 };
 
 // Real API service
@@ -66,6 +67,8 @@ async function loadCountData() {
         } else if (Array.isArray(data)) {
             countData = data;
         }
+        // Store count data for later use
+        countBoxConfig.countData = countData;
         renderCountBox(countData);
     } catch (error) {
         console.error('Error loading count data:', error);
@@ -94,28 +97,17 @@ function renderCountBox(counts) {
 
     let html = '';
     countData.forEach(item => {
-        let badgeClass = 'badge-outline';
-        if (item.status_id === 1) badgeClass = 'badge-primary';
-        else if (item.status_id === 2) badgeClass = 'badge-secondary';
-        else if (item.status_id === 3) badgeClass = 'badge-accent';
-        else if (item.status_id === 7) badgeClass = 'badge-success';
-        else if (item.status_id === 8) badgeClass = 'badge-error';
-        else badgeClass = 'badge-warning';
-
         html += `
-            <div class="card bg-base-100 shadow-xl cursor-pointer count-box" 
+            <div class="flex flex-col items-center gap-2 count-box-wrapper" 
                  data-status="${item.status_id}" 
-                 data-key="${item.status_key}" 
-                 title="Click to filter by ${item.label}">
-                <div class="card-body text-center">
-                    <div class="flex justify-center items-center mb-2">
-                        <span class="text-4xl font-bold">${item.count || 0}</span>
-                    </div>
-                    <h3 class="card-title justify-center text-lg">${item.label}</h3>
-                    <div class="card-actions justify-center mt-2">
-                        <div class="hidden badge ${badgeClass}">${item.status_id}</div>
-                    </div>
-                </div>
+                 data-key="${item.status_key}">
+                <span class="text-sm font-semibold text-center hidden">${item.label}</span>
+                <button class="btn btn-outline btn-sm count-box" 
+                     data-status="${item.status_id}" 
+                     data-key="${item.status_key}" 
+                     title="Click to filter by ${item.label}">
+                    ${item.label}
+                </button>
             </div>
         `;
     });
@@ -138,20 +130,24 @@ function handleCountBoxClick(event) {
     const box = event.currentTarget;
     const statusId = box.getAttribute('data-status');
     const statusKey = box.getAttribute('data-key');
-    const label = box.querySelector('h3').textContent;
+    const wrapper = box.closest('.count-box-wrapper');
+    const labelElement = wrapper ? wrapper.querySelector('span') : null;
+    const label = labelElement ? labelElement.textContent.trim() : box.textContent.trim();
 
     console.log('Count box clicked:', { statusId, statusKey, label });
 
     document.querySelectorAll('.count-box').forEach(b => {
-        b.classList.remove('bg-primary', 'text-primary-content');
-        b.classList.add('bg-base-100');
+        b.classList.remove('btn-active');
     });
-    box.classList.remove('bg-base-100');
-    box.classList.add('bg-primary', 'text-primary-content');
+    box.classList.add('btn-active');
+
+    // Find the count for this status
+    const statusData = countBoxConfig.countData.find(item => item.status_id == statusId);
+    const count = statusData ? statusData.count : 0;
 
     const activeStatusElement = document.getElementById('activeStatus');
     if (activeStatusElement) {
-        activeStatusElement.textContent = `${label} (ID: ${statusId})`;
+        activeStatusElement.textContent = count;
     }
     countBoxConfig.activeStatus = statusId;
 
@@ -169,15 +165,18 @@ function setActiveStatus(statusId) {
     const box = document.querySelector(`.count-box[data-status="${statusId}"]`);
     if (box) {
         document.querySelectorAll('.count-box').forEach(b => {
-            b.classList.remove('bg-primary', 'text-primary-content');
-            b.classList.add('bg-base-100');
+            b.classList.remove('btn-active');
         });
-        box.classList.remove('bg-base-100');
-        box.classList.add('bg-primary', 'text-primary-content');
+        box.classList.add('btn-active');
         countBoxConfig.activeStatus = statusId;
+        
+        // Find the count for this status
+        const statusData = countBoxConfig.countData.find(item => item.status_id == statusId);
+        const count = statusData ? statusData.count : 0;
+        
         const activeStatusElement = document.getElementById('activeStatus');
         if (activeStatusElement) {
-            activeStatusElement.textContent = `${box.querySelector('h3').textContent} (ID: ${statusId})`;
+            activeStatusElement.textContent = count;
         }
     }
 }

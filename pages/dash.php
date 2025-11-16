@@ -575,7 +575,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${row.id || '-'}</td>
-                    <td><span class="badge ${this.getStatusColor(row.status)}">${row.status || '-'}</span></td>
+                    <td class="${this.getStatusColor(row.status)}">${row.status || '-'}</td>
                     <td>${row.supplier ? row.supplier.toUpperCase() : '-'}</td>
                     <td>${row.b_head || '-'}</td>
                     <td>${row.buyername || row.buyer || '-'}</td>
@@ -748,7 +748,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 <tr><th>Buyer</th><td>${record.buyer || '-'}</td></tr>
                 <tr><th>PO Team Member</th><td>${record.po_team_member || '-'}</td></tr>
                 <tr><th>Purch Type</th><td>${record.purch_type || '-'}</td></tr>
-                <tr><th>Status</th><td><span class="badge ${this.getStatusColor(record.status)}">${record.status || '-'}</span></td></tr>
+                <tr><th>Status</th><td class="${this.getStatusColor(record.status)}">${record.status || '-'}</td></tr>
                 <tr><th>Created Date</th><td>${this.formatDateTime(record.created_at) || '-'}</td></tr>
                 <tr><th>Completed Date</th><td>${this.formatDateTime(record.status_7) || 'Not Completed'}</td></tr>
                 <tr><th>Total Processing Time</th><td>${this.calculateTimeDifference(record.created_at, record.status_7)}</td></tr>

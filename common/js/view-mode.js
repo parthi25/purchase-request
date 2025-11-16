@@ -294,28 +294,37 @@ console.log("fall backg");
       container.innerHTML = '';
     }
 
-    data.forEach(item => {
+    data.forEach((item, index) => {
       const cardHtml = `
-        <div class="card w-96 bg-base-100 shadow-md border border-gray-200 mb-4">
-          <div class="card-body p-5">
-            <h2 class="text-lg font-bold mb-2">Buyer Head: ${item.buyerHead || 'N/A'}</h2>
-            <div class="space-y-2 text-sm">
+        <div class="card w-84 bg-base-100 shadow-md border border-gray-200 mb-4 opacity-0 translate-y-4 scale-95 transition-all duration-500 ease-in-out hover:shadow-lg hover:scale-105 rounded-2xl">
+          <div class="card-body p-4">
+            <h2 class="text-base font-bold mb-1">Buyer Head: ${item.buyerHead || 'N/A'}</h2>
+            <div class="space-y-1.5 text-sm">
               <div class="flex"><span class="font-semibold w-24">Ref ID:</span><span>${item.refId || 'N/A'}</span></div>
               <div class="flex"><span class="font-semibold w-24">Supplier:</span><span>${item.supplier || 'N/A'}</span></div>
               <div class="flex"><span class="font-semibold w-24">Category:</span><span>${item.category || 'N/A'}</span></div>
             </div>
-            <div class="divider my-4"></div>
+            <div class="divider my-3"></div>
             <div class="flex justify-between items-center">
               <button class="text-sm font-semibold text-blue-600 hover:text-blue-800">Read More</button>
               <div class="flex gap-2">
-                <button class="btn btn-sm btn-primary">Proforma√</button>
-                <button class="btn btn-sm btn-secondary">PO</button>
+                <button class="btn btn-sm btn-outline">Proforma√</button>
+                <button class="btn btn-sm btn-outline">PO</button>
               </div>
             </div>
           </div>
         </div>
       `;
       container.insertAdjacentHTML('beforeend', cardHtml);
+      
+      // Animate card in with scale effect
+      setTimeout(() => {
+        const card = container.lastElementChild;
+        if (card) {
+          card.classList.add('opacity-100', 'translate-y-0', 'scale-100');
+          card.classList.remove('translate-y-4', 'scale-95');
+        }
+      }, index * 50);
     });
   },
 
@@ -395,17 +404,17 @@ console.log("fall backg");
 
   getStatusBadge(status) {
     const badges = {
-      "1": '<span class="badge badge-success">Open</span>',
-      "2": '<span class="badge badge-info">Forwarded</span>',
-      "3": '<span class="badge badge-warning">Awaiting PO</span>',
-      "4": '<span class="badge badge-primary">Proforma</span>',
-      "5": '<span class="badge badge-error">To Buyer Head</span>',
-      "6": '<span class="badge badge-neutral">To PO Team</span>',
-      "7": '<span class="badge badge-success">PO Generated</span>',
-      "8": '<span class="badge badge-error">Rejected</span>',
-      "9": '<span class="badge badge-success">Forwarded to PO Members</span>'
+      "1": '<span class="text-success">Open</span>',
+      "2": '<span class="text-info">Forwarded</span>',
+      "3": '<span class="text-warning">Awaiting PO</span>',
+      "4": '<span class="text-primary">Proforma</span>',
+      "5": '<span class="text-error">To Buyer Head</span>',
+      "6": '<span class="text-base-content/70">To PO Team</span>',
+      "7": '<span class="text-success">PO Generated</span>',
+      "8": '<span class="text-error">Rejected</span>',
+      "9": '<span class="text-success">Forwarded to PO Members</span>'
     };
-    return badges[String(status)] || '<span class="badge badge-secondary">Unknown</span>';
+    return badges[String(status)] || '<span class="text-base-content/50">Unknown</span>';
   },
 
   // Method to load more data (call this from your load more button)
@@ -477,13 +486,11 @@ console.log("fall backg");
 
   applyFilters() {
     const searchInput = document.getElementById('searchInput');
-    const fromDate = document.getElementById('fromDate');
-    const toDate = document.getElementById('toDate');
+    // Date range is already set by flatpickr onChange handler
 
     if (window.state) {
       window.state.search = searchInput ? searchInput.value : '';
-      window.state.from = fromDate ? fromDate.value : '';
-      window.state.to = toDate ? toDate.value : '';
+      // window.state.from and window.state.to are set by flatpickr onChange
       window.state.offset = 0;
       window.state.noMoreData = false;
     }
@@ -494,12 +501,17 @@ console.log("fall backg");
 
   clearFilters() {
     const searchInput = document.getElementById('searchInput');
-    const fromDate = document.getElementById('fromDate');
-    const toDate = document.getElementById('toDate');
+    const dateRangeInput = document.getElementById('dateRange');
 
     if (searchInput) searchInput.value = '';
-    if (fromDate) fromDate.value = '';
-    if (toDate) toDate.value = '';
+    if (dateRangeInput) {
+      // Clear flatpickr instance
+      const fpInstance = dateRangeInput._flatpickr;
+      if (fpInstance) {
+        fpInstance.clear();
+      }
+      dateRangeInput.value = '';
+    }
 
     if (window.state) {
       window.state.search = '';

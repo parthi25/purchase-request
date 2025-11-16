@@ -119,14 +119,16 @@ document.addEventListener("DOMContentLoaded", function () {
       statusSaveBtn.disabled = false;
       statusSelect.disabled = false;
 
-      // 5️⃣ Always show fields for CURRENT status only
-      if (currentStatus) {
-        handleStatusChange(currentStatus);
-      }
+      // 5️⃣ Ensure all fields are hidden initially - only show when status is selected
+      hideAllFields();
 
-      // 6️⃣ Make sure dropdown changes trigger updates (optional)
+      // 6️⃣ Make sure dropdown changes trigger updates
       statusSelect.onchange = function () {
-        handleStatusChange(this.value);
+        if (this.value) {
+          handleStatusChange(this.value);
+        } else {
+          hideAllFields();
+        }
       };
 
       // 7️⃣ Show modal
@@ -236,10 +238,10 @@ document.addEventListener("DOMContentLoaded", function () {
       if (result.status === "success") {
         showAlert("Status updated successfully!", "success");
         statusModal.close();
-        // Refresh the view if needed
-        if (window.ViewMode && typeof ViewMode.refreshView === "function") {
-          ViewMode.refreshView();
-        }
+        // Reload page after successful update
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
       } else {
         showAlert(result.message || "Failed to update status", "error");
       }

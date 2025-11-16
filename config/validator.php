@@ -218,17 +218,27 @@ class Validator {
         
         // Required fields
         if (empty($data['username'])) {
-            $this->errors[] = 'Username is required';
+            $this->errors[] = 'Username or email is required';
         }
         
         if (empty($data['password'])) {
             $this->errors[] = 'Password is required';
         }
         
-        // Validate username
+        // Validate username or email
         if (!empty($data['username'])) {
-            if (!Security::validateString($data['username'], 3, 50, '/^[a-zA-Z0-9_\-\.]+$/')) {
-                $this->errors[] = 'Username must be 3-50 characters and contain only letters, numbers, underscores, hyphens, and dots';
+            $input = $data['username'];
+            // Check if it's an email
+            if (filter_var($input, FILTER_VALIDATE_EMAIL)) {
+                // Valid email format
+                if (strlen($input) > 255) {
+                    $this->errors[] = 'Email must be less than 255 characters';
+                }
+            } else {
+                // Validate as username
+                if (!Security::validateString($input, 3, 50, '/^[a-zA-Z0-9_\-\.]+$/')) {
+                    $this->errors[] = 'Username must be 3-50 characters and contain only letters, numbers, underscores, hyphens, and dots';
+                }
             }
         }
         
