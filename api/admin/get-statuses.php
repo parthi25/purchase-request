@@ -11,7 +11,7 @@ if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role'], $allowedRoles))
 
 try {
     // Get all statuses
-    $query = "SELECT id, status FROM status ORDER BY id";
+    $query = "SELECT id, status FROM pr_statuses ORDER BY id";
     $result = $conn->query($query);
     
     if (!$result) {

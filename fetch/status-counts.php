@@ -8,7 +8,7 @@ $query = "
         SUM(CASE WHEN po_status = '1' THEN 1 ELSE 0 END) AS open_status_count,
         SUM(CASE WHEN po_status in ('7','8') THEN 1 ELSE 0 END) AS close_status_count,
         SUM(CASE WHEN po_status NOT IN ('1', '7','8') THEN 1 ELSE 0 END) AS inprogress_status_count
-    FROM po_tracking
+    FROM purchase_requests
 ";
 
 $result = $conn->query($query);

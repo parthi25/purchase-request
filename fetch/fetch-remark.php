@@ -28,7 +28,7 @@ $sql = "
         to_bh_rm,
         po_team_rm,
         rrm
-    FROM po_tracking
+    FROM purchase_requests
     WHERE id = ?
     LIMIT 1
 ";

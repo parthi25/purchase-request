@@ -11,7 +11,7 @@ require_once '../../config/response.php'; // Unified API response helper
 header('Content-Type: application/json; charset=utf-8');
 
 try {
-    $sql = "SELECT id, name FROM purchase_master ORDER BY name ASC";
+    $sql = "SELECT id, name FROM purchase_types ORDER BY name ASC";
     $stmt = $conn->prepare($sql);
 
     if (!$stmt) {

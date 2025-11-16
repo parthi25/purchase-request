@@ -153,7 +153,7 @@ if ($qtyInput !== null && $qtyInput !== '') {
 }
 
 $placeholders = implode(',', array_fill(0, count($idsArray), '?'));
-$query = "UPDATE po_tracking SET " . implode(", ", $updateFields) . " WHERE id IN ($placeholders)";
+$query = "UPDATE purchase_requests SET " . implode(", ", $updateFields) . " WHERE id IN ($placeholders)";
 $stmt = $conn->prepare($query);
 $stmt->bind_param($updateTypes . str_repeat('i', count($idsArray)), ...$updateValues, ...$idsArray);
 $stmt->execute();

@@ -17,7 +17,7 @@ try {
     }
 
     // Get status options from database
-    $statusStmt = $conn->query("SELECT DISTINCT status FROM status ORDER BY status ASC");
+    $statusStmt = $conn->query("SELECT DISTINCT status FROM pr_statuses ORDER BY status ASC");
     $statusOptions = [];
     while ($row = $statusStmt->fetch_assoc()) {
         $statusOptions[] = $row['status'];
@@ -33,7 +33,7 @@ try {
         $options['supplier_options'][] = $row;
     }
 
-    $purchFilterresult = $conn->query("SELECT id, name FROM purchase_master ORDER BY name ASC");
+    $purchFilterresult = $conn->query("SELECT id, name FROM purchase_types ORDER BY name ASC");
     $options['purch_options'] = [];
     if ($purchFilterresult && $purchFilterresult->num_rows > 0) {
         while ($row = $purchFilterresult->fetch_assoc()) {
@@ -53,7 +53,7 @@ try {
 
         // Categories mapped to this buyer through catbasbh
         $catQuery = "SELECT c.id, c.maincat FROM catbasbh cb
-                     JOIN cat c ON c.maincat = cb.cat 
+                     JOIN categories c ON c.maincat = cb.cat 
                      WHERE cb.user_id = ?
                      ORDER BY c.maincat ASC";
         $catStmt = $conn->prepare($catQuery);
@@ -89,7 +89,7 @@ try {
     } elseif ($role == 'B_Head') {
         // All categories assigned to this buyer head
         $catQuery = "SELECT c.id, c.maincat FROM catbasbh cb
-                     JOIN cat c ON c.maincat = cb.cat 
+                     JOIN categories c ON c.maincat = cb.cat 
                      WHERE cb.user_id = ?
                      ORDER BY c.maincat ASC";
         $catStmt = $conn->prepare($catQuery);
@@ -137,7 +137,7 @@ try {
         }
     } elseif ($role == 'PO_Team_Member') {
         // All categories
-        $catResult = $conn->query("SELECT id, maincat FROM cat ORDER BY maincat ASC");
+        $catResult = $conn->query("SELECT id, maincat FROM categories ORDER BY maincat ASC");
         $options['category_options'] = [];
         while ($row = $catResult->fetch_assoc()) {
             $options['category_options'][] = $row;
@@ -170,7 +170,7 @@ try {
         $selfStmt->close();
     } elseif ($role == 'admin' || $role == 'PO_Team') {
         // For admin, show everything
-        $catResult = $conn->query("SELECT id, maincat FROM cat ORDER BY maincat ASC");
+        $catResult = $conn->query("SELECT id, maincat FROM categories ORDER BY maincat ASC");
         $options['category_options'] = [];
         while ($row = $catResult->fetch_assoc()) {
             $options['category_options'][] = $row;

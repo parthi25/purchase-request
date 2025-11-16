@@ -143,6 +143,12 @@
                         <h3 class="text-xl font-semibold mb-4">Processing Time Distribution</h3>
                         <canvas id="timeBucketChart"></canvas>
                     </div>
+
+                    <!-- Buyer PR Count Chart -->
+                    <div class="bg-base-200 p-6 rounded-lg lg:col-span-2">
+                        <h3 class="text-xl font-semibold mb-4">PR Count by Buyer</h3>
+                        <canvas id="buyerChart"></canvas>
+                    </div>
                 </div>
 
                 <!-- Data Table Section -->
@@ -249,6 +255,7 @@
                 searchTimeout: null,
                 statusChart: null,
                 timeBucketChart: null,
+                buyerChart: null,
                 filtersInitialized: false,
                 lastOptionsHash: null,
                 abortController: null
@@ -431,16 +438,20 @@
                     }
                 });
 
-                // Time Buckets Chart
+                // Time Buckets Chart - Line Chart
                 const timeCtx = document.getElementById('timeBucketChart').getContext('2d');
                 this.state.timeBucketChart = new Chart(timeCtx, {
-                    type: 'bar',
+                    type: 'line',
                     data: {
                         labels: [],
                         datasets: [{
                             label: 'Number of Orders',
                             data: [],
-                            backgroundColor: 'rgba(59, 130, 246, 0.8)'
+                            borderColor: 'rgba(59, 130, 246, 1)',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 2,
+                            fill: true,
+                            tension: 0.4
                         }]
                     },
                     options: {
@@ -448,12 +459,50 @@
                         maintainAspectRatio: true,
                         plugins: {
                             legend: {
-                                display: false
+                                display: true,
+                                position: 'top'
                             }
                         },
                         scales: {
                             y: {
                                 beginAtZero: true
+                            }
+                        }
+                    }
+                });
+
+                // Buyer PR Count Chart
+                const buyerCtx = document.getElementById('buyerChart').getContext('2d');
+                this.state.buyerChart = new Chart(buyerCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: [],
+                        datasets: [{
+                            label: 'Number of PRs',
+                            data: [],
+                            backgroundColor: 'rgba(34, 197, 94, 0.8)',
+                            borderColor: 'rgba(34, 197, 94, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: true,
+                        plugins: {
+                            legend: {
+                                display: true,
+                                position: 'top'
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            },
+                            x: {
+                                ticks: {
+                                    maxRotation: 45,
+                                    minRotation: 45
+                                }
                             }
                         }
                     }
@@ -483,6 +532,21 @@
                         this.state.timeBucketChart.data.labels = timeLabels;
                         this.state.timeBucketChart.data.datasets[0].data = timeData;
                         this.state.timeBucketChart.update('none'); // 'none' mode for faster updates
+                    }
+
+                    // Update Buyer Chart
+                    if (stats.buyer_distribution && this.state.buyerChart) {
+                        const buyerLabels = Object.keys(stats.buyer_distribution);
+                        const buyerData = Object.values(stats.buyer_distribution);
+                        
+                        // Sort by count descending and take top 20
+                        const buyerEntries = buyerLabels.map((label, idx) => ({label, count: buyerData[idx]}))
+                            .sort((a, b) => b.count - a.count)
+                            .slice(0, 20);
+                        
+                        this.state.buyerChart.data.labels = buyerEntries.map(e => e.label);
+                        this.state.buyerChart.data.datasets[0].data = buyerEntries.map(e => e.count);
+                        this.state.buyerChart.update('none');
                     }
                 });
             },

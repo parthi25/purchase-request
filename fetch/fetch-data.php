@@ -77,18 +77,18 @@ $sql = "SELECT p.*,
             ptm.buyername AS buyername,
             upo.username AS po_team_member,
             s.id AS supplier_code
-        FROM po_tracking p
-        LEFT JOIN po_team_member ptm ON p.id = ptm.ord_id
+        FROM purchase_requests p
+        LEFT JOIN pr_assignments ptm ON p.id = ptm.ord_id
         LEFT JOIN users upo ON ptm.po_team_member = upo.id
         LEFT JOIN users u ON p.created_by = u.id
         LEFT JOIN users b ON p.b_head = b.id
         LEFT JOIN users bu ON p.buyer = bu.id
         LEFT JOIN users pt ON p.po_team = pt.id
-        LEFT JOIN po_ po ON p.id = po.ord_id AND po.filename IS NOT NULL
+        LEFT JOIN po_documents po ON p.id = po.ord_id AND po.filename IS NOT NULL
         LEFT JOIN suppliers s ON p.supplier_id = s.id
-        LEFT JOIN new_supplier ns ON p.new_supplier = ns.id
-        LEFT JOIN cat c ON p.category_id = c.id
-        LEFT JOIN purchase_master pm ON pm.id = p.purch_id";
+        LEFT JOIN supplier_requests ns ON p.new_supplier = ns.id
+        LEFT JOIN categories c ON p.category_id = c.id
+        LEFT JOIN purchase_types pm ON pm.id = p.purch_id";
 
 $conditions = [];
 $values = [];
@@ -253,7 +253,7 @@ if ($ids) {
     // Sanitize IDs and use prepared statement for security
     $id_list = implode(',', array_map('intval', $ids));
     $img_sql = "
-        SELECT ord_id, id, url, 'po_order' AS type FROM po_order WHERE ord_id IN ($id_list) AND filename IS NOT NULL
+        SELECT ord_id, id, url, 'pr_attachments' AS type FROM pr_attachments WHERE ord_id IN ($id_list) AND filename IS NOT NULL
         UNION ALL
         SELECT ord_id, id, url, 'proforma' AS type FROM proforma WHERE ord_id IN ($id_list) AND filename IS NOT NULL
     ";
@@ -265,15 +265,15 @@ if ($ids) {
             $oid = (int) $img['ord_id'];
             $type = $img['type'];
             if (!isset($images_map[$oid]))
-                $images_map[$oid] = ['po_order' => [], 'proforma' => []];
+                $images_map[$oid] = ['pr_attachments' => [], 'proforma' => []];
             $images_map[$oid][$type][] = ['id' => (int) $img['id'], 'url' => $img['url']];
         }
         
         // Initialize arrays to avoid isset checks
         foreach ($data as &$d) {
             $oid = $d['id'];
-            $d['po_order_ids'] = array_column($images_map[$oid]['po_order'] ?? [], 'id');
-            $d['images'] = array_column($images_map[$oid]['po_order'] ?? [], 'url');
+            $d['po_order_ids'] = array_column($images_map[$oid]['pr_attachments'] ?? [], 'id');
+            $d['images'] = array_column($images_map[$oid]['pr_attachments'] ?? [], 'url');
             $d['proforma_ids'] = array_column($images_map[$oid]['proforma'] ?? [], 'id');
             $d['proforma_images'] = array_column($images_map[$oid]['proforma'] ?? [], 'url');
         }

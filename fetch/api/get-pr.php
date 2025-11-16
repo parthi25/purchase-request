@@ -19,9 +19,9 @@ try {
                s.supplier, s.agent, s.city, 
                c.maincat AS category,
                u.username as bhead_name
-        FROM po_tracking pt
+        FROM purchase_requests pt
         LEFT JOIN suppliers s ON pt.supplier_id = s.id
-        LEFT JOIN cat c ON pt.category_id = c.id
+        LEFT JOIN categories c ON pt.category_id = c.id
         LEFT JOIN users u ON pt.b_head = u.id
         WHERE pt.id = ?
     ";

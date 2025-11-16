@@ -30,7 +30,7 @@ try {
     }
 
     // Count total
-    $countSql = "SELECT COUNT(DISTINCT status) as total FROM status WHERE $where";
+    $countSql = "SELECT COUNT(DISTINCT status) as total FROM pr_statuses WHERE $where";
     $countStmt = $conn->prepare($countSql);
     if (!empty($params)) {
         $countStmt->bind_param($types, ...$params);
@@ -40,7 +40,7 @@ try {
     $countStmt->close();
 
     // Get results
-    $sql = "SELECT DISTINCT status FROM status WHERE $where ORDER BY status ASC LIMIT ? OFFSET ?";
+    $sql = "SELECT DISTINCT status FROM pr_statuses WHERE $where ORDER BY status ASC LIMIT ? OFFSET ?";
     $stmt = $conn->prepare($sql);
     if (!empty($params)) {
         $params[] = $perPage;

@@ -7,8 +7,6 @@ require '../config/security.php';
 require '../config/validator.php';
 require '../config/env.php';
 
-header('Content-Type: application/json');
-
 session_start();
 if (!isset($_SESSION["user_id"])) {
     sendResponse(401, "error", "User not logged in");
@@ -16,7 +14,7 @@ if (!isset($_SESSION["user_id"])) {
 
 // Check if user has permission to create PR from database
 $userRole = $_SESSION['role'] ?? '';
-$checkPermission = $conn->prepare("SELECT can_create FROM pr_permissions WHERE role = ? AND is_active = 1");
+$checkPermission = $conn->prepare("SELECT can_create FROM role_pr_permissions WHERE role = ? AND is_active = 1");
 if ($checkPermission) {
     $checkPermission->bind_param("s", $userRole);
     $checkPermission->execute();
@@ -97,7 +95,7 @@ try {
     }
 
     // Get category_id
-    $stmt = $conn->prepare("SELECT id FROM cat WHERE maincat = ? LIMIT 1");
+    $stmt = $conn->prepare("SELECT id FROM categories WHERE maincat = ? LIMIT 1");
     $stmt->bind_param("s", $categoryName);
     $stmt->execute();
     $category = $stmt->get_result()->fetch_assoc();
@@ -119,16 +117,16 @@ try {
             sendResponse(400, 'error', $validator->getFirstError());
         }
 
-        $stmt = $conn->prepare("INSERT INTO new_supplier (supplier, created_by, created_at, agent, city) VALUES (?, ?, NOW(), ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO supplier_requests (supplier, created_by, created_at, agent, city) VALUES (?, ?, NOW(), ?, ?)");
         $stmt->bind_param("siss", $newsupplier, $createdBy, $agent, $city);
         $stmt->execute();
         $newSupplierId = $stmt->insert_id;
         $stmt->close();
     }
 
-    // Insert into po_tracking
+    // Insert into purchase_requests
     $stmt = $conn->prepare("
-        INSERT INTO po_tracking (
+        INSERT INTO purchase_requests (
             supplier_id, new_supplier, b_head, qty, uom, remark, po_status,
             created_by, created_at, category_id, purch_id
         ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?)
@@ -185,7 +183,7 @@ try {
             }
             chmod($filePath, 0644);
 
-            $stmt = $conn->prepare("INSERT INTO po_order (ord_id, url, filename) VALUES (?, ?, ?)");
+            $stmt = $conn->prepare("INSERT INTO pr_attachments (ord_id, url, filename) VALUES (?, ?, ?)");
             $stmt->bind_param("iss", $poId, $fileUrl, $secureFileName);
             $stmt->execute();
             $stmt->close();

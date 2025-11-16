@@ -71,14 +71,14 @@ if ($status == 6 && $po_team !== null)
 
 // Insert PO number if provided
 if ($ponum !== null) {
-    $stmt = $conn->prepare("INSERT INTO po_ (po_num, ord_id) VALUES (?, ?)");
+    $stmt = $conn->prepare("INSERT INTO po_documents (po_num, ord_id) VALUES (?, ?)");
     $stmt->bind_param("ii", $ponum, $ids);
     $stmt->execute();
 }
 
 // Execute update
 if (!empty($updateFields)) {
-    $query = "UPDATE po_tracking SET " . implode(", ", $updateFields) . " WHERE id IN ($ids)";
+    $query = "UPDATE purchase_requests SET " . implode(", ", $updateFields) . " WHERE id IN ($ids)";
     error_log("QUERY: " . $query, 3, "../debug_log.txt");
 
     if (mysqli_query($conn, $query)) {

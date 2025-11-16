@@ -21,7 +21,7 @@ try {
     if (is_numeric($current_status)) {
         $current_status_id = (int) $current_status;
     } else {
-        $stmt = $conn->prepare("SELECT id FROM status WHERE status = ?");
+        $stmt = $conn->prepare("SELECT id FROM pr_statuses WHERE status = ?");
         if (!$stmt) {
             // Return empty array instead of error
             sendResponse(200, "success", "Status options retrieved", []);
@@ -41,9 +41,9 @@ try {
     }
 
     // Get allowed status flows from database
-    // Check if status_flow table exists, if not fall back to old logic
+    // Check if status_transitions table exists, if not fall back to old logic
     $tableExists = false;
-    $checkTable = $conn->query("SHOW TABLES LIKE 'status_flow'");
+    $checkTable = $conn->query("SHOW TABLES LIKE 'status_transitions'");
     if ($checkTable && $checkTable->num_rows > 0) {
         $tableExists = true;
     }
@@ -51,8 +51,8 @@ try {
     if ($tableExists) {
         // Use database-driven flow
         $query = "SELECT sf.to_status_id, s.id, s.status 
-                  FROM status_flow sf
-                  INNER JOIN status s ON sf.to_status_id = s.id
+                  FROM status_transitions sf
+                  INNER JOIN pr_statuses s ON sf.to_status_id = s.id
                   WHERE sf.from_status_id = ? 
                   AND sf.role = ? 
                   AND sf.is_active = 1
@@ -75,7 +75,7 @@ try {
             $filteredStatuses = [];
             foreach ($statuses as $status) {
                 // Check if this flow requires proforma
-                $checkFlow = $conn->prepare("SELECT requires_proforma FROM status_flow 
+                $checkFlow = $conn->prepare("SELECT requires_proforma FROM status_transitions 
                                             WHERE from_status_id = ? AND to_status_id = ? AND role = ? AND is_active = 1");
                 $checkFlow->bind_param("iis", $current_status_id, $status['to_status_id'], $role);
                 $checkFlow->execute();
@@ -122,7 +122,7 @@ try {
         // Special handling for status 1 (Forwarded to Buyer)
         if ($current_status_id == 1) {
             $statuses = [];
-            $stmt = $conn->prepare("SELECT id, status FROM status WHERE id in (2)");
+            $stmt = $conn->prepare("SELECT id, status FROM pr_statuses WHERE id in (2)");
             if (!$stmt) {
                 // Return empty array instead of error
                 sendResponse(200, "success", "Status options retrieved", []);
@@ -145,7 +145,7 @@ try {
                 $stmt->close();
 
                 if ($row['count'] > 0) {
-                    $stmt = $conn->prepare("SELECT id, status FROM status WHERE id in (6)");
+                    $stmt = $conn->prepare("SELECT id, status FROM pr_statuses WHERE id in (6)");
                     if (!$stmt) {
                         // Return empty array instead of error
                         sendResponse(200, "success", "Status options retrieved", []);
@@ -166,7 +166,7 @@ try {
                 // No status available - return empty array silently
                 sendResponse(200, "success", "Status options retrieved", []);
             } else {
-                $stmt = $conn->prepare("SELECT id, status FROM status WHERE id = ?");
+                $stmt = $conn->prepare("SELECT id, status FROM pr_statuses WHERE id = ?");
                 if (!$stmt) {
                     // Return empty array instead of error
                     sendResponse(200, "success", "Status options retrieved", []);

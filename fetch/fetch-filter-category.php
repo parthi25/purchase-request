@@ -58,7 +58,7 @@ try {
     }
 
     // Count total
-    $countSql = "SELECT COUNT(DISTINCT c.id) as total FROM cat c $join WHERE $where";
+    $countSql = "SELECT COUNT(DISTINCT c.id) as total FROM categories c $join WHERE $where";
     $countStmt = $conn->prepare($countSql);
     if (!empty($params)) {
         $countStmt->bind_param($types, ...$params);
@@ -68,7 +68,7 @@ try {
     $countStmt->close();
 
     // Get results
-    $sql = "SELECT DISTINCT c.id, c.maincat FROM cat c $join WHERE $where ORDER BY c.maincat ASC LIMIT ? OFFSET ?";
+    $sql = "SELECT DISTINCT c.id, c.maincat FROM categories c $join WHERE $where ORDER BY c.maincat ASC LIMIT ? OFFSET ?";
     $stmt = $conn->prepare($sql);
     $params[] = $perPage;
     $params[] = $offset;

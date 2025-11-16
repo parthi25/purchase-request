@@ -86,21 +86,21 @@ try {
             $stmt->close();
         }
 
-        $stmt = $conn->prepare("UPDATE po_tracking SET supplier_id = ? WHERE id = ?");
+        $stmt = $conn->prepare("UPDATE purchase_requests SET supplier_id = ? WHERE id = ?");
         $stmt->bind_param("ii", $supplierId, $po_id);
         $stmt->execute();
         $stmt->close();
     }
 
-    // --- Update po_tracking ---
-    $stmt = $conn->prepare("UPDATE po_tracking SET po_status = ?, status_7 = ?, po_date = ? WHERE id = ?");
+    // --- Update purchase_requests ---
+    $stmt = $conn->prepare("UPDATE purchase_requests SET po_status = ?, status_7 = ?, po_date = ? WHERE id = ?");
     $stmt->bind_param("sssi", $status, $status_date, $po_date, $po_id);
     $stmt->execute();
     $stmt->close();
 
-    // --- Update po_team_member ---
+    // --- Update pr_assignments ---
     $stmt = $conn->prepare("
-        UPDATE po_team_member 
+        UPDATE pr_assignments 
         SET po_qty = ?, po_number = ?, po_lines = ?, updated_by = ?, amount = ?, buyername = ?, supplier = ?, updated_at = ?
         WHERE ord_id = ?");
     $stmt->bind_param("iiiiisssi", $po_qty, $po_num, $po_lines, $user_id, $inv_am, $buyer, $supplier, $current_date, $po_id);

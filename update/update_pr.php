@@ -74,7 +74,7 @@ if (empty($uploadedFiles)) {
 
 // Handle "change" type
 if ($type === 'change') {
-    $stmt = $conn->prepare("SELECT url FROM po_order WHERE ord_id = ?");
+    $stmt = $conn->prepare("SELECT url FROM pr_attachments WHERE ord_id = ?");
     $stmt->bind_param("i", $order_id);
     $stmt->execute();
     $stmt->store_result();
@@ -87,7 +87,7 @@ if ($type === 'change') {
                 unlink($oldFilePath);
         }
 
-        $deleteStmt = $conn->prepare("DELETE FROM po_order WHERE ord_id = ?");
+        $deleteStmt = $conn->prepare("DELETE FROM pr_attachments WHERE ord_id = ?");
         $deleteStmt->bind_param("i", $order_id);
         $deleteStmt->execute();
         $deleteStmt->close();
@@ -97,7 +97,7 @@ if ($type === 'change') {
 
 // Insert new records
 $successCount = 0;
-$stmt = $conn->prepare("INSERT INTO po_order (ord_id, url, filename) VALUES (?, ?, ?)");
+$stmt = $conn->prepare("INSERT INTO pr_attachments (ord_id, url, filename) VALUES (?, ?, ?)");
 
 foreach ($uploadedFiles as $file) {
     $stmt->bind_param("iss", $order_id, $file['url'], $file['filename']);

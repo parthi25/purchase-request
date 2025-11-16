@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let permissions = [];
     let flows = [];
     let prPermissions = [];
+    let modalFields = [];
 
     // Tab switching
     document.querySelectorAll('[data-tab]').forEach(tab => {
@@ -17,7 +18,8 @@ document.addEventListener('DOMContentLoaded', function() {
             // Show/hide content
             document.getElementById('permissions-tab').classList.toggle('hidden', tabName !== 'permissions');
             document.getElementById('flow-tab').classList.toggle('hidden', tabName !== 'flow');
-            document.getElementById('pr_permissions-tab').classList.toggle('hidden', tabName !== 'pr_permissions');
+            document.getElementById('role_pr_permissions-tab').classList.toggle('hidden', tabName !== 'role_pr_permissions');
+            document.getElementById('status_modal_fields-tab').classList.toggle('hidden', tabName !== 'status_modal_fields');
             
             // Clear search and load data for active tab
             if (tabName === 'permissions') {
@@ -26,9 +28,13 @@ document.addEventListener('DOMContentLoaded', function() {
             } else if (tabName === 'flow') {
                 if (flowSearch) flowSearch.value = '';
                 loadFlows();
-            } else if (tabName === 'pr_permissions') {
+            } else if (tabName === 'role_pr_permissions') {
                 if (prPermissionSearch) prPermissionSearch.value = '';
                 loadPRPermissions();
+            } else if (tabName === 'status_modal_fields') {
+                const modalFieldsSearch = document.getElementById('modalFieldsSearch');
+                if (modalFieldsSearch) modalFieldsSearch.value = '';
+                loadModalFields();
             }
         });
     });
@@ -42,6 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const permissionSearch = document.getElementById('permissionSearch');
     const flowSearch = document.getElementById('flowSearch');
     const prPermissionSearch = document.getElementById('prPermissionSearch');
+    const modalFieldsSearch = document.getElementById('modalFieldsSearch');
 
     if (permissionSearch) {
         permissionSearch.addEventListener('input', function() {
@@ -58,6 +65,12 @@ document.addEventListener('DOMContentLoaded', function() {
     if (prPermissionSearch) {
         prPermissionSearch.addEventListener('input', function() {
             filterPRPermissions(this.value);
+        });
+    }
+
+    if (modalFieldsSearch) {
+        modalFieldsSearch.addEventListener('input', function() {
+            filterModalFields(this.value);
         });
     }
 
@@ -79,6 +92,14 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Add Modal Field button
+    const addModalFieldBtn = document.getElementById('addModalFieldBtn');
+    if (addModalFieldBtn) {
+        addModalFieldBtn.addEventListener('click', function() {
+            openModalFieldModal();
+        });
+    }
+
     // Permission form submit
     document.getElementById('permissionForm').addEventListener('submit', function(e) {
         e.preventDefault();
@@ -97,6 +118,15 @@ document.addEventListener('DOMContentLoaded', function() {
         prPermissionForm.addEventListener('submit', function(e) {
             e.preventDefault();
             savePRPermission();
+        });
+    }
+
+    // Modal Field form submit
+    const modalFieldForm = document.getElementById('modalFieldForm');
+    if (modalFieldForm) {
+        modalFieldForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            saveModalField();
         });
     }
 
@@ -310,7 +340,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Load PR permissions
     async function loadPRPermissions() {
         try {
-            const response = await fetch('../api/admin/status-permissions.php?type=pr_permissions');
+            const response = await fetch('../api/admin/status-permissions.php?type=role_pr_permissions');
             const result = await response.json();
             if (result.status === 'success') {
                 prPermissions = result.data;
@@ -668,6 +698,212 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
+    // Load Modal Fields
+    async function loadModalFields() {
+        try {
+            const response = await fetch('../api/admin/status-permissions.php?type=status_modal_fields');
+            const result = await response.json();
+            if (result.status === 'success') {
+                modalFields = result.data;
+                renderModalFieldsTable();
+            }
+        } catch (error) {
+            console.error('Error loading modal fields:', error);
+        }
+    }
+
+    // Render Modal Fields table
+    function renderModalFieldsTable(filteredData = null) {
+        const tbody = document.getElementById('modalFieldsTableBody');
+        const dataToRender = filteredData !== null ? filteredData : modalFields;
+        
+        if (dataToRender.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" class="text-center">No modal fields found</td></tr>';
+            return;
+        }
+
+        tbody.innerHTML = dataToRender.map(field => {
+            const statusName = statuses.find(s => s.id == field.status_id)?.status || `Status ${field.status_id}`;
+            const fieldNameMap = {
+                'buyer': 'Buyer',
+                'po_head': 'PO Head',
+                'po_team': 'PO Team',
+                'qty': 'Quantity',
+                'file_upload': 'File Upload',
+                'remark': 'Remark'
+            };
+            const fieldDisplayName = fieldNameMap[field.field_name] || field.field_name;
+            
+            return `
+                <tr>
+                    <td>${field.id}</td>
+                    <td>${statusName}</td>
+                    <td>${fieldDisplayName}</td>
+                    <td>
+                        <span class="badge ${field.is_required == 1 ? 'badge-error' : 'badge-ghost'}">
+                            ${field.is_required == 1 ? 'Required' : 'Optional'}
+                        </span>
+                    </td>
+                    <td>${field.field_order}</td>
+                    <td>
+                        <button class="btn btn-sm btn-primary" onclick="editModalField(${field.id})">Edit</button>
+                        <button class="btn btn-sm btn-error" onclick="deleteModalField(${field.id})">Delete</button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+    }
+
+    // Filter Modal Fields
+    function filterModalFields(searchTerm) {
+        if (!searchTerm || searchTerm.trim() === '') {
+            renderModalFieldsTable();
+            return;
+        }
+
+        const term = searchTerm.toLowerCase().trim();
+        const filtered = modalFields.filter(field => {
+            const statusName = statuses.find(s => s.id == field.status_id)?.status || '';
+            const fieldNameMap = {
+                'buyer': 'Buyer',
+                'po_head': 'PO Head',
+                'po_team': 'PO Team',
+                'qty': 'Quantity',
+                'file_upload': 'File Upload',
+                'remark': 'Remark'
+            };
+            const fieldDisplayName = fieldNameMap[field.field_name] || field.field_name;
+            
+            return (
+                field.id.toString().includes(term) ||
+                statusName.toLowerCase().includes(term) ||
+                fieldDisplayName.toLowerCase().includes(term) ||
+                field.field_name.toLowerCase().includes(term) ||
+                (field.is_required == 1 ? 'required' : 'optional').includes(term) ||
+                field.field_order.toString().includes(term)
+            );
+        });
+
+        renderModalFieldsTable(filtered);
+    }
+
+    // Open Modal Field modal
+    window.openModalFieldModal = function(id = null) {
+        const modal = document.getElementById('modalFieldModal');
+        const form = document.getElementById('modalFieldForm');
+        const title = document.getElementById('modalFieldModalTitle');
+        
+        form.reset();
+        document.getElementById('modalFieldId').value = id || '';
+        title.textContent = id ? 'Edit Status Modal Field' : 'Add Status Modal Field';
+        
+        // Populate status dropdown
+        const statusSelect = document.getElementById('modalFieldStatus');
+        statusSelect.innerHTML = '<option value="">Select Status</option>';
+        statuses.forEach(status => {
+            statusSelect.innerHTML += `<option value="${status.id}">${status.status}</option>`;
+        });
+        
+        if (id) {
+            const field = modalFields.find(f => f.id == id);
+            if (field) {
+                document.getElementById('modalFieldStatus').value = field.status_id;
+                document.getElementById('modalFieldName').value = field.field_name;
+                document.getElementById('modalFieldRequired').checked = field.is_required == 1;
+                document.getElementById('modalFieldOrder').value = field.field_order;
+            }
+        }
+        
+        modal.showModal();
+    };
+
+    // Save Modal Field
+    async function saveModalField() {
+        const form = document.getElementById('modalFieldForm');
+        const formData = new FormData(form);
+        const id = formData.get('id');
+        
+        formData.append('status_id', document.getElementById('modalFieldStatus').value);
+        formData.append('field_name', document.getElementById('modalFieldName').value);
+        formData.append('is_required', document.getElementById('modalFieldRequired').checked ? '1' : '0');
+        formData.append('field_order', document.getElementById('modalFieldOrder').value);
+        
+        try {
+            const url = '../api/admin/status-permissions.php';
+            const data = {};
+            formData.forEach((value, key) => data[key] = value);
+            
+            const options = {
+                method: id ? 'PUT' : 'POST',
+                body: new URLSearchParams(data),
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            };
+            
+            const response = await fetch(url, options);
+            const result = await response.json();
+            
+            if (result.status === 'success') {
+                showAlert('Status modal field saved successfully', 'success');
+                document.getElementById('modalFieldModal').close();
+                loadModalFields();
+            } else {
+                showAlert(result.message || 'Failed to save status modal field', 'error');
+            }
+        } catch (error) {
+            console.error('Error saving modal field:', error);
+            showAlert('Failed to save status modal field', 'error');
+        }
+    }
+
+    // Edit Modal Field
+    window.editModalField = function(id) {
+        openModalFieldModal(id);
+    };
+
+    // Delete Modal Field
+    window.deleteModalField = async function(id) {
+        if (typeof Swal === 'undefined') {
+            if (!confirm('Are you sure you want to delete this modal field?')) return;
+        } else {
+            const confirmResult = await Swal.fire({
+                title: 'Are you sure?',
+                text: 'Are you sure you want to delete this modal field?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'Cancel'
+            });
+            
+            if (!confirmResult.isConfirmed) return;
+        }
+        
+        try {
+            const formData = new FormData();
+            formData.append('type', 'status_modal_fields');
+            formData.append('id', id);
+            
+            const response = await fetch('../api/admin/status-permissions.php', {
+                method: 'DELETE',
+                body: new URLSearchParams(formData),
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+            });
+            
+            const result = await response.json();
+            
+            if (result.status === 'success') {
+                showAlert('Modal field deleted successfully', 'success');
+                loadModalFields();
+            } else {
+                showAlert(result.message || 'Failed to delete modal field', 'error');
+            }
+        } catch (error) {
+            console.error('Error deleting modal field:', error);
+            showAlert('Failed to delete modal field', 'error');
+        }
+    };
+
     // Edit PR permission
     window.editPRPermission = function(id) {
         openPRPermissionModal(id);
@@ -694,7 +930,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         try {
             const formData = new FormData();
-            formData.append('type', 'pr_permissions');
+            formData.append('type', 'role_pr_permissions');
             formData.append('id', id);
             
             const response = await fetch('../api/admin/status-permissions.php', {

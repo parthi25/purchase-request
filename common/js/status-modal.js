@@ -20,13 +20,73 @@ document.addEventListener("DOMContentLoaded", function () {
   const fileInput = document.getElementById("statusFileInput");
   const remarkInput = document.getElementById("statusRemarkInput");
 
-  // Status change handler
-  function handleStatusChange(status) {
-    console.log(status);
+  // Field mapping: database field_name -> DOM element
+  const fieldMapping = {
+    'buyer': { field: buyerField, input: buyerInput, loader: loadBuyers },
+    'po_head': { field: poHeadField, input: poHeadInput, loader: null },
+    'po_team': { field: poTeamField, input: poTeamInput, loader: loadPoTeamMembers },
+    'qty': { field: qtyField, input: qtyInput, loader: null },
+    'file_upload': { field: fileUploadField, input: fileInput, loader: null },
+    'remark': { field: remarkField, input: remarkInput, loader: null }
+  };
+
+  // Status change handler - Now fetches from database
+  async function handleStatusChange(status) {
+    console.log("Status changed to:", status);
 
     // First hide all fields
     hideAllFields();
 
+    if (!status) {
+      return;
+    }
+
+    try {
+      // Fetch field configuration from database
+      const response = await fetch(`../api/get-status-fields.php?status_id=${status}`);
+      const result = await response.json();
+
+      if (result.status === "success" && result.data && result.data.length > 0) {
+        // Sort by field_order
+        const fields = result.data.sort((a, b) => a.field_order - b.field_order);
+        
+        // Show fields based on database configuration
+        const fieldsToShow = [];
+        fields.forEach(fieldConfig => {
+          const fieldName = fieldConfig.field_name;
+          if (fieldMapping[fieldName]) {
+            const mappedField = fieldMapping[fieldName];
+            fieldsToShow.push(mappedField.field);
+            
+            // Mark as required if needed
+            if (fieldConfig.is_required) {
+              mappedField.input.setAttribute('required', 'required');
+            } else {
+              mappedField.input.removeAttribute('required');
+            }
+            
+            // Load data if loader function exists
+            if (mappedField.loader && typeof mappedField.loader === 'function') {
+              mappedField.loader();
+            }
+          }
+        });
+        
+        showFields(fieldsToShow);
+      } else {
+        // No fields configured in database - fallback to old behavior
+        console.log("No field configuration found, using fallback");
+        handleStatusChangeFallback(status);
+      }
+    } catch (error) {
+      console.error("Error fetching status fields:", error);
+      // Fallback to old behavior on error
+      handleStatusChangeFallback(status);
+    }
+  }
+
+  // Fallback function for old hardcoded behavior (if database doesn't have config)
+  function handleStatusChangeFallback(status) {
     switch (status) {
       case "2": // Forwarded to Buyer
         showFields([buyerField, remarkField]);
@@ -37,7 +97,7 @@ document.addEventListener("DOMContentLoaded", function () {
         showFields([qtyField, fileUploadField]);
         break;
 
-      case "5": // Forword To B Head
+      case "5": // Forwarded To B Head
         showFields([remarkField]);
         break;
 
@@ -59,7 +119,7 @@ document.addEventListener("DOMContentLoaded", function () {
         break;
 
       case "9": // Forwarded to PO Team
-        showFields([ poTeamField, remarkField]);
+        showFields([poTeamField, remarkField]);
         loadPoTeamMembers();
         break;
 
@@ -190,41 +250,28 @@ document.addEventListener("DOMContentLoaded", function () {
       formData.append("csrf_token", csrfToken);
     }
 
-    // Add conditional fields based on status
-   switch (status) {
-  case "2": // Forwarded to Buyer
-    if (buyerInput.value) formData.append("buyerInput", buyerInput.value);
-    if (remarkInput.value) formData.append("remarkInput", remarkInput.value);
-    break;
-
-  case "4": // Awaiting PO
-    if (qtyInput.value) formData.append("qtyInput", qtyInput.value);
-    if (fileInput.files.length > 0) {
+    // Add conditional fields based on visible fields (dynamic from database)
+    // Check which fields are visible and add their values
+    if (!buyerField.classList.contains("hidden") && buyerInput.value) {
+      formData.append("buyerInput", buyerInput.value);
+    }
+    if (!poHeadField.classList.contains("hidden") && poHeadInput.value) {
+      formData.append("poHeadInput", poHeadInput.value);
+    }
+    if (!poTeamField.classList.contains("hidden") && poTeamInput.value) {
+      formData.append("poTeamInput", poTeamInput.value);
+    }
+    if (!qtyField.classList.contains("hidden") && qtyInput.value) {
+      formData.append("qtyInput", qtyInput.value);
+    }
+    if (!fileUploadField.classList.contains("hidden") && fileInput.files.length > 0) {
       for (let file of fileInput.files) {
         formData.append("files[]", file); // use [] for multiple files
       }
     }
-    break;
-
-  case "5": 
-    if (remarkInput.value) formData.append("remarkInput", remarkInput.value);
-    break;
-  case "7": // Forwarded to Buyer Head
-  case "8": // Rejected
-    if (remarkInput.value) formData.append("remarkInput", remarkInput.value);
-    break;
-
-  case "6": // Forwarded to PO Team
-    if (poHeadInput.value) formData.append("poHeadInput", poHeadInput.value);
-    if (buyerInput.value) formData.append("buyerInput", buyerInput.value);
-    if (remarkInput.value) formData.append("remarkInput", remarkInput.value);
-    break;
-
-  case "9": // Forwarded to PO Members
-    if (poTeamInput.value) formData.append("poTeamInput", poTeamInput.value);
-    if (remarkInput.value) formData.append("remarkInput", remarkInput.value);
-    break;
-}
+    if (!remarkField.classList.contains("hidden") && remarkInput.value) {
+      formData.append("remarkInput", remarkInput.value);
+    }
 
     try {
       statusSaveBtn.disabled = true;

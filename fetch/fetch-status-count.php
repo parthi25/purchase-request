@@ -17,8 +17,8 @@ try {
     // Base query
     $statusQuery = "
         SELECT DISTINCT s.id as status_id, s.status, COALESCE(COUNT(p.po_status), 0) AS count
-        FROM status s
-        LEFT JOIN po_tracking p ON s.id = p.po_status
+        FROM pr_statuses s
+        LEFT JOIN purchase_requests p ON s.id = p.po_status
     ";
 
     $bindTypes = "";

@@ -30,7 +30,7 @@ try {
     }
 
     // Count total
-    $countSql = "SELECT COUNT(*) as total FROM purchase_master WHERE $where";
+    $countSql = "SELECT COUNT(*) as total FROM purchase_types WHERE $where";
     $countStmt = $conn->prepare($countSql);
     if (!empty($params)) {
         $countStmt->bind_param($types, ...$params);
@@ -40,7 +40,7 @@ try {
     $countStmt->close();
 
     // Get results
-    $sql = "SELECT id, name FROM purchase_master WHERE $where ORDER BY name ASC LIMIT ? OFFSET ?";
+    $sql = "SELECT id, name FROM purchase_types WHERE $where ORDER BY name ASC LIMIT ? OFFSET ?";
     $stmt = $conn->prepare($sql);
     if (!empty($params)) {
         $params[] = $perPage;

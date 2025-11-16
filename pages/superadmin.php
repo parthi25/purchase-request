@@ -1,4 +1,19 @@
-<?php include '../common/layout.php'; ?>
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+if (!isset($_SESSION["user_id"])) {
+    header("Location: ../index.php");
+    exit;
+}
+
+// Only super_admin and master can access
+if (!in_array($_SESSION['role'], ['super_admin', 'master'])) {
+    header("Location: ../index.php");
+    exit;
+}
+
+include '../common/layout.php'; ?>
     <div class="container mx-auto p-6">
         <h1 class="text-3xl font-bold mb-6">Status Flow Management</h1>
         
@@ -6,7 +21,8 @@
         <div class="tabs tabs-boxed mb-6">
             <a class="tab tab-active" data-tab="permissions">Status Permissions</a>
             <a class="tab" data-tab="flow">Status Flow</a>
-            <a class="tab" data-tab="pr_permissions">PR Permissions</a>
+            <a class="tab" data-tab="role_pr_permissions">PR Permissions</a>
+            <a class="tab" data-tab="status_modal_fields">Status Modal Fields</a>
         </div>
 
         <!-- Status Permissions Tab -->
@@ -73,7 +89,7 @@
         </div>
 
         <!-- PR Permissions Tab -->
-        <div id="pr_permissions-tab" class="hidden">
+        <div id="role_pr_permissions-tab" class="hidden">
             <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
                 <h2 class="text-2xl font-semibold">PR Permissions</h2>
                 <div class="flex gap-2 items-center">
@@ -98,6 +114,37 @@
                     <tbody id="prPermissionsTableBody">
                         <tr>
                             <td colspan="7" class="text-center">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Status Modal Fields Tab -->
+        <div id="status_modal_fields-tab" class="hidden">
+            <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
+                <h2 class="text-2xl font-semibold">Status Modal Fields</h2>
+                <div class="flex gap-2 items-center">
+                    <input type="text" id="modalFieldsSearch" placeholder="Search fields..." class="input input-bordered w-64">
+                    <button id="addModalFieldBtn" class="btn btn-primary">Add Field</button>
+                </div>
+            </div>
+            
+            <div class="overflow-x-auto">
+                <table class="table table-zebra w-full">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Status</th>
+                            <th>Field Name</th>
+                            <th>Required</th>
+                            <th>Order</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modalFieldsTableBody">
+                        <tr>
+                            <td colspan="6" class="text-center">Loading...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -222,7 +269,7 @@
             <h3 class="font-bold text-lg mb-4" id="prPermissionModalTitle">Add PR Permission</h3>
             <form id="prPermissionForm">
                 <input type="hidden" id="prPermissionId" name="id">
-                <input type="hidden" name="type" value="pr_permissions">
+                <input type="hidden" name="type" value="role_pr_permissions">
                 
                 <div class="form-control mb-4">
                     <label class="label">
@@ -265,6 +312,63 @@
                 
                 <div class="modal-action">
                     <button type="button" class="btn" onclick="document.getElementById('prPermissionModal').close()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
+        </div>
+        <form method="dialog" class="modal-backdrop">
+            <button>close</button>
+        </form>
+    </dialog>
+
+    <!-- Status Modal Fields Modal -->
+    <dialog id="modalFieldModal" class="modal">
+        <div class="modal-box">
+            <h3 class="font-bold text-lg mb-4" id="modalFieldModalTitle">Add Status Modal Field</h3>
+            <form id="modalFieldForm">
+                <input type="hidden" id="modalFieldId" name="id">
+                <input type="hidden" name="type" value="status_modal_fields">
+                
+                <div class="form-control mb-4">
+                    <label class="label">
+                        <span class="label-text">Status</span>
+                    </label>
+                    <select id="modalFieldStatus" class="select select-bordered w-full" required>
+                        <option value="">Select Status</option>
+                    </select>
+                </div>
+                
+                <div class="form-control mb-4">
+                    <label class="label">
+                        <span class="label-text">Field Name</span>
+                    </label>
+                    <select id="modalFieldName" class="select select-bordered w-full" required>
+                        <option value="">Select Field</option>
+                        <option value="buyer">Buyer</option>
+                        <option value="po_head">PO Head</option>
+                        <option value="po_team">PO Team</option>
+                        <option value="qty">Quantity</option>
+                        <option value="file_upload">File Upload</option>
+                        <option value="remark">Remark</option>
+                    </select>
+                </div>
+                
+                <div class="form-control mb-4">
+                    <label class="label cursor-pointer">
+                        <span class="label-text">Required</span>
+                        <input type="checkbox" id="modalFieldRequired" class="toggle toggle-primary">
+                    </label>
+                </div>
+                
+                <div class="form-control mb-4">
+                    <label class="label">
+                        <span class="label-text">Field Order</span>
+                    </label>
+                    <input type="number" id="modalFieldOrder" class="input input-bordered w-full" value="0" min="0" required>
+                </div>
+                
+                <div class="modal-action">
+                    <button type="button" class="btn" onclick="document.getElementById('modalFieldModal').close()">Cancel</button>
                     <button type="submit" class="btn btn-primary">Save</button>
                 </div>
             </form>

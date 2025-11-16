@@ -44,10 +44,10 @@ try {
             (is_array($_GET['purchFilter']) ? 
                 array_filter($_GET['purchFilter'], 'is_numeric') : 
                 [filter_var($_GET['purchFilter'], FILTER_VALIDATE_INT)]) : [],
-        'po_team_member' => isset($_GET['po_team_member']) ? 
-            (is_array($_GET['po_team_member']) ? 
-                array_filter($_GET['po_team_member'], 'is_numeric') : 
-                [filter_var($_GET['po_team_member'], FILTER_VALIDATE_INT)]) : [],
+        'pr_assignments' => isset($_GET['pr_assignments']) ? 
+            (is_array($_GET['pr_assignments']) ? 
+                array_filter($_GET['pr_assignments'], 'is_numeric') : 
+                [filter_var($_GET['pr_assignments'], FILTER_VALIDATE_INT)]) : [],
         'start_date' => isset($_GET['start_date']) ? $_GET['start_date'] : null,
         'end_date' => isset($_GET['end_date']) ? $_GET['end_date'] : null
     ];
@@ -111,7 +111,7 @@ try {
         $placeholders = implode(',', array_fill(0, count($filters['category']), '?'));
         $where .= " AND EXISTS (
             SELECT 1 FROM catbasbh cb
-            JOIN cat c ON c.maincat = cb.cat
+            JOIN categories c ON c.maincat = cb.cat
             WHERE cb.user_id = pt.b_head AND c.maincat IN ($placeholders)
         )";
         $types .= str_repeat('s', count($filters['category']));
@@ -119,11 +119,11 @@ try {
     }
 
     // PO Team Member filter
-    if (!empty($filters['po_team_member'])) {
-        $placeholders = implode(',', array_fill(0, count($filters['po_team_member']), '?'));
+    if (!empty($filters['pr_assignments'])) {
+        $placeholders = implode(',', array_fill(0, count($filters['pr_assignments']), '?'));
         $where .= " AND ptm.po_team_member IN ($placeholders)";
-        $types .= str_repeat('i', count($filters['po_team_member']));
-        $params = array_merge($params, $filters['po_team_member']);
+        $types .= str_repeat('i', count($filters['pr_assignments']));
+        $params = array_merge($params, $filters['pr_assignments']);
     }
 
     // Date range handling
@@ -203,7 +203,7 @@ try {
 
     // 3. Category match via cat table
     $catIds = [];
-    $stmt = $conn->prepare("SELECT id FROM cat WHERE UPPER(maincat) LIKE ?");
+    $stmt = $conn->prepare("SELECT id FROM categories WHERE UPPER(maincat) LIKE ?");
     $stmt->bind_param("s", $like);
     $stmt->execute();
     $res = $stmt->get_result();
@@ -216,7 +216,7 @@ try {
         $placeholders = implode(',', array_fill(0, count($catIds), '?'));
         $searchConditions[] = "EXISTS (
             SELECT 1 FROM catbasbh cb
-            JOIN cat c ON c.maincat = cb.cat
+            JOIN categories c ON c.maincat = cb.cat
             WHERE cb.user_id = pt.b_head AND c.id IN ($placeholders)
         )";
         $types .= str_repeat("i", count($catIds));
@@ -248,10 +248,10 @@ try {
 
 
     // Count total records
-    $countSql = "SELECT COUNT(DISTINCT pt.id) as total FROM po_tracking pt
+    $countSql = "SELECT COUNT(DISTINCT pt.id) as total FROM purchase_requests pt
                 LEFT JOIN suppliers s ON pt.supplier_id = s.id
-                LEFT JOIN status st ON pt.po_status = st.id
-                LEFT JOIN po_team_member ptm ON ptm.ord_id = pt.id
+                LEFT JOIN pr_statuses st ON pt.po_status = st.id
+                LEFT JOIN pr_assignments ptm ON ptm.ord_id = pt.id
                 $where";
 
     $countStmt = $conn->prepare($countSql);
@@ -282,18 +282,18 @@ try {
                 ptm.po_number,
                 (SELECT GROUP_CONCAT(DISTINCT c.maincat SEPARATOR ', ') 
                  FROM catbasbh cb
-                 JOIN cat c ON c.maincat = cb.cat
+                 JOIN categories c ON c.maincat = cb.cat
                  WHERE cb.user_id = pt.b_head
                  LIMIT 50) AS categories
-            FROM po_tracking pt
+            FROM purchase_requests pt
             LEFT JOIN users bh ON pt.b_head = bh.id
             LEFT JOIN users b ON pt.buyer = b.id
             LEFT JOIN suppliers s ON pt.supplier_id = s.id
-            LEFT JOIN status st ON pt.po_status = st.id
-            LEFT JOIN po_team_member ptm ON ptm.ord_id = pt.id
+            LEFT JOIN pr_statuses st ON pt.po_status = st.id
+            LEFT JOIN pr_assignments ptm ON ptm.ord_id = pt.id
             LEFT JOIN users po ON po.id = ptm.po_team_member
             LEFT JOIN users poh ON poh.id = pt.po_team
-            LEFT JOIN purchase_master pm ON pm.id = pt.purch_id
+            LEFT JOIN purchase_types pm ON pm.id = pt.purch_id
             $where
             ORDER BY pt.created_at DESC
             LIMIT ?, ?";
@@ -326,8 +326,8 @@ try {
                         pt.po_status,
                         st.status AS status,
                         pt.po_date
-                    FROM po_tracking pt
-                    LEFT JOIN status st ON pt.po_status = st.id
+                    FROM purchase_requests pt
+                    LEFT JOIN pr_statuses st ON pt.po_status = st.id
                     $where
                     ORDER BY pt.created_at DESC";
 
@@ -350,7 +350,7 @@ try {
 
     if (!$skipFilters) {
         // Get status options from database
-        $statusStmt = $conn->query("SELECT DISTINCT status FROM status ORDER BY status ASC");
+        $statusStmt = $conn->query("SELECT DISTINCT status FROM pr_statuses ORDER BY status ASC");
         $statusOptions = [];
         while ($row = $statusStmt->fetch_assoc()) {
             $statusOptions[] = $row['status'];
@@ -365,7 +365,7 @@ try {
             $options['supplier_options'][] = $row;
         }
 
-        $purchFilterresult = $conn->query("SELECT id, name FROM purchase_master ORDER BY name ASC");
+        $purchFilterresult = $conn->query("SELECT id, name FROM purchase_types ORDER BY name ASC");
         $options['purch_options'] = [];
         if ($purchFilterresult && $purchFilterresult->num_rows > 0) {
             while ($row = $purchFilterresult->fetch_assoc()) {
@@ -383,7 +383,7 @@ try {
 
             // Categories mapped to this buyer through catbasbh
             $catQuery = "SELECT c.id, c.maincat FROM catbasbh cb
-                         JOIN cat c ON c.maincat = cb.cat 
+                         JOIN categories c ON c.maincat = cb.cat 
                          WHERE cb.user_id = $bheadId
                          ORDER BY c.maincat ASC";
             $catResult = $conn->query($catQuery);
@@ -404,14 +404,14 @@ try {
 
             // PO Team Members (all)
             $poTeamResult = $conn->query("SELECT id, username FROM users WHERE role = 'PO_Team_Member' ORDER BY username ASC");
-            $options['po_team_member_options'] = [];
+            $options['pr_assignments_options'] = [];
             while ($row = $poTeamResult->fetch_assoc()) {
-                $options['po_team_member_options'][] = $row;
+                $options['pr_assignments_options'][] = $row;
             }
         } elseif ($role == 'B_Head') {
             // All categories assigned to this buyer head
             $catQuery = "SELECT c.id, c.maincat FROM catbasbh cb
-                         JOIN cat c ON c.maincat = cb.cat 
+                         JOIN categories c ON c.maincat = cb.cat 
                          WHERE cb.user_id = $userid
                          ORDER BY c.maincat ASC";
             $catResult = $conn->query($catQuery);
@@ -441,13 +441,13 @@ try {
 
             // PO Team Members (all)
             $poTeamResult = $conn->query("SELECT id, username FROM users WHERE role = 'PO_Team_Member' ORDER BY username ASC");
-            $options['po_team_member_options'] = [];
+            $options['pr_assignments_options'] = [];
             while ($row = $poTeamResult->fetch_assoc()) {
-                $options['po_team_member_options'][] = $row;
+                $options['pr_assignments_options'][] = $row;
             }
         } elseif ($role == 'PO_Team_Member') {
             // All categories
-            $catResult = $conn->query("SELECT id, maincat FROM cat ORDER BY maincat ASC");
+            $catResult = $conn->query("SELECT id, maincat FROM categories ORDER BY maincat ASC");
             $options['category_options'] = [];
             while ($row = $catResult->fetch_assoc()) {
                 $options['category_options'][] = $row;
@@ -470,13 +470,13 @@ try {
             // PO Team Members (only self)
             $selfQuery = "SELECT id, username FROM users WHERE id = $userid";
             $selfResult = $conn->query($selfQuery);
-            $options['po_team_member_options'] = [];
+            $options['pr_assignments_options'] = [];
             while ($row = $selfResult->fetch_assoc()) {
-                $options['po_team_member_options'][] = $row;
+                $options['pr_assignments_options'][] = $row;
             }
         } elseif ($role == 'admin' || $role == 'PO_Team') {
             // For admin, show everything
-            $catResult = $conn->query("SELECT id, maincat FROM cat ORDER BY maincat ASC");
+            $catResult = $conn->query("SELECT id, maincat FROM categories ORDER BY maincat ASC");
             $options['category_options'] = [];
             while ($row = $catResult->fetch_assoc()) {
                 $options['category_options'][] = $row;
@@ -495,9 +495,9 @@ try {
             }
 
             $poTeamResult = $conn->query("SELECT id, username FROM users WHERE role = 'PO_Team_Member' ORDER BY username ASC");
-            $options['po_team_member_options'] = [];
+            $options['pr_assignments_options'] = [];
             while ($row = $poTeamResult->fetch_assoc()) {
-                $options['po_team_member_options'][] = $row;
+                $options['pr_assignments_options'][] = $row;
             }
         }
 
@@ -530,11 +530,16 @@ try {
         $totalMinutes = 0;
         $completedCount = 0;
         $statusCounts = [];
+        $buyerCounts = [];
 
         // Optimize date parsing by using strtotime instead of DateTime
         foreach ($allFilteredData as $row) {
             $status = $row['status'] ?? 'Unknown';
             $statusCounts[$status] = ($statusCounts[$status] ?? 0) + 1;
+            
+            // Count by buyer
+            $buyerName = $row['buyer'] ?? ($row['buyername'] ?? 'Unknown');
+            $buyerCounts[$buyerName] = ($buyerCounts[$buyerName] ?? 0) + 1;
 
             if (!empty($row['po_date']) && !empty($row['created_at'])) {
                 // Use strtotime for faster date parsing
@@ -598,6 +603,7 @@ try {
         
         $stats['completed_count'] = $completedCount;
         $stats['status_distribution'] = $statusCounts;
+        $stats['buyer_distribution'] = $buyerCounts;
     }
 
     // Response

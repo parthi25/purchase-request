@@ -21,9 +21,9 @@ try {
             // Specific PO member selected - show counts for that member
             $statusQuery = "
                 SELECT s.id, s.status, COUNT(p.po_status) AS count
-                FROM status s
-                LEFT JOIN po_tracking p ON s.id = p.po_status
-                LEFT JOIN po_team_member ptm ON ptm.ord_id = p.id
+                FROM pr_statuses s
+                LEFT JOIN purchase_requests p ON s.id = p.po_status
+                LEFT JOIN pr_assignments ptm ON ptm.ord_id = p.id
                 WHERE ptm.po_team_member = ?
                 GROUP BY s.id
                 ORDER BY s.id
@@ -34,8 +34,8 @@ try {
             // buyer_id = 0 or PO Head's own ID - show only status 6, 9, 7
             $statusQuery = "
                 SELECT s.id, s.status, COUNT(p.po_status) AS count
-                FROM status s
-                LEFT JOIN po_tracking p ON s.id = p.po_status AND s.id IN (6, 9, 7)
+                FROM pr_statuses s
+                LEFT JOIN purchase_requests p ON s.id = p.po_status AND s.id IN (6, 9, 7)
                 WHERE s.id IN (6, 9, 7)
                 GROUP BY s.id
                 ORDER BY FIELD(s.id, 6, 9, 7)
@@ -47,9 +47,9 @@ try {
         // PO_Team_Member or others: only own counts
         $statusQuery = "
             SELECT s.id, s.status, COUNT(p.po_status) AS count
-            FROM status s
-            LEFT JOIN po_tracking p ON s.id = p.po_status
-            LEFT JOIN po_team_member ptm ON ptm.ord_id = p.id
+            FROM pr_statuses s
+            LEFT JOIN purchase_requests p ON s.id = p.po_status
+            LEFT JOIN pr_assignments ptm ON ptm.ord_id = p.id
             WHERE ptm.po_team_member = ?
             GROUP BY s.id
             ORDER BY s.id

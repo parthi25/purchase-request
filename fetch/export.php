@@ -38,19 +38,19 @@ try {
         p.qty AS QTY,
         p.created_at as CREATED_AT,
         p.po_date as PO_DATE
-    FROM po_tracking p
+    FROM purchase_requests p
     LEFT JOIN users u ON p.created_by = u.id
-    LEFT JOIN purchase_master pm ON pm.id = p.purch_id
+    LEFT JOIN purchase_types pm ON pm.id = p.purch_id
     LEFT JOIN users b ON p.b_head = b.id
     LEFT JOIN users bu ON p.buyer = bu.id
     LEFT JOIN users pt ON p.po_team = pt.id
-    LEFT JOIN po_ po ON p.id = po.ord_id AND po.filename IS NOT NULL
+    LEFT JOIN po_documents po ON p.id = po.ord_id AND po.filename IS NOT NULL
     LEFT JOIN suppliers s ON p.supplier_id = s.id
-    LEFT JOIN new_supplier ns ON p.new_supplier = ns.id 
-    LEFT JOIN cat c ON p.category_id = c.id
-    LEFT JOIN po_team_member ptm ON p.id = ptm.ord_id
+    LEFT JOIN supplier_requests ns ON p.new_supplier = ns.id 
+    LEFT JOIN categories c ON p.category_id = c.id
+    LEFT JOIN pr_assignments ptm ON p.id = ptm.ord_id
     LEFT JOIN users upo ON ptm.po_team_member = upo.id
-    LEFT JOIN status ss ON ss.id = p.po_status
+    LEFT JOIN pr_statuses ss ON ss.id = p.po_status
     ";
 
     $result = $conn->query($sql);

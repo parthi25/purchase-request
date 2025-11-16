@@ -22,14 +22,14 @@ $buyer_id = isset($_POST['buyerInput']) ? intval($_POST['buyerInput']) : null;
 
 
 // Prepare statements
-$selectQuery = "SELECT b_head,created_by FROM po_tracking WHERE id = ?";
+$selectQuery = "SELECT b_head,created_by FROM purchase_requests WHERE id = ?";
 $selectStmt = $conn->prepare($selectQuery);
 
 $checkBuyerQuery = "SELECT role FROM users WHERE id = ?";
 $checkBuyerStmt = $conn->prepare($checkBuyerQuery);
 
 // Prepare base SQL
-$sql = "UPDATE po_tracking SET 
+$sql = "UPDATE purchase_requests SET 
             po_team = ?, 
             status_1 = ?, 
             status_2 = ?, 
@@ -49,7 +49,7 @@ if (!$stmt) {
 
 // Run update for each ID
 foreach ($ids as $id) {
-    // Get created_by from po_tracking
+    // Get created_by from purchase_requests
     $selectStmt->bind_param("i", $id);
     $selectStmt->execute();
     $selectResult = $selectStmt->get_result();

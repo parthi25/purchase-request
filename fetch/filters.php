@@ -33,7 +33,7 @@ try {
     $stmt->close();
 
     // Purchase filters - Using prepared statement
-    $stmt = $conn->prepare("SELECT id, name FROM purchase_master ORDER BY name ASC");
+    $stmt = $conn->prepare("SELECT id, name FROM purchase_types ORDER BY name ASC");
     $stmt->execute();
     $result = $stmt->get_result();
     while ($row = $result->fetch_assoc()) {
@@ -58,7 +58,7 @@ try {
                 $stmt = $conn->prepare("
                     SELECT c.id, c.maincat 
                     FROM catbasbh cb
-                    JOIN cat c ON c.maincat = cb.cat
+                    JOIN categories c ON c.maincat = cb.cat
                     WHERE cb.user_id = ?
                     ORDER BY c.maincat ASC
                 ");
@@ -98,7 +98,7 @@ try {
             $stmt = $conn->prepare("
                 SELECT c.id, c.maincat 
                 FROM catbasbh cb
-                JOIN cat c ON c.maincat = cb.cat
+                JOIN categories c ON c.maincat = cb.cat
                 WHERE cb.user_id = ?
                 ORDER BY c.maincat ASC
             ");
@@ -148,7 +148,7 @@ try {
 
         case 'PO_Team_Member':
             // All categories - Using prepared statement
-            $stmt = $conn->prepare("SELECT id, maincat FROM cat ORDER BY maincat ASC");
+            $stmt = $conn->prepare("SELECT id, maincat FROM categories ORDER BY maincat ASC");
             $stmt->execute();
             $result = $stmt->get_result();
             while ($row = $result->fetch_assoc()) {
@@ -178,7 +178,7 @@ try {
         case 'admin':
         case 'PO_Team':
             // All categories - Using prepared statement
-            $stmt = $conn->prepare("SELECT id, maincat FROM cat ORDER BY maincat ASC");
+            $stmt = $conn->prepare("SELECT id, maincat FROM categories ORDER BY maincat ASC");
             $stmt->execute();
             $result = $stmt->get_result();
             while ($row = $result->fetch_assoc()) {

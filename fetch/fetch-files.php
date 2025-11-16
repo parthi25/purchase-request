@@ -20,8 +20,8 @@ if ($id <= 0) {
 
 $allowedTables = [
     'proforma' => 'proforma',
-    'po' => 'po_',
-    'product' => 'po_order'
+    'po' => 'po_documents',
+    'product' => 'pr_attachments'
 ];
 
 if (!isset($allowedTables[$type])) {

@@ -23,7 +23,7 @@ try {
     }
 
     // Delete record from database
-    $stmt = $conn->prepare("DELETE FROM po_ WHERE ord_id = ? AND url = ?");
+    $stmt = $conn->prepare("DELETE FROM po_documents WHERE ord_id = ? AND url = ?");
     $stmt->bind_param("is", $order_id, $file_url);
     $stmt->execute();
 

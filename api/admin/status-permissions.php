@@ -4,8 +4,8 @@ require '../../config/db.php';
 include '../../config/response.php';
 include '../../config/security.php';
 
-// Check if user is admin/superadmin/master
-$allowedRoles = ['admin', 'super_admin', 'master'];
+// Check if user is super_admin/master only
+$allowedRoles = ['super_admin', 'master'];
 if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role'], $allowedRoles)) {
     sendResponse(403, "error", "Unauthorized access");
 }
@@ -16,25 +16,31 @@ try {
     switch ($method) {
         case 'GET':
             // Get all status permissions
-            $type = $_GET['type'] ?? 'permissions'; // 'permissions', 'flow', or 'pr_permissions'
+            $type = $_GET['type'] ?? 'permissions'; // 'permissions', 'flow', 'role_pr_permissions', or 'status_modal_fields'
             
             if ($type === 'flow') {
                 // Get status flow
                 $query = "SELECT sf.*, 
                          s1.status as from_status_name, 
                          s2.status as to_status_name
-                         FROM status_flow sf
-                         LEFT JOIN status s1 ON sf.from_status_id = s1.id
-                         LEFT JOIN status s2 ON sf.to_status_id = s2.id
+                         FROM status_transitions sf
+                         LEFT JOIN pr_statuses s1 ON sf.from_status_id = s1.id
+                         LEFT JOIN pr_statuses s2 ON sf.to_status_id = s2.id
                          ORDER BY sf.from_status_id, sf.priority DESC, sf.id";
-            } elseif ($type === 'pr_permissions') {
+            } elseif ($type === 'role_pr_permissions') {
                 // Get PR permissions
-                $query = "SELECT * FROM pr_permissions ORDER BY role";
+                $query = "SELECT * FROM role_pr_permissions ORDER BY role";
+            } elseif ($type === 'status_modal_fields') {
+                // Get status modal fields
+                $query = "SELECT smf.*, s.status as status_name
+                         FROM status_modal_fields smf
+                         LEFT JOIN pr_statuses s ON smf.status_id = s.id
+                         ORDER BY smf.status_id, smf.field_order";
             } else {
                 // Get status permissions
                 $query = "SELECT sp.*, s.status as status_name
-                         FROM status_permissions sp
-                         LEFT JOIN status s ON sp.status_id = s.id
+                         FROM role_status_permissions sp
+                         LEFT JOIN pr_statuses s ON sp.status_id = s.id
                          ORDER BY sp.role, sp.status_id";
             }
             
@@ -55,7 +61,16 @@ try {
             // Create new permission or flow
             $type = $_POST['type'] ?? 'permission';
             
-            if ($type === 'pr_permissions') {
+            if ($type === 'status_modal_fields') {
+                $status_id = intval($_POST['status_id']);
+                $field_name = Security::sanitizeInput($_POST['field_name']);
+                $is_required = isset($_POST['is_required']) ? 1 : 0;
+                $field_order = intval($_POST['field_order'] ?? 0);
+                
+                $stmt = $conn->prepare("INSERT INTO status_modal_fields (status_id, field_name, is_required, field_order) 
+                                       VALUES (?, ?, ?, ?)");
+                $stmt->bind_param("isii", $status_id, $field_name, $is_required, $field_order);
+            } elseif ($type === 'role_pr_permissions') {
                 $role = Security::sanitizeInput($_POST['role']);
                 $can_create = isset($_POST['can_create']) ? 1 : 0;
                 $can_edit = isset($_POST['can_edit']) ? 1 : 0;
@@ -63,11 +78,11 @@ try {
                 $is_active = isset($_POST['is_active']) ? 1 : 0;
                 
                 if ($can_edit_status === null) {
-                    $stmt = $conn->prepare("INSERT INTO pr_permissions (role, can_create, can_edit, can_edit_status, is_active) 
+                    $stmt = $conn->prepare("INSERT INTO role_pr_permissions (role, can_create, can_edit, can_edit_status, is_active) 
                                            VALUES (?, ?, ?, NULL, ?)");
                     $stmt->bind_param("siii", $role, $can_create, $can_edit, $is_active);
                 } else {
-                    $stmt = $conn->prepare("INSERT INTO pr_permissions (role, can_create, can_edit, can_edit_status, is_active) 
+                    $stmt = $conn->prepare("INSERT INTO role_pr_permissions (role, can_create, can_edit, can_edit_status, is_active) 
                                            VALUES (?, ?, ?, ?, ?)");
                     $stmt->bind_param("siiii", $role, $can_create, $can_edit, $can_edit_status, $is_active);
                 }
@@ -79,7 +94,7 @@ try {
                 $is_active = isset($_POST['is_active']) ? 1 : 0;
                 $priority = intval($_POST['priority'] ?? 0);
                 
-                $stmt = $conn->prepare("INSERT INTO status_flow (from_status_id, to_status_id, role, requires_proforma, is_active, priority) 
+                $stmt = $conn->prepare("INSERT INTO status_transitions (from_status_id, to_status_id, role, requires_proforma, is_active, priority) 
                                        VALUES (?, ?, ?, ?, ?, ?)");
                 $stmt->bind_param("iisiii", $from_status_id, $to_status_id, $role, $requires_proforma, $is_active, $priority);
             } else {
@@ -87,7 +102,7 @@ try {
                 $status_id = intval($_POST['status_id']);
                 $is_active = isset($_POST['is_active']) ? 1 : 0;
                 
-                $stmt = $conn->prepare("INSERT INTO status_permissions (role, status_id, is_active) 
+                $stmt = $conn->prepare("INSERT INTO role_status_permissions (role, status_id, is_active) 
                                        VALUES (?, ?, ?)");
                 $stmt->bind_param("sii", $role, $status_id, $is_active);
             }
@@ -111,7 +126,17 @@ try {
             $type = $putData['type'] ?? 'permission';
             $id = intval($putData['id']);
             
-            if ($type === 'pr_permissions') {
+            if ($type === 'status_modal_fields') {
+                $status_id = intval($putData['status_id']);
+                $field_name = Security::sanitizeInput($putData['field_name']);
+                $is_required = isset($putData['is_required']) ? 1 : 0;
+                $field_order = intval($putData['field_order'] ?? 0);
+                
+                $stmt = $conn->prepare("UPDATE status_modal_fields 
+                                       SET status_id = ?, field_name = ?, is_required = ?, field_order = ?
+                                       WHERE id = ?");
+                $stmt->bind_param("isiii", $status_id, $field_name, $is_required, $field_order, $id);
+            } elseif ($type === 'role_pr_permissions') {
                 $role = Security::sanitizeInput($putData['role']);
                 $can_create = isset($putData['can_create']) ? 1 : 0;
                 $can_edit = isset($putData['can_edit']) ? 1 : 0;
@@ -119,12 +144,12 @@ try {
                 $is_active = isset($putData['is_active']) ? 1 : 0;
                 
                 if ($can_edit_status === null) {
-                    $stmt = $conn->prepare("UPDATE pr_permissions 
+                    $stmt = $conn->prepare("UPDATE role_pr_permissions 
                                            SET role = ?, can_create = ?, can_edit = ?, can_edit_status = NULL, is_active = ?
                                            WHERE id = ?");
                     $stmt->bind_param("siiii", $role, $can_create, $can_edit, $is_active, $id);
                 } else {
-                    $stmt = $conn->prepare("UPDATE pr_permissions 
+                    $stmt = $conn->prepare("UPDATE role_pr_permissions 
                                            SET role = ?, can_create = ?, can_edit = ?, can_edit_status = ?, is_active = ?
                                            WHERE id = ?");
                     $stmt->bind_param("siiiii", $role, $can_create, $can_edit, $can_edit_status, $is_active, $id);
@@ -137,7 +162,7 @@ try {
                 $is_active = isset($putData['is_active']) ? 1 : 0;
                 $priority = intval($putData['priority'] ?? 0);
                 
-                $stmt = $conn->prepare("UPDATE status_flow 
+                $stmt = $conn->prepare("UPDATE status_transitions 
                                        SET from_status_id = ?, to_status_id = ?, role = ?, 
                                            requires_proforma = ?, is_active = ?, priority = ?
                                        WHERE id = ?");
@@ -147,7 +172,7 @@ try {
                 $status_id = intval($putData['status_id']);
                 $is_active = isset($putData['is_active']) ? 1 : 0;
                 
-                $stmt = $conn->prepare("UPDATE status_permissions 
+                $stmt = $conn->prepare("UPDATE role_status_permissions 
                                        SET role = ?, status_id = ?, is_active = ?
                                        WHERE id = ?");
                 $stmt->bind_param("siii", $role, $status_id, $is_active, $id);
@@ -172,12 +197,14 @@ try {
             $type = $deleteData['type'] ?? 'permission';
             $id = intval($deleteData['id']);
             
-            if ($type === 'pr_permissions') {
-                $table = 'pr_permissions';
+            if ($type === 'status_modal_fields') {
+                $table = 'status_modal_fields';
+            } elseif ($type === 'role_pr_permissions') {
+                $table = 'role_pr_permissions';
             } elseif ($type === 'flow') {
-                $table = 'status_flow';
+                $table = 'status_transitions';
             } else {
-                $table = 'status_permissions';
+                $table = 'role_status_permissions';
             }
             $stmt = $conn->prepare("DELETE FROM $table WHERE id = ?");
             $stmt->bind_param("i", $id);

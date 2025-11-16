@@ -9,7 +9,7 @@ if (!isset($_SESSION["user_id"])) {
 
 // Check if user has permission to edit PR from database
 $userRole = $_SESSION['role'] ?? '';
-$checkPermission = $conn->prepare("SELECT can_edit, can_edit_status FROM pr_permissions WHERE role = ? AND is_active = 1");
+$checkPermission = $conn->prepare("SELECT can_edit, can_edit_status FROM role_pr_permissions WHERE role = ? AND is_active = 1");
 $allowedEditStatus = null;
 if ($checkPermission) {
     $checkPermission->bind_param("s", $userRole);
@@ -83,9 +83,9 @@ if ($buyer_id !== null) {
     $userStmt->close();
 }
 
-// Get category_id from 'cat' table
+// Get category_id from 'categories' table
 $category_id = null;
-$catStmt = $conn->prepare("SELECT id FROM cat WHERE maincat = ?");
+$catStmt = $conn->prepare("SELECT id FROM categories WHERE maincat = ?");
 $catStmt->bind_param("s", $cat);
 $catStmt->execute();
 $catStmt->bind_result($category_id);
@@ -97,7 +97,7 @@ if ($category_id === null) {
 }
 
 // Check if PR exists and is in editable status (status 1 = Open)
-$checkStmt = $conn->prepare("SELECT po_status, created_by FROM po_tracking WHERE id = ?");
+$checkStmt = $conn->prepare("SELECT po_status, created_by FROM purchase_requests WHERE id = ?");
 $checkStmt->bind_param("i", $id);
 $checkStmt->execute();
 $checkResult = $checkStmt->get_result();
@@ -116,7 +116,7 @@ if ($allowedEditStatus !== null && $prData['po_status'] != $allowedEditStatus) {
 // Prepare update query
 if ($buyer_id !== null) {
     $updateQuery = "
-        UPDATE po_tracking 
+        UPDATE purchase_requests 
         SET supplier_id = ?, 
             b_head = ?, 
             qty = ?, 
@@ -130,7 +130,7 @@ if ($buyer_id !== null) {
     $bindParams = [$supplier_id, $buyer_id, $quantity, $uom, $remark, $created_by, $category_id, $purchtype, $id];
 } else {
     $updateQuery = "
-        UPDATE po_tracking 
+        UPDATE purchase_requests 
         SET supplier_id = ?, 
             qty = ?, 
             uom = ?, 

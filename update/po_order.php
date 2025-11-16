@@ -65,7 +65,7 @@ for ($i = 0; $i < count($files['name']); $i++) {
     $fileUrl = $uploadConfig['dir'] . '/' . $newFileName;
 
     if (move_uploaded_file($tmpName, $filePath)) {
-        $stmt = $conn->prepare("INSERT INTO po_order (ord_id, url, filename) VALUES (?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO pr_attachments (ord_id, url, filename) VALUES (?, ?, ?)");
         $stmt->bind_param("iss", $order_id, $fileUrl, $newFileName);
 
         if ($stmt->execute()) {
@@ -74,7 +74,7 @@ for ($i = 0; $i < count($files['name']); $i++) {
                 'id' => $stmt->insert_id,
                 'file' => $newFileName,
                 'full_path' => $filePath,
-                'table' => 'po_order'
+                'table' => 'pr_attachments'
             ];
         } else {
             $errors[] = "$fileName: Database error (" . $stmt->error . ")";
