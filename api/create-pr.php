@@ -14,6 +14,31 @@ if (!isset($_SESSION["user_id"])) {
     sendResponse(401, "error", "User not logged in");
 }
 
+// Check if user has permission to create PR from database
+$userRole = $_SESSION['role'] ?? '';
+$checkPermission = $conn->prepare("SELECT can_create FROM pr_permissions WHERE role = ? AND is_active = 1");
+if ($checkPermission) {
+    $checkPermission->bind_param("s", $userRole);
+    $checkPermission->execute();
+    $permissionResult = $checkPermission->get_result();
+    $permission = $permissionResult->fetch_assoc();
+    $checkPermission->close();
+    
+    if (!$permission || $permission['can_create'] != 1) {
+        // Fallback to hardcoded check if table doesn't exist or no permission found
+        $allowedRoles = ['admin', 'buyer', 'B_Head'];
+        if (!in_array($userRole, $allowedRoles)) {
+            sendResponse(403, "error", "You do not have permission to create PR");
+        }
+    }
+} else {
+    // Fallback to hardcoded check if table doesn't exist
+    $allowedRoles = ['admin', 'buyer', 'B_Head'];
+    if (!in_array($userRole, $allowedRoles)) {
+        sendResponse(403, "error", "You do not have permission to create PR");
+    }
+}
+
 // Rate limiting
 $clientIP = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
 if (!Security::checkRateLimit($clientIP, 'create_pr', 10, 3600)) { // 10 PRs per hour

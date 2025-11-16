@@ -103,17 +103,20 @@ document.addEventListener("DOMContentLoaded", function () {
       const result = await response.json();
 
       if (result.status === "success") {
-        populateStatusSelect(result.data);
+        if (result.data && result.data.length > 0) {
+          populateStatusSelect(result.data);
+        } else {
+          // No statuses available - silently handle
+          statusSelect.innerHTML = '<option value="">No status options available</option>';
+        }
       } else {
-        showAlert(result.message || "Failed to load status options", "error");
-        statusSelect.innerHTML =
-          '<option value="">Error loading statuses</option>';
+        // Silently handle errors - don't show alerts
+        statusSelect.innerHTML = '<option value="">No status options available</option>';
       }
     } catch (error) {
+      // Silently handle errors - don't show alerts
       console.error("Error fetching status:", error);
-      showAlert("Failed to load status options", "error");
-      statusSelect.innerHTML =
-        '<option value="">Error loading statuses</option>';
+      statusSelect.innerHTML = '<option value="">No status options available</option>';
     } finally {
       // 4️⃣ Re-enable controls
       statusSaveBtn.disabled = false;
@@ -307,7 +310,17 @@ function showFields(fieldsToShow) {
         timerProgressBar: true,
       });
     } else {
-      alert(message);
+      if (typeof Swal !== 'undefined') {
+        Swal.fire({
+          icon: 'info',
+          title: message,
+          toast: true,
+          position: "top-end",
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+        });
+      }
     }
   }
 

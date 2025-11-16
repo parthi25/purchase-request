@@ -140,7 +140,17 @@ document.addEventListener('DOMContentLoaded', function() {
         timerProgressBar: true,
       });
     } else {
-      alert(message);
+      if (typeof Swal !== 'undefined') {
+        Swal.fire({
+          icon: type,
+          title: message,
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+        });
+      }
     }
   }
 });

@@ -7,6 +7,36 @@ if (!isset($_SESSION["user_id"])) {
     sendResponse(401, "error", "User not logged in");
 }
 
+// Check if user has permission to edit PR from database
+$userRole = $_SESSION['role'] ?? '';
+$checkPermission = $conn->prepare("SELECT can_edit, can_edit_status FROM pr_permissions WHERE role = ? AND is_active = 1");
+$allowedEditStatus = null;
+if ($checkPermission) {
+    $checkPermission->bind_param("s", $userRole);
+    $checkPermission->execute();
+    $permissionResult = $checkPermission->get_result();
+    $permission = $permissionResult->fetch_assoc();
+    $checkPermission->close();
+    
+    if (!$permission || $permission['can_edit'] != 1) {
+        // Fallback to hardcoded check if table doesn't exist or no permission found
+        $allowedRoles = ['admin', 'buyer', 'B_Head'];
+        if (!in_array($userRole, $allowedRoles)) {
+            sendResponse(403, "error", "You do not have permission to edit PR");
+        }
+        $allowedEditStatus = 1; // Default: only status 1
+    } else {
+        $allowedEditStatus = $permission['can_edit_status']; // NULL means any status
+    }
+} else {
+    // Fallback to hardcoded check if table doesn't exist
+    $allowedRoles = ['admin', 'buyer', 'B_Head'];
+    if (!in_array($userRole, $allowedRoles)) {
+        sendResponse(403, "error", "You do not have permission to edit PR");
+    }
+    $allowedEditStatus = 1; // Default: only status 1
+}
+
 if (!isset($_POST['id'])) {
     sendResponse(400, "error", "Missing PO ID.");
 }
@@ -64,6 +94,23 @@ $catStmt->close();
 
 if ($category_id === null) {
     sendResponse(400, "error", "Category '{$cat}' not found.");
+}
+
+// Check if PR exists and is in editable status (status 1 = Open)
+$checkStmt = $conn->prepare("SELECT po_status, created_by FROM po_tracking WHERE id = ?");
+$checkStmt->bind_param("i", $id);
+$checkStmt->execute();
+$checkResult = $checkStmt->get_result();
+$prData = $checkResult->fetch_assoc();
+$checkStmt->close();
+
+if (!$prData) {
+    sendResponse(404, "error", "PR not found");
+}
+
+// Check if PR can be edited based on status restriction
+if ($allowedEditStatus !== null && $prData['po_status'] != $allowedEditStatus) {
+    sendResponse(403, "error", "PR can only be edited when status is " . $allowedEditStatus);
 }
 
 // Prepare update query

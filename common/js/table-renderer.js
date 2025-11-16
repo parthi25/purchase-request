@@ -90,7 +90,22 @@ function renderFileList(files, currentUrls, currentType, uploadAllowed, deleteAl
     delBtn.addEventListener('click', async (e) => {
       e.preventDefault();
       const fileId = delBtn.dataset.id;
-      if (!confirm('Are you sure you want to delete this file?')) return;
+      if (typeof Swal === 'undefined') {
+        if (!confirm('Are you sure you want to delete this file?')) return;
+      } else {
+        const confirmResult = await Swal.fire({
+          title: 'Are you sure?',
+          text: 'Are you sure you want to delete this file?',
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#3085d6',
+          confirmButtonText: 'Yes, delete it!',
+          cancelButtonText: 'Cancel'
+        });
+        
+        if (!confirmResult.isConfirmed) return;
+      }
 
       try {
         delBtn.disabled = true;
@@ -151,7 +166,17 @@ function showAlert(message, type = 'info') {
       timerProgressBar: true,
     });
   } else {
-    alert(message);
+    if (typeof Swal !== 'undefined') {
+      Swal.fire({
+        icon: type,
+        title: message,
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+      });
+    }
   }
 }
 

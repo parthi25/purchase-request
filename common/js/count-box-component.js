@@ -156,7 +156,20 @@ function handleCountBoxClick(event) {
             console.log('Calling onStatusClick callback with:', statusId, statusKey);
             countBoxConfig.onStatusClick(statusId, statusKey); 
         } 
-        catch (error) { console.error(error); alert('Status filter failed: ' + error.message); }
+        catch (error) { 
+          console.error(error); 
+          if (typeof Swal !== 'undefined') {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Status filter failed: ' + error.message,
+              toast: true,
+              position: 'top-end',
+              showConfirmButton: false,
+              timer: 3000
+            });
+          }
+        }
     }
 }
 

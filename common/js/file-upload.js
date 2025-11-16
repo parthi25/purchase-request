@@ -272,7 +272,22 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    if (!confirm('Are you sure you want to delete this file?')) return;
+    if (typeof Swal === 'undefined') {
+      if (!confirm('Are you sure you want to delete this file?')) return;
+    } else {
+      const confirmResult = await Swal.fire({
+        title: 'Are you sure?',
+        text: 'Are you sure you want to delete this file?',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel'
+      });
+      
+      if (!confirmResult.isConfirmed) return;
+    }
 
     try {
       deleteBtn.disabled = true;
@@ -311,8 +326,18 @@ document.addEventListener('DOMContentLoaded', () => {
         timerProgressBar: true,
       });
     } else {
-      // Fallback to native alert
-      alert(message);
+      // Fallback to Swal if available
+      if (typeof Swal !== 'undefined') {
+        Swal.fire({
+          icon: type,
+          title: message,
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 3000,
+          timerProgressBar: true,
+        });
+      }
     }
   }
 });

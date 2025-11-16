@@ -82,7 +82,18 @@ async function openPRModal(prId = null) {
             const json = await res.json();
 
             if (json.status !== "success") {
-                return alert("Error fetching PR: " + json.message);
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: "Error fetching PR: " + json.message,
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+                }
+                return;
             }
 
             const data = json.data;
@@ -113,7 +124,17 @@ async function openPRModal(prId = null) {
 
         } catch (err) {
             console.error(err);
-            alert("Failed to fetch PR data");
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: "Failed to fetch PR data",
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            }
         }
     }
 
@@ -131,7 +152,18 @@ if (form) {
         const formData = new FormData(this);
 
         if (!formData.get('supplierId') || !formData.get('categoryId')) {
-            return alert('Please fill all required fields');
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Validation Error',
+                    text: 'Please fill all required fields',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            }
+            return;
         }
 
         let url = '../api/create-pr.php';
@@ -146,7 +178,17 @@ if (form) {
             console.log('PR Response:', json);
 
             if (json.status === 'success') {
-                alert((currentPRId ? 'PR updated' : 'PR created') + ' successfully (ID: ' + json.data.po_id + ')');
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: (currentPRId ? 'PR updated' : 'PR created') + ' successfully (ID: ' + json.data.po_id + ')',
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+                }
                 document.getElementById('create_modal')?.close();
                 currentPRId = null;
                 // Reload page after successful create/update
@@ -154,11 +196,31 @@ if (form) {
                   window.location.reload();
                 }, 1000);
             } else {
-                alert('Error: ' + json.message);
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Error: ' + json.message,
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 3000
+                    });
+                }
             }
         } catch (err) {
             console.error(err);
-            alert('Network or server error');
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Network or server error',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            }
         }
     });
 }
