@@ -328,6 +328,7 @@ try {
                         pt.po_date
                     FROM purchase_requests pt
                     LEFT JOIN pr_statuses st ON pt.po_status = st.id
+                    LEFT JOIN pr_assignments ptm ON ptm.ord_id = pt.id
                     $where
                     ORDER BY pt.created_at DESC";
 

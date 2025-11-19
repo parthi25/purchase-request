@@ -1,7 +1,4 @@
 <?php include '../common/layout.php'; ?>
-
-            <!-- Page Content -->
-            <div class="p-4 lg:p-6">
                 <!-- Page Header -->
                 <div class="mb-6">
                     <h1 class="text-4xl font-bold mb-2">Dashboard</h1>
@@ -147,7 +144,9 @@
                     <!-- Buyer PR Count Chart -->
                     <div class="bg-base-200 p-6 rounded-lg lg:col-span-2">
                         <h3 class="text-xl font-semibold mb-4">PR Count by Buyer</h3>
-                        <canvas id="buyerChart"></canvas>
+                        <div class="relative" style="height: 400px;">
+                            <canvas id="buyerChart"></canvas>
+                        </div>
                     </div>
                 </div>
 
@@ -487,21 +486,35 @@
                     },
                     options: {
                         responsive: true,
-                        maintainAspectRatio: true,
+                        maintainAspectRatio: false,
+                        aspectRatio: 2,
                         plugins: {
                             legend: {
                                 display: true,
                                 position: 'top'
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return 'PRs: ' + context.parsed.y;
+                                    }
+                                }
                             }
                         },
                         scales: {
                             y: {
-                                beginAtZero: true
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1,
+                                    precision: 0
+                                }
                             },
                             x: {
                                 ticks: {
                                     maxRotation: 45,
-                                    minRotation: 45
+                                    minRotation: 45,
+                                    autoSkip: true,
+                                    maxTicksLimit: 20
                                 }
                             }
                         }
@@ -539,14 +552,24 @@
                         const buyerLabels = Object.keys(stats.buyer_distribution);
                         const buyerData = Object.values(stats.buyer_distribution);
                         
-                        // Sort by count descending and take top 20
-                        const buyerEntries = buyerLabels.map((label, idx) => ({label, count: buyerData[idx]}))
+                        if (buyerLabels.length > 0) {
+                            // Sort by count descending and take top 20
+                            const buyerEntries = buyerLabels.map((label, idx) => ({
+                                label: label || 'Unknown',
+                                count: buyerData[idx] || 0
+                            }))
                             .sort((a, b) => b.count - a.count)
                             .slice(0, 20);
-                        
-                        this.state.buyerChart.data.labels = buyerEntries.map(e => e.label);
-                        this.state.buyerChart.data.datasets[0].data = buyerEntries.map(e => e.count);
-                        this.state.buyerChart.update('none');
+                            
+                            this.state.buyerChart.data.labels = buyerEntries.map(e => e.label);
+                            this.state.buyerChart.data.datasets[0].data = buyerEntries.map(e => e.count);
+                            this.state.buyerChart.update('none');
+                        } else {
+                            // Handle empty data
+                            this.state.buyerChart.data.labels = ['No Data'];
+                            this.state.buyerChart.data.datasets[0].data = [0];
+                            this.state.buyerChart.update('none');
+                        }
                     }
                 });
             },

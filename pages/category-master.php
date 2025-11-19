@@ -19,8 +19,6 @@ $userid = $_SESSION['user_id'] ?? 0;
 $currentPage = 'category-master.php';
 ?>
 <?php include '../common/layout.php'; ?>
-
-<div class="container mx-auto p-6">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold">Category Master</h1>
     </div>
@@ -122,8 +120,8 @@ $currentPage = 'category-master.php';
     </table>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<script src="../assets/js/xlsx.full.min.js"></script>
+<script src="../assets/js/FileSaver.min.js"></script>
 <script>
 $("#categoryForm").submit(function(e) {
     e.preventDefault();

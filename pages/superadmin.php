@@ -14,7 +14,6 @@ if (!in_array($_SESSION['role'], ['super_admin', 'master'])) {
 }
 
 include '../common/layout.php'; ?>
-    <div class="container mx-auto p-6">
         <h1 class="text-3xl font-bold mb-6">Status Flow Management</h1>
         
         <!-- Tabs for Permissions and Flow -->

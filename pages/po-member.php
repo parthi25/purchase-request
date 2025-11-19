@@ -1,48 +1,67 @@
 <?php include '../common/layout.php'; ?>
-    <!-- Filter bar and count box sticky container -->
-    <div class="sticky top-16 z-40 bg-base-100">
-        <!-- Filter bar for view toggle buttons -->
-        <div class="p-4 bg-base-200 rounded-xl shadow">
-            <div class="flex flex-wrap items-center justify-between gap-3">
+    <!-- Create PR Button - Outside Filter -->
+    <div class="mt-4 hidden sm:flex justify-end sticky top-4 z-40 pb-2">
+        <button id="openCreatePRBtn" class="btn btn-accent">Create PR</button>
+    </div>
+    <div class="bg-base-200 border-base-300 collapse border">
+  <input type="checkbox" class="peer" />
+  <div
+    class="collapse-title bg-base-200 text-base-content font-semibold"
+  >
+   FILTERS
+  </div>
+  <div
+    class="collapse-content bg-base-200"
+  >
+  <div class="lg:sticky lg:top-16 z-40 bg-base-100">
+        <!-- Filter bar -->
+        <div class="bg-base-200 rounded-xl shadow border border-base-300">
+            <div class="p-4 flex flex-wrap items-center justify-between gap-3">
+                    <!-- Search + Date Range -->
+                    <div class="flex flex-wrap items-center gap-3">
+                        <input type="text" id="searchInput" placeholder="Search..." class="input input-bordered w-48 md:w-64" />
+                        <input type="text" id="dateRange" placeholder="Select Date Range" class="input input-bordered w-64" />
+                    </div>
 
-                <!-- Search + Date Range -->
-                <div class="flex flex-wrap items-center gap-3">
-                    <input type="text" id="searchInput" placeholder="Search..." class="input input-bordered w-48 md:w-64" />
-                    <input type="text" id="dateRange" placeholder="Select Date Range" class="input input-bordered w-64" />
-                </div>
-
-                <!-- Buttons -->
-                <div class="flex flex-wrap items-center gap-3">
-                    <button id="applyFilters" class="btn btn-outline btn-primary">Apply</button>
-                    <button id="clearFilters" class="btn btn-outline btn-secondary">Clear</button>
-                    <button id="openCreatePRBtn" class="btn btn-outline btn-accent">Create PR</button>
-                    <div class="btn-group">
-                        <button class="btn btn-outline view-toggle-btn active" data-view="table">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                            </svg>
-                            Table
-                        </button>
-                        <button class="btn btn-outline view-toggle-btn" data-view="cards">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                            </svg>
-                            Cards
-                        </button>
+                    <!-- Buttons -->
+                    <div class="flex flex-wrap items-center gap-3">
+                        <button id="applyFilters" class="btn btn-outline btn-primary">Apply</button>
+                        <button id="clearFilters" class="btn btn-outline btn-secondary">Clear</button>
+                        <div class="btn-group">
+                            <button class="btn btn-outline view-toggle-btn active" data-view="table">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                </svg>
+                                Table
+                            </button>
+                            <button class="btn btn-outline view-toggle-btn" data-view="cards">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                                </svg>
+                                Cards
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            <!-- Status Counts -->
+            <div id="statusCounts" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-4 p-2 sm:p-4 border-t border-base-300"></div>
         </div>
+    </div>
+  </div>
+</div>
 
-        <!-- Status Counts -->
-        <div id="statusCounts" class="flex flex-wrap justify-around items-center gap-4 m-4 bg-base-100 py-2"></div>
+    <!-- Mobile-only sticky Create PR button -->
+    <div class="lg:hidden fixed bottom-6 right-6 z-50">
+        <button id="openCreatePRBtnMobile" class="btn btn-accent btn-circle btn-lg shadow-lg">
+            <i class="fas fa-plus text-xl"></i>
+        </button>
     </div>
 
-        <div id="view-container" class="p-4"></div>
+        <div id="view-container" class="p-2 sm:p-4"></div>
         <?php include '../common/read-more-modal.php'; ?>
         <?php include '../common/file-upload.php'; ?>
         <?php include '../common/create-pr-modal.php'; ?>
@@ -114,11 +133,15 @@
                 });
             });
             const openBtn = document.getElementById('openCreatePRBtn');
+            const openBtnMobile = document.getElementById('openCreatePRBtnMobile');
             const modal = document.getElementById('create_modal');
             const editPRBtns = document.querySelectorAll('.openEditPRBtn');
 
             if (openBtn && modal) {
                 openBtn.addEventListener('click', () => openPRModal());
+            }
+            if (openBtnMobile && modal) {
+                openBtnMobile.addEventListener('click', () => openPRModal());
             }
             editPRBtns.forEach((btn) => {
                 btn.addEventListener('click', () => {

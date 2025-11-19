@@ -9,13 +9,19 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 try {
-    // Get filters
+    // Get filters from chart click
     $startDate = $_GET['start_date'] ?? '';
     $endDate = $_GET['end_date'] ?? '';
     $statusIds = isset($_GET['status']) ? (is_array($_GET['status']) ? $_GET['status'] : [$_GET['status']]) : [];
     $buyerIds = isset($_GET['buyer']) ? (is_array($_GET['buyer']) ? $_GET['buyer'] : [$_GET['buyer']]) : [];
     $categories = isset($_GET['category']) ? (is_array($_GET['category']) ? $_GET['category'] : [$_GET['category']]) : [];
     $purchIds = isset($_GET['purch']) ? (is_array($_GET['purch']) ? $_GET['purch'] : [$_GET['purch']]) : [];
+    $supplierName = $_GET['supplier'] ?? '';
+    $purchTypeName = $_GET['purch_type'] ?? '';
+    $buyerName = $_GET['buyer_name'] ?? '';
+    $statusName = $_GET['status_name'] ?? '';
+    $categoryName = $_GET['category_name'] ?? '';
+    $month = $_GET['month'] ?? '';
 
     // Build WHERE clause
     $where = "1=1";
@@ -55,25 +61,70 @@ try {
         $types .= str_repeat("i", count($purchIds));
     }
 
+    // Filter by name values (from chart clicks)
+    if ($supplierName) {
+        $where .= " AND s.supplier = ?";
+        $params[] = $supplierName;
+        $types .= "s";
+    }
+
+    if ($purchTypeName) {
+        // Handle "Unknown" purchase type (NULL or invalid purch_id)
+        if ($purchTypeName === 'Unknown') {
+            $where .= " AND (pt.purch_id IS NULL OR pm.id IS NULL)";
+        } else {
+            $where .= " AND pm.name = ?";
+            $params[] = $purchTypeName;
+            $types .= "s";
+        }
+    }
+
+    if ($buyerName) {
+        // Handle "Unknown" buyer (NULL or invalid buyer_id)
+        if ($buyerName === 'Unknown') {
+            $where .= " AND (pt.buyer IS NULL OR b.id IS NULL)";
+        } else {
+            $where .= " AND b.username = ?";
+            $params[] = $buyerName;
+            $types .= "s";
+        }
+    }
+
+    if ($statusName) {
+        $where .= " AND st.status = ?";
+        $params[] = $statusName;
+        $types .= "s";
+    }
+
+    if ($month) {
+        $where .= " AND DATE_FORMAT(pt.created_at, '%Y-%m') = ?";
+        $params[] = $month;
+        $types .= "s";
+    }
+
     // Main query
     $sql = "SELECT DISTINCT
                 pt.id,
+                pt.id AS ref_id,
                 pt.created_at,
                 pt.po_status,
-                COALESCE(b.username, ptm.buyername, bh.username, 'Unknown') AS buyer,
+                COALESCE(b.username, 'Unknown') AS buyer,
                 s.supplier,
-                pm.name as purch_type,
+                COALESCE(pm.name, 'Unknown') as purch_type,
                 st.status AS status_name,
+                pt.qty,
+                pt.uom,
+                pt.remark,
                 c.maincat AS categories
             FROM purchase_requests pt
             LEFT JOIN users b ON pt.buyer = b.id
-            LEFT JOIN users bh ON pt.b_head = bh.id
-            LEFT JOIN pr_assignments ptm ON ptm.ord_id = pt.id
             LEFT JOIN suppliers s ON pt.supplier_id = s.id
             LEFT JOIN pr_statuses st ON pt.po_status = st.id
             LEFT JOIN purchase_types pm ON pm.id = pt.purch_id
             LEFT JOIN categories c ON c.id = pt.category_id
-            WHERE $where";
+            WHERE $where
+            ORDER BY pt.created_at DESC
+            LIMIT 1000";
 
     $stmt = $conn->prepare($sql);
     if (!empty($params)) {
@@ -96,64 +147,18 @@ try {
         });
     }
 
-    // Calculate distributions
-    $analytics = [
-        'purchase_type_distribution' => [],
-        'category_distribution' => [],
-        'status_distribution' => [],
-        'buyer_distribution' => [],
-        'supplier_distribution' => [],
-        'monthly_trend' => [],
-        'status_over_time' => []
-    ];
-
-    foreach ($allData as $row) {
-        // Purchase Type
-        $purchType = $row['purch_type'] ?? 'Unknown';
-        $analytics['purchase_type_distribution'][$purchType] = 
-            ($analytics['purchase_type_distribution'][$purchType] ?? 0) + 1;
-
-        // Category
-        $cat = $row['categories'] ?? '';
-        if ($cat) {
-            $analytics['category_distribution'][$cat] = 
-                ($analytics['category_distribution'][$cat] ?? 0) + 1;
-        }
-
-        // Status
-        $status = $row['status_name'] ?? 'Unknown';
-        $analytics['status_distribution'][$status] = 
-            ($analytics['status_distribution'][$status] ?? 0) + 1;
-
-        // Buyer
-        $buyer = $row['buyer'] ?? 'Unknown';
-        $analytics['buyer_distribution'][$buyer] = 
-            ($analytics['buyer_distribution'][$buyer] ?? 0) + 1;
-
-        // Supplier
-        $supplier = $row['supplier'] ?? 'Unknown';
-        $analytics['supplier_distribution'][$supplier] = 
-            ($analytics['supplier_distribution'][$supplier] ?? 0) + 1;
-
-        // Monthly Trend
-        if ($row['created_at']) {
-            $month = date('Y-m', strtotime($row['created_at']));
-            $analytics['monthly_trend'][$month] = 
-                ($analytics['monthly_trend'][$month] ?? 0) + 1;
-        }
-
-        // Status Over Time
-        if ($row['created_at']) {
-            $month = date('Y-m', strtotime($row['created_at']));
-            if (!isset($analytics['status_over_time'][$month])) {
-                $analytics['status_over_time'][$month] = [];
-            }
-            $analytics['status_over_time'][$month][$status] = 
-                ($analytics['status_over_time'][$month][$status] ?? 0) + 1;
-        }
+    // Also filter by category name if specified
+    if ($categoryName) {
+        $allData = array_filter($allData, function($row) use ($categoryName) {
+            $rowCategory = $row['categories'] ?? '';
+            return $rowCategory === $categoryName;
+        });
     }
 
-    sendResponse(200, "success", "Analytics data retrieved successfully", $analytics);
+    // Re-index array after filtering
+    $allData = array_values($allData);
+
+    sendResponse(200, "success", "Records retrieved successfully", $allData);
 
 } catch (Exception $e) {
     sendResponse(500, "error", "Error: " . $e->getMessage());

@@ -13,8 +13,6 @@ $userid = $_SESSION['user_id'] ?? 0;
 $currentPage = 'analytics.php';
 ?>
 <?php include '../common/layout.php'; ?>
-
-<div class="container mx-auto p-6">
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-3xl font-bold">Analytics Dashboard</h1>
         <div class="flex gap-2">
@@ -126,10 +124,47 @@ $currentPage = 'analytics.php';
             <canvas id="statusOverTimeChart"></canvas>
         </div>
     </div>
-</div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+<!-- Data Table Modal -->
+<dialog id="chartDataModal" class="modal">
+    <div class="modal-box w-11/12 max-w-7xl">
+        <h3 class="font-bold text-lg mb-4" id="modalTitle">Chart Data</h3>
+        <div class="overflow-x-auto">
+            <table class="table table-zebra w-full">
+                <thead>
+                    <tr>
+                        <th>Ref ID</th>
+                        <th>Created At</th>
+                        <th>Buyer</th>
+                        <th>Supplier</th>
+                        <th>Purchase Type</th>
+                        <th>Status</th>
+                        <th>Category</th>
+                        <th>Qty</th>
+                        <th>UOM</th>
+                        <th>Remark</th>
+                    </tr>
+                </thead>
+                <tbody id="chartDataTableBody">
+                    <tr>
+                        <td colspan="10" class="text-center">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="modal-action">
+            <form method="dialog">
+                <button class="btn">Close</button>
+            </form>
+        </div>
+    </div>
+    <form method="dialog" class="modal-backdrop">
+        <button>close</button>
+    </form>
+</dialog>
+
+<script src="../assets/js/xlsx.full.min.js"></script>
+<script src="../assets/js/FileSaver.min.js"></script>
 <script src="../assets/js/chart.umd.min.js"></script>
 <script src="../assets/js/select2.min.js"></script>
 <script>
@@ -160,53 +195,134 @@ $(document).ready(function() {
         },
 
         initCharts() {
+            const self = this;
+            
             // Purchase Type Chart
             this.state.charts.purchaseType = new Chart(document.getElementById('purchaseTypeChart'), {
                 type: 'doughnut',
                 data: { labels: [], datasets: [{ data: [], backgroundColor: [] }] },
-                options: { responsive: true, maintainAspectRatio: true }
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: true,
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const label = self.state.charts.purchaseType.data.labels[index];
+                            self.loadChartData('purchase_type', { purch_type: label });
+                        }
+                    }
+                }
             });
 
             // Category Chart
             this.state.charts.category = new Chart(document.getElementById('categoryChart'), {
                 type: 'pie',
                 data: { labels: [], datasets: [{ data: [], backgroundColor: [] }] },
-                options: { responsive: true, maintainAspectRatio: true }
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: true,
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const label = self.state.charts.category.data.labels[index];
+                            self.loadChartData('category', { category_name: label });
+                        }
+                    }
+                }
             });
 
             // Status Chart
             this.state.charts.status = new Chart(document.getElementById('statusChart'), {
                 type: 'bar',
                 data: { labels: [], datasets: [{ label: 'Count', data: [], backgroundColor: 'rgba(59, 130, 246, 0.8)' }] },
-                options: { responsive: true, maintainAspectRatio: true, scales: { y: { beginAtZero: true } } }
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: true, 
+                    scales: { y: { beginAtZero: true } },
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const label = self.state.charts.status.data.labels[index];
+                            self.loadChartData('status', { status_name: label });
+                        }
+                    }
+                }
             });
 
             // Buyer Chart
             this.state.charts.buyer = new Chart(document.getElementById('buyerChart'), {
                 type: 'bar',
                 data: { labels: [], datasets: [{ label: 'PR Count', data: [], backgroundColor: 'rgba(34, 197, 94, 0.8)' }] },
-                options: { responsive: true, maintainAspectRatio: true, scales: { y: { beginAtZero: true }, x: { ticks: { maxRotation: 45, minRotation: 45 } } } }
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: true, 
+                    scales: { y: { beginAtZero: true }, x: { ticks: { maxRotation: 45, minRotation: 45 } } },
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const label = self.state.charts.buyer.data.labels[index];
+                            self.loadChartData('buyer', { buyer_name: label });
+                        }
+                    }
+                }
             });
 
             // Supplier Chart
             this.state.charts.supplier = new Chart(document.getElementById('supplierChart'), {
                 type: 'bar',
                 data: { labels: [], datasets: [{ label: 'PR Count', data: [], backgroundColor: 'rgba(245, 158, 11, 0.8)' }] },
-                options: { responsive: true, maintainAspectRatio: true, scales: { y: { beginAtZero: true }, x: { ticks: { maxRotation: 45, minRotation: 45 } } } }
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: true, 
+                    scales: { y: { beginAtZero: true }, x: { ticks: { maxRotation: 45, minRotation: 45 } } },
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const label = self.state.charts.supplier.data.labels[index];
+                            self.loadChartData('supplier', { supplier: label });
+                        }
+                    }
+                }
             });
 
             // Monthly Trend Chart
             this.state.charts.monthlyTrend = new Chart(document.getElementById('monthlyTrendChart'), {
                 type: 'line',
                 data: { labels: [], datasets: [{ label: 'PR Count', data: [], borderColor: 'rgba(139, 92, 246, 1)', backgroundColor: 'rgba(139, 92, 246, 0.1)', fill: true, tension: 0.4 }] },
-                options: { responsive: true, maintainAspectRatio: true, scales: { y: { beginAtZero: true } } }
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: true, 
+                    scales: { y: { beginAtZero: true } },
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const index = elements[0].index;
+                            const label = self.state.charts.monthlyTrend.data.labels[index];
+                            self.loadChartData('monthly_trend', { month: label });
+                        }
+                    }
+                }
             });
 
             // Status Over Time Chart
             this.state.charts.statusOverTime = new Chart(document.getElementById('statusOverTimeChart'), {
                 type: 'line',
                 data: { labels: [], datasets: [] },
-                options: { responsive: true, maintainAspectRatio: true, scales: { y: { beginAtZero: true } } }
+                options: { 
+                    responsive: true, 
+                    maintainAspectRatio: true, 
+                    scales: { y: { beginAtZero: true } },
+                    onClick: (event, elements) => {
+                        if (elements.length > 0) {
+                            const element = elements[0];
+                            const datasetIndex = element.datasetIndex;
+                            const index = element.index;
+                            const dataset = self.state.charts.statusOverTime.data.datasets[datasetIndex];
+                            const status = dataset.label;
+                            const month = self.state.charts.statusOverTime.data.labels[index];
+                            self.loadChartData('status_over_time', { status_name: status, month: month });
+                        }
+                    }
+                }
             });
         },
 
@@ -477,6 +593,77 @@ $(document).ready(function() {
             }
 
             XLSX.writeFile(wb, `analytics_${new Date().toISOString().split('T')[0]}.xlsx`);
+        },
+
+        loadChartData(chartType, additionalFilters = {}) {
+            const baseFilters = {
+                start_date: $('#startDate').val(),
+                end_date: $('#endDate').val(),
+                status: $('#statusFilter').val(),
+                buyer: $('#buyerFilter').val(),
+                category: $('#categoryFilter').val(),
+                purch: $('#purchFilter').val()
+            };
+
+            const filters = { ...baseFilters, ...additionalFilters };
+            
+            // Set modal title
+            let title = 'Chart Data';
+            if (chartType === 'purchase_type' && additionalFilters.purch_type) {
+                title = `Purchase Type: ${additionalFilters.purch_type}`;
+            } else if (chartType === 'category' && additionalFilters.category_name) {
+                title = `Category: ${additionalFilters.category_name}`;
+            } else if (chartType === 'status' && additionalFilters.status_name) {
+                title = `Status: ${additionalFilters.status_name}`;
+            } else if (chartType === 'buyer' && additionalFilters.buyer_name) {
+                title = `Buyer: ${additionalFilters.buyer_name}`;
+            } else if (chartType === 'supplier' && additionalFilters.supplier) {
+                title = `Supplier: ${additionalFilters.supplier}`;
+            } else if (chartType === 'monthly_trend' && additionalFilters.month) {
+                title = `Monthly Trend: ${additionalFilters.month}`;
+            } else if (chartType === 'status_over_time' && additionalFilters.status_name && additionalFilters.month) {
+                title = `Status: ${additionalFilters.status_name} - Month: ${additionalFilters.month}`;
+            }
+            
+            $('#modalTitle').text(title);
+            $('#chartDataTableBody').html('<tr><td colspan="10" class="text-center">Loading...</td></tr>');
+            document.getElementById('chartDataModal').showModal();
+
+            $.get('../fetch/fetch-analytics-records.php', filters, (response) => {
+                if (response.status === 'success' && response.data) {
+                    this.displayChartData(response.data);
+                } else {
+                    $('#chartDataTableBody').html(`<tr><td colspan="10" class="text-center text-error">Error loading data: ${response.message || 'Unknown error'}</td></tr>`);
+                }
+            }, 'json').fail(function(xhr, status, error) {
+                console.error('AJAX Error:', status, error);
+                $('#chartDataTableBody').html(`<tr><td colspan="10" class="text-center text-error">Error: ${error}</td></tr>`);
+            });
+        },
+
+        displayChartData(data) {
+            const tbody = $('#chartDataTableBody');
+            tbody.empty();
+
+            if (data.length === 0) {
+                tbody.html('<tr><td colspan="10" class="text-center">No records found</td></tr>');
+                return;
+            }
+
+            data.forEach(row => {
+                const tr = $('<tr>');
+                tr.append(`<td>${row.ref_id || row.id || '-'}</td>`);
+                tr.append(`<td>${row.created_at ? new Date(row.created_at).toLocaleDateString() : '-'}</td>`);
+                tr.append(`<td>${row.buyer || '-'}</td>`);
+                tr.append(`<td>${row.supplier || '-'}</td>`);
+                tr.append(`<td>${row.purch_type || '-'}</td>`);
+                tr.append(`<td>${row.status_name || '-'}</td>`);
+                tr.append(`<td>${row.categories || '-'}</td>`);
+                tr.append(`<td>${row.qty || '-'}</td>`);
+                tr.append(`<td>${row.uom || '-'}</td>`);
+                tr.append(`<td>${row.remark || '-'}</td>`);
+                tbody.append(tr);
+            });
         }
     };
 
