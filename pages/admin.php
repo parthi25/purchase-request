@@ -1,7 +1,7 @@
 <?php include '../common/layout.php'; ?>
-    <!-- Create PR Button - Outside Filter -->
-    <div class="mt-4 hidden sm:flex justify-end sticky top-4 z-40 pb-2">
-        <button id="openCreatePRBtn" class="btn btn-accent">Create PR</button>
+    <!-- Create PR Button - Fixed at Top -->
+    <div class="hidden sm:flex justify-end fixed top-20 right-6 z-40">
+        <button id="openCreatePRBtn" class="btn btn-accent shadow-lg">Create PR</button>
     </div>
     <div class="bg-base-200 border-base-300 collapse border">
   <input type="checkbox" class="peer" />

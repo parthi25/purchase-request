@@ -82,11 +82,13 @@ try {
     if ($buyerName) {
         // Handle "Unknown" buyer (NULL or invalid buyer_id)
         if ($buyerName === 'Unknown') {
-            $where .= " AND (pt.buyer IS NULL OR b.id IS NULL)";
+            $where .= " AND (pt.buyer IS NULL OR b.id IS NULL) AND (ptm.buyername IS NULL) AND (pt.b_head IS NULL OR bh.id IS NULL)";
         } else {
-            $where .= " AND b.username = ?";
+            $where .= " AND (b.username = ? OR ptm.buyername = ? OR bh.username = ?)";
             $params[] = $buyerName;
-            $types .= "s";
+            $params[] = $buyerName;
+            $params[] = $buyerName;
+            $types .= "sss";
         }
     }
 
@@ -108,7 +110,7 @@ try {
                 pt.id AS ref_id,
                 pt.created_at,
                 pt.po_status,
-                COALESCE(b.username, 'Unknown') AS buyer,
+                COALESCE(b.username, ptm.buyername, bh.username, 'Unknown') AS buyer,
                 s.supplier,
                 COALESCE(pm.name, 'Unknown') as purch_type,
                 st.status AS status_name,
@@ -118,6 +120,8 @@ try {
                 c.maincat AS categories
             FROM purchase_requests pt
             LEFT JOIN users b ON pt.buyer = b.id
+            LEFT JOIN users bh ON pt.b_head = bh.id
+            LEFT JOIN pr_assignments ptm ON ptm.ord_id = pt.id
             LEFT JOIN suppliers s ON pt.supplier_id = s.id
             LEFT JOIN pr_statuses st ON pt.po_status = st.id
             LEFT JOIN purchase_types pm ON pm.id = pt.purch_id

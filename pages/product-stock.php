@@ -14,23 +14,37 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <!-- Product -->
-          <div class="form-control">
+          <div class="form-control relative">
             <label class="label">
               <span class="label-text font-semibold">Select Product</span>
             </label>
-            <select id="productSelect" class="select select-bordered w-full">
-              <option value="" disabled selected>Loading products...</option>
-            </select>
+            <div class="relative">
+              <input type="text" class="input input-bordered w-full pr-10" id="productInput" 
+                autocomplete="off" placeholder="Type to search products..." 
+                oninput="searchProductAPI()" onfocus="showProductDropdown()" 
+                onkeydown="handleProductKeydown(event)">
+              <div id="productDropdown" class="absolute top-full left-0 right-0 z-10 mt-1 hidden">
+                <ul class="menu bg-base-200 rounded-box shadow-lg max-h-60 overflow-y-auto" id="productList"></ul>
+              </div>
+              <input type="hidden" id="productId">
+            </div>
           </div>
 
           <!-- Supplier -->
-          <div class="form-control">
+          <div class="form-control relative">
             <label class="label">
               <span class="label-text font-semibold">Select Supplier</span>
             </label>
-            <select id="supplierSelect" class="select select-bordered w-full">
-              <option value="" disabled selected>Loading suppliers...</option>
-            </select>
+            <div class="relative">
+              <input type="text" class="input input-bordered w-full pr-10" id="supplierInput" 
+                autocomplete="off" placeholder="Type to search suppliers..." 
+                oninput="searchSupplierAPI()" onfocus="showSupplierDropdown()" 
+                onkeydown="handleSupplierKeydown(event)">
+              <div id="supplierDropdown" class="absolute top-full left-0 right-0 z-10 mt-1 hidden">
+                <ul class="menu bg-base-200 rounded-box shadow-lg max-h-60 overflow-y-auto" id="supplierList"></ul>
+              </div>
+              <input type="hidden" id="supplierId">
+            </div>
           </div>
         </div>
 

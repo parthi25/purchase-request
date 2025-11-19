@@ -136,15 +136,33 @@ function renderCards(dataArray, role = 'buyer', containerId = 'cardContainer') {
             product : item.images[0],
         };
 
+        // Icon mapping for fields
+        const fieldIcons = {
+            refId: '<i class="fas fa-hashtag text-blue-500"></i>',
+            poNumber: '<i class="fas fa-file-invoice text-blue-500"></i>',
+            poTeam: '<i class="fas fa-users text-blue-500"></i>',
+            supplier: '<i class="fas fa-truck text-blue-500"></i>',
+            category: '<i class="fas fa-tags text-blue-500"></i>',
+            purchType: '<i class="fas fa-shopping-cart text-blue-500"></i>',
+            qty: '<i class="fas fa-boxes text-blue-500"></i>',
+            createdBy: '<i class="fas fa-user text-blue-500"></i>',
+            createdOn: '<i class="fas fa-calendar text-blue-500"></i>',
+            remarks: '<i class="fas fa-comment text-blue-500"></i>'
+        };
+
         let fieldsHtml = '';
         Object.keys(config.showFields).forEach(key => {
             if (config.showFields[key] && mappedItem[key] !== undefined) {
                 const label = key
                     .replace(/([A-Z])/g, ' $1')
                     .replace(/^./, str => str.toUpperCase());
+                const icon = fieldIcons[key] || '<i class="fas fa-circle text-blue-500"></i>';
                 fieldsHtml += `
-                    <div class="flex">
-                        <span class="font-semibold w-24">${label}:</span>
+                    <div class="flex items-center gap-2">
+                        <span class="font-semibold w-24 flex items-center gap-1">
+                            ${icon}
+                            ${label}:
+                        </span>
                         <span>${mappedItem[key]}</span>
                     </div>
                 `;
@@ -152,15 +170,16 @@ function renderCards(dataArray, role = 'buyer', containerId = 'cardContainer') {
         });
 
         let buttonsHtml = '';
-        buttonsHtml += `<button class="btn btn-sm btn-outline read-more-toggle" data-id='${mappedItem.refId}'>remarks</button>`;
-        if (config.showButtons.edit && item.po_status === 1) buttonsHtml += `<button class="btn btn-sm btn-outline openEditPRBtn" data-pr-id='${mappedItem.refId}'>Edit</button>`;
+        buttonsHtml += `<button class="btn btn-sm btn-outline h-7 min-h-7 px-2 text-xs read-more-toggle" data-id='${mappedItem.refId}'><i class="fas fa-comment text-blue-500 text-xs"></i> <span class="hidden sm:inline">remarks</span></button>`;
+        if (config.showButtons.edit && item.po_status === 1) buttonsHtml += `<button class="btn btn-sm btn-outline h-7 min-h-7 px-2 text-xs openEditPRBtn" data-pr-id='${mappedItem.refId}'><i class="fas fa-edit text-blue-500 text-xs"></i> <span class="hidden sm:inline">Edit</span></button>`;
         
         if (config.showButtons.proforma) {
     const hasProforma = item.proforma_ids && item.proforma_ids[0] ? true : false;
     buttonsHtml += `
-        <button class="btn btn-sm btn-outline proforma" data-pr-id='${mappedItem.refId}' data-status-id='${item.po_status}' data-role='${config.role}'>
-            Proforma
-            ${hasProforma ? `<span class="text-success">&#10003;</span>` : ''}
+        <button class="btn btn-sm btn-outline h-7 min-h-7 px-2 text-xs proforma" data-pr-id='${mappedItem.refId}' data-status-id='${item.po_status}' data-role='${config.role}'>
+            <i class="fas fa-file-invoice-dollar text-blue-500 text-xs"></i>
+            <span class="hidden sm:inline">Proforma</span>
+            ${hasProforma ? `<i class="fas fa-check text-success text-xs"></i>` : ''}
         </button>
     `;
 }
@@ -169,9 +188,10 @@ function renderCards(dataArray, role = 'buyer', containerId = 'cardContainer') {
 if (config.showButtons.po && item.po_status === 7) {
     const hasPO = item.po_url ? true : false;
     buttonsHtml += `
-        <button class="btn btn-sm btn-outline po" data-pr-id='${mappedItem.refId}' data-status-id='${item.po_status}' data-role='${config.role}'>
-            PO
-            ${hasPO ? `<span class="text-success">&#10003;</span>` : ''}
+        <button class="btn btn-sm btn-outline h-7 min-h-7 px-2 text-xs po" data-pr-id='${mappedItem.refId}' data-status-id='${item.po_status}' data-role='${config.role}'>
+            <i class="fas fa-file-alt text-blue-500 text-xs"></i>
+            <span class="hidden sm:inline">PO</span>
+            ${hasPO ? `<i class="fas fa-check text-success text-xs"></i>` : ''}
         </button>
     `;
 }
@@ -179,31 +199,31 @@ if (config.showButtons.po && item.po_status === 7) {
            config.role === 'bhead' ? [1, 5].includes(item.po_status) :
            config.role === 'buyer' ? [2, 3, 4].includes(item.po_status) :
            config.role === 'pohead' ? [6].includes(item.po_status) :
-           false) buttonsHtml += `<button class="btn btn-sm btn-outline update-status" data-id='${mappedItem.refId}' data-status='${item.po_status}'>--></button>`;
-        if (config.role === 'poteammember' && item.po_status === 9) buttonsHtml += `<button class="btn btn-sm btn-info insert-po" data-id='${mappedItem.refId}'>Insert PO</button>`;
+           false) buttonsHtml += `<button class="btn btn-sm btn-outline h-7 min-h-7 px-2 text-xs update-status" data-id='${mappedItem.refId}' data-status='${item.po_status}'><i class="fas fa-arrow-right text-blue-500 text-xs"></i></button>`;
+        if (config.role === 'poteammember' && item.po_status === 9) buttonsHtml += `<button class="btn btn-sm btn-info h-7 min-h-7 px-2 text-xs insert-po" data-id='${mappedItem.refId}'><i class="fas fa-plus text-white text-xs"></i> <span class="hidden sm:inline">Insert PO</span></button>`;
 
         const cardHtml = `
-            <div class="card max-w-[300px] min-w-[280px] bg-base-100 shadow-md border border-gray-200 mb-4 opacity-0 translate-y-4 scale-95 transition-all duration-500 ease-in-out hover:shadow-lg hover:scale-105 rounded-2xl">
-                <div class="card-body p-4">
-                    <div class="avatar absolute translate-x-[170px] translate-y-[14px] product cursor-pointer" data-pr-id='${mappedItem.refId}' data-status-id='${item.po_status}' data-role='${config.role}'>
-                        <div class="w-24 rounded flex justify-center items-center">
-                            <img src="../${mappedItem.product}" alt="product" class="cursor-pointer" onerror="this.onerror=null; this.src='../assets/brand/no-image.png';"/>
+            <div class="card w-full min-w-[280px] max-w-[320px] min-h-[400px] bg-base-100 shadow-md border border-gray-200 m-2 opacity-0 translate-y-4 scale-95 transition-all duration-500 ease-in-out hover:shadow-lg hover:scale-105 rounded-2xl flex flex-col">
+                <div class="card-body p-4 flex flex-col flex-grow relative">
+                    <div class="absolute top-2 right-2 product cursor-pointer" data-pr-id='${mappedItem.refId}' data-status-id='${item.po_status}' data-role='${config.role}'>
+                        <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden flex justify-center items-center bg-base-200">
+                            <img src="../${mappedItem.product}" alt="product" class="w-full h-full object-cover cursor-pointer" onerror="this.onerror=null; this.src='../assets/brand/no-image.png';"/>
                         </div>
                     </div>
                     <!-- Header -->
-                    <div class="mb-3">
+                    <div class="mb-3 pr-20">
                         <h2 class="text-base font-bold mb-1 truncate">Buyer Head: ${mappedItem.buyerHead}</h2>
                         ${statusBadge}
                     </div>
 
                     <!-- Content -->
-                    <div class="space-y-1.5 text-sm">${fieldsHtml}</div>
+                    <div class="space-y-1.5 text-sm flex-grow">${fieldsHtml}</div>
 
                     <!-- Divider -->
                     <div class="divider my-3"></div>
 
                     <!-- Footer Actions -->
-                    <div class="flex justify-between items-center gap-1">
+                    <div class="flex flex-nowrap items-center gap-1 overflow-x-auto">
                     ${buttonsHtml}
                     </div>
                 </div>

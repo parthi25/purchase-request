@@ -11,7 +11,7 @@
     <!-- Bootstrap CSS -->
     <link href="./assets/css/bootstrap.min.css" rel="stylesheet">
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="./assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
     <style>
         body {
@@ -107,6 +107,12 @@
         .input-group-text i { color: #1e3c72 !important; }
 
         .alert { margin-bottom: 20px; }
+        
+        .login-logo i { color: #1e3c72; }
+        
+        .login-header i { opacity: 0.9; }
+        
+        #error-box i { margin-right: 5px; }
     </style>
 </head>
 
@@ -114,16 +120,18 @@
     <div class="login-container">
         <div class="login-logo">
             <img src="./assets/brand/jr.png" alt="Logo" width="240">
-            <p>Purchase Request & Tracker</p>
+            <p><i class="fas fa-shopping-cart me-2"></i>Purchase Request & Tracker</p>
         </div>
 
         <div class="login-card">
             <div class="login-header">
-                <h2 class="mb-0">Login</h2>
+                <h2 class="mb-0"><i class="fas fa-user-circle me-2"></i>Login</h2>
             </div>
 
             <div class="login-body">
-                <div id="error-box" class="alert alert-danger text-center" style="display:none;"></div>
+                <div id="error-box" class="alert alert-danger text-center" style="display:none;">
+                    <i class="fas fa-exclamation-circle me-2"></i><span id="error-text"></span>
+                </div>
 
                 <form id="login-form">
                     <div class="mb-3">
@@ -152,7 +160,7 @@
         </div>
 
         <div class="text-center mt-4">
-            <p style="color: darkblue;">© <span id="year"></span> JeyaRama Group.</p>
+            <p style="color: darkblue;"><i class="fas fa-copyright me-1"></i><span id="year"></span> JeyaRama Group.</p>
         </div>
     </div>
 
@@ -165,6 +173,7 @@
         form.addEventListener("submit", async e => {
             e.preventDefault();
             errorBox.style.display = "none";
+            document.getElementById('error-text').textContent = '';
 
             const username = document.getElementById("id_username").value.trim();
             const password = document.getElementById("id_password").value;
@@ -187,12 +196,12 @@
                         default: window.location.href = './pages/po-head.php';
                     }
                 } else {
-                    errorBox.textContent = data.message;
+                    document.getElementById('error-text').textContent = data.message;
                     errorBox.style.display = "block";
                 }
             } catch (err) {
                 console.error(err);
-                errorBox.textContent = "Something went wrong. Please try again.";
+                document.getElementById('error-text').textContent = "Something went wrong. Please try again.";
                 errorBox.style.display = "block";
             }
         });

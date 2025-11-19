@@ -1,51 +1,58 @@
 <?php include '../common/layout.php'; ?>
+  <div class="max-w-6xl mx-auto">
 
-<div class="h-screen flex justify-center items-center">
-        <div class="card w-full max-w-md shadow-2xl bg-base-100">
-        <div class="card-body">
-            <h2 class="card-title text-2xl font-bold mb-2">Update Profile</h2>
-            <p class="text-base-content/70 mb-6">Update your email and password</p>
-
-            <div id="alert-container"></div>
-
-            <form id="profileForm" class="space-y-4 mt-4">
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text font-semibold">Email</span>
-                    </label>
-                    <input type="email" id="email" class="input input-bordered w-full" required readonly>
-                </div>
-
-                <div class="divider">Change Password (Optional)</div>
-
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text font-semibold">Old Password</span>
-                    </label>
-                    <input type="password" id="old_password" class="input input-bordered w-full">
-                </div>
-
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text font-semibold">New Password</span>
-                    </label>
-                    <input type="password" id="new_password" class="input input-bordered w-full">
-                </div>
-
-                <div class="form-control">
-                    <label class="label">
-                        <span class="label-text font-semibold">Confirm New Password</span>
-                    </label>
-                    <input type="password" id="confirm_password" class="input input-bordered w-full">
-                </div>
-
-                <div class="card-actions justify-end mt-6">
-                    <button type="submit" class="btn btn-primary w-full">Update Profile</button>
-                </div>
-            </form>
-        </div>
+    <!-- Header -->
+    <div class="text-center mb-8">
+      <h1 class="text-4xl font-bold text-primary mb-2">Update Profile</h1>
+      <p class="text-base-content">Update your email and password</p>
     </div>
-</div>
+
+    <!-- Profile Form Card -->
+    <div class="card bg-base-100 shadow-xl mb-8">
+      <div class="card-body space-y-4">
+        <h2 class="card-title text-2xl">Profile Information</h2>
+
+        <div id="alert-container"></div>
+
+        <form id="profileForm" class="space-y-4 mt-4">
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text font-semibold">Email</span>
+            </label>
+            <input type="email" id="email" class="input input-bordered w-full" required readonly>
+          </div>
+
+          <div class="divider">Change Password (Optional)</div>
+
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text font-semibold">Old Password</span>
+            </label>
+            <input type="password" id="old_password" class="input input-bordered w-full">
+          </div>
+
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text font-semibold">New Password</span>
+            </label>
+            <input type="password" id="new_password" class="input input-bordered w-full">
+          </div>
+
+          <div class="form-control">
+            <label class="label">
+              <span class="label-text font-semibold">Confirm New Password</span>
+            </label>
+            <input type="password" id="confirm_password" class="input input-bordered w-full">
+          </div>
+
+          <div class="card-actions justify-end mt-6">
+            <button type="submit" class="btn btn-primary w-full">Update Profile</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </div>
 
     <script>
         const form = document.getElementById('profileForm');

@@ -11,7 +11,7 @@ try {
 
     if ($supplier_id) {
         // Get supplier_id → supplier_code
-        $stmt = $conn->prepare("SELECT supplier_id FROM suppliers WHERE id = ?");
+        $stmt = $conn->prepare("SELECT supplier_id, supplier FROM suppliers WHERE id = ?");
         $stmt->bind_param("i", $supplier_id);
         $stmt->execute();
         $result = $stmt->get_result();
@@ -30,6 +30,7 @@ try {
 
         $data = [];
         while ($row = $res->fetch_assoc()) {
+            $row['supplier_name'] = $supplier['supplier'];
             $row['plants'] = getProductStocks($conn, $row['id']);
             $data[] = $row;
         }
@@ -39,9 +40,10 @@ try {
 
     elseif ($product_id) {
         $stmt = $conn->prepare("
-            SELECT id, name, rsp, lpp, supplier_code, uom
-            FROM pr_product 
-            WHERE id = ?
+            SELECT p.id, p.name, p.rsp, p.lpp, p.supplier_code, p.uom, s.supplier AS supplier_name
+            FROM pr_product p
+            LEFT JOIN suppliers s ON s.supplier_id = p.supplier_code
+            WHERE p.id = ?
         ");
         $stmt->bind_param("i", $product_id);
         $stmt->execute();
@@ -72,7 +74,7 @@ function getProductStocks($conn, $product_id) {
         SELECT p.name AS plant_name, s.qty AS quantity 
         FROM stocks s 
         LEFT JOIN rc_vendors_db.plants p ON p.plant_code = s.plant_code  
-        WHERE s.product_id = ?
+        WHERE s.product_id = ? AND s.qty > 0
     ");
     $stockStmt->bind_param("i", $product_id);
     $stockStmt->execute();
@@ -80,7 +82,10 @@ function getProductStocks($conn, $product_id) {
 
     $plants = [];
     while ($row = $res->fetch_assoc()) {
-        $plants[] = $row;
+        // Only include plants with quantity > 0
+        if (floatval($row['quantity']) > 0) {
+            $plants[] = $row;
+        }
     }
 
     return $plants;

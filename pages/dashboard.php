@@ -1156,7 +1156,7 @@
                             <td class="${statusColor}">${row.status || '-'}</td>
                             <td>${row.supplier_name || row.supplier || '-'}</td>
                             <td>${row.b_head || '-'}</td>
-                            <td>${row.buyername || row.buyer || '-'}</td>
+                            <td>${row.buyer || row.buyername || '-'}</td>
                             <td>${row.po_team_member || '-'}</td>
                             <td>${row.purch_type || '-'}</td>
                             <td>${this.formatDate(row.created_at)}</td>
@@ -1331,7 +1331,7 @@
                     <tr><th>Status</th><td class="${this.getStatusTextColor(order.status)}">${order.status || '-'}</td></tr>
                     <tr><th>Supplier</th><td>${order.supplier_name || order.supplier || '-'}</td></tr>
                     <tr><th>Buyer Head</th><td>${order.b_head || '-'}</td></tr>
-                    <tr><th>Buyer</th><td>${order.buyername || order.buyer || '-'}</td></tr>
+                    <tr><th>Buyer</th><td>${order.buyer || order.buyername || '-'}</td></tr>
                     <tr><th>PO Team Member</th><td>${order.po_team_member || '-'}</td></tr>
                     <tr><th>PO Head</th><td>${order.pohead || '-'}</td></tr>
                     <tr><th>Purchase Type</th><td>${order.purch_type || '-'}</td></tr>

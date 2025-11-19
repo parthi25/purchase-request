@@ -82,7 +82,7 @@ const ViewMode = {
     if (!document.getElementById(this.cardContainerId)) {
       const cardContainer = document.createElement('div');
       cardContainer.id = this.cardContainerId;
-      cardContainer.className = 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 justify-items-center';
+      cardContainer.className = 'flex flex-wrap gap-4 justify-center items-start p-4';
       this.dom.container.appendChild(cardContainer);
     }
 
@@ -193,7 +193,7 @@ const ViewMode = {
 
     // Show the active one
     if (this.currentView === "cards" && this.dom.cardContainer) {
-      this.dom.cardContainer.style.display = 'grid';
+      this.dom.cardContainer.style.display = 'flex';
     } else if (this.currentView === "table" && this.dom.tableContainer) {
       this.dom.tableContainer.style.display = 'block';
     }

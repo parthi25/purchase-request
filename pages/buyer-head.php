@@ -61,9 +61,9 @@
             <i class="fas fa-plus text-xl"></i>
         </button>
     </div>
-    <!-- Create PR Button - Outside Filter -->
-    <div class="mt-4 hidden sm:flex justify-end sticky top-4 z-40 pb-2">
-        <button id="openCreatePRBtn" class="btn btn-accent">Create PR</button>
+    <!-- Create PR Button - Fixed at Top -->
+    <div class="hidden sm:flex justify-end fixed top-20 right-6 z-40">
+        <button id="openCreatePRBtn" class="btn btn-accent shadow-lg">Create PR</button>
     </div>
         <div id="view-container" class="p-2 sm:p-4"></div>
         <?php include '../common/read-more-modal.php'; ?>

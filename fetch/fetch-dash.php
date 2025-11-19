@@ -263,23 +263,31 @@ try {
     $countStmt->close();
 
     // Main query with pagination
+    // Use subquery to get buyername from pr_assignments to avoid DISTINCT issues
     $sql = "SELECT DISTINCT
                 pt.id,
                 pt.created_at,
                 pt.status_1, pt.status_2, pt.status_3, pt.status_4, pt.status_5, pt.status_6,
                 pt.po_status,
                 bh.username AS b_head,
-                b.username AS buyer,
+                COALESCE(
+                    b.username, 
+                    (SELECT ptm2.buyername FROM pr_assignments ptm2 WHERE ptm2.ord_id = pt.id AND ptm2.buyername IS NOT NULL AND ptm2.buyername != '' LIMIT 1),
+                    bh.username, 
+                    'Unknown'
+                ) AS buyer,
                 s.supplier,
                 s.id as supplier_id,
                 st.status AS status,
-                ptm.buyername,
+                (SELECT ptm2.buyername FROM pr_assignments ptm2 WHERE ptm2.ord_id = pt.id LIMIT 1) AS buyername,
                 pt.po_date as status_7,
                 pt.po_date,
-                po.username AS po_team_member,
+                (SELECT po2.username FROM pr_assignments ptm3 
+                 LEFT JOIN users po2 ON po2.id = ptm3.po_team_member 
+                 WHERE ptm3.ord_id = pt.id LIMIT 1) AS po_team_member,
                 poh.username AS pohead,
                 pm.name as purch_type,
-                ptm.po_number,
+                (SELECT ptm4.po_number FROM pr_assignments ptm4 WHERE ptm4.ord_id = pt.id LIMIT 1) AS po_number,
                 (SELECT GROUP_CONCAT(DISTINCT c.maincat SEPARATOR ', ') 
                  FROM catbasbh cb
                  JOIN categories c ON c.maincat = cb.cat
@@ -290,8 +298,6 @@ try {
             LEFT JOIN users b ON pt.buyer = b.id
             LEFT JOIN suppliers s ON pt.supplier_id = s.id
             LEFT JOIN pr_statuses st ON pt.po_status = st.id
-            LEFT JOIN pr_assignments ptm ON ptm.ord_id = pt.id
-            LEFT JOIN users po ON po.id = ptm.po_team_member
             LEFT JOIN users poh ON poh.id = pt.po_team
             LEFT JOIN purchase_types pm ON pm.id = pt.purch_id
             $where
@@ -539,7 +545,7 @@ try {
             $statusCounts[$status] = ($statusCounts[$status] ?? 0) + 1;
             
             // Count by buyer
-            $buyerName = $row['buyer'] ?? ($row['buyername'] ?? 'Unknown');
+            $buyerName = $row['buyer'] ?? 'Unknown';
             $buyerCounts[$buyerName] = ($buyerCounts[$buyerName] ?? 0) + 1;
 
             if (!empty($row['po_date']) && !empty($row['created_at'])) {
