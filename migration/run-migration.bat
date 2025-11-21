@@ -33,7 +33,7 @@ if %ERRORLEVEL% EQU 0 (
         if "%%a"=="DB_HOST" set DB_HOST=%%b
         if "%%a"=="DB_USER" set DB_USER=%%b
         if "%%a"=="DB_PASS" set DB_PASS=%%b
-        if "%%a"=="DB_NAME" set DB_NAME=%%b
+        if "%%a"=="DB_NAME" set DEFAULT_DB_NAME=%%b
         if "%%a"=="DB_PORT" set DB_PORT=%%b
     )
     del %TEMP%\db_config.txt
@@ -42,9 +42,19 @@ if %ERRORLEVEL% EQU 0 (
     set DB_HOST=127.0.0.1
     set DB_USER=root
     set DB_PASS=
-    set DB_NAME=jcrc
+    set DEFAULT_DB_NAME=jcrc_ch
     set DB_PORT=3307
 )
+
+REM Prompt user to choose database
+echo.
+echo Available databases from .env file: %DEFAULT_DB_NAME%
+echo.
+set /p DB_NAME="Enter database name to migrate (press Enter for '%DEFAULT_DB_NAME%'): "
+if "%DB_NAME%"=="" set DB_NAME=%DEFAULT_DB_NAME%
+echo.
+echo [INFO] Selected database: %DB_NAME%
+echo.
 
 REM Check if MySQL is available
 where mysql >nul 2>&1

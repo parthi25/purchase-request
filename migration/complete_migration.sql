@@ -562,18 +562,65 @@ DEALLOCATE PREPARE stmt;
 -- PART 5: INSERT MASTER DATA
 -- ============================================
 
--- Insert PR Statuses
-INSERT INTO `pr_statuses` (`id`, `status`, `created_at`, `updated_at`) VALUES
-(1, 'Open', NOW(), NOW()),
-(2, 'Forwarded to Buyer', NOW(), NOW()),
-(3, 'Agent/Supplier contacted and Awaiting PO details', NOW(), NOW()),
-(4, 'Received Proforma PO', NOW(), NOW()),
-(5, 'Forwarded to Buyer Head', NOW(), NOW()),
-(6, 'Forwarded to PO Team', NOW(), NOW()),
-(7, 'PO generated', NOW(), NOW()),
-(8, 'Rejected', NOW(), NOW()),
-(9, 'Forwarded to PO Members', NOW(), NOW())
-ON DUPLICATE KEY UPDATE `status` = VALUES(`status`), `updated_at` = NOW();
+-- Ensure pr_statuses table has created_at and updated_at columns
+-- (in case table was renamed from old 'status' table without these columns)
+SET @col_exists = (
+    SELECT COUNT(*) 
+    FROM INFORMATION_SCHEMA.COLUMNS 
+    WHERE TABLE_SCHEMA = DATABASE() 
+    AND TABLE_NAME = 'pr_statuses' 
+    AND COLUMN_NAME = 'created_at'
+);
+
+SET @add_cols_sql = IF(
+    @col_exists = 0,
+    'ALTER TABLE `pr_statuses` 
+     ADD COLUMN `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP AFTER `status`,
+     ADD COLUMN `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP AFTER `created_at`',
+    'SELECT 1'
+);
+PREPARE stmt FROM @add_cols_sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+ -- Insert PR Statuses
+-- Check if created_at column exists to determine which INSERT to use
+SET @has_created_at = (
+    SELECT COUNT(*) 
+    FROM INFORMATION_SCHEMA.COLUMNS 
+    WHERE TABLE_SCHEMA = DATABASE() 
+    AND TABLE_NAME = 'pr_statuses' 
+    AND COLUMN_NAME = 'created_at'
+);
+
+SET @insert_sql = IF(
+    @has_created_at > 0,
+    'INSERT INTO `pr_statuses` (`id`, `status`, `created_at`, `updated_at`) VALUES
+    (1, ''Open'', NOW(), NOW()),
+    (2, ''Forwarded to Buyer'', NOW(), NOW()),
+    (3, ''Agent/Supplier contacted and Awaiting PO details'', NOW(), NOW()),
+    (4, ''Received Proforma PO'', NOW(), NOW()),
+    (5, ''Forwarded to Buyer Head'', NOW(), NOW()),
+    (6, ''Forwarded to PO Team'', NOW(), NOW()),
+    (7, ''PO generated'', NOW(), NOW()),
+    (8, ''Rejected'', NOW(), NOW()),
+    (9, ''Forwarded to PO Members'', NOW(), NOW())
+    ON DUPLICATE KEY UPDATE `status` = VALUES(`status`), `updated_at` = NOW()',
+    'INSERT INTO `pr_statuses` (`id`, `status`) VALUES
+    (1, ''Open''),
+    (2, ''Forwarded to Buyer''),
+    (3, ''Agent/Supplier contacted and Awaiting PO details''),
+    (4, ''Received Proforma PO''),
+    (5, ''Forwarded to Buyer Head''),
+    (6, ''Forwarded to PO Team''),
+    (7, ''PO generated''),
+    (8, ''Rejected''),
+    (9, ''Forwarded to PO Members'')
+    ON DUPLICATE KEY UPDATE `status` = VALUES(`status`)'
+);
+PREPARE stmt FROM @insert_sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
 -- Insert Role Status Permissions
 INSERT INTO `role_status_permissions` (`role`, `status_id`, `is_active`) VALUES

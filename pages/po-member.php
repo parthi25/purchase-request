@@ -1,6 +1,6 @@
 <?php include '../common/layout.php'; ?>
     <!-- Create PR Button - Fixed at Top -->
-    <div class="hidden sm:flex justify-end fixed top-20 right-6 z-40">
+    <div class="hidden sm:flex justify-end fixed top-24 right-8 z-40">
         <button id="openCreatePRBtn" class="btn btn-accent shadow-lg">Create PR</button>
     </div>
     <div class="bg-base-200 border-base-300 collapse border">

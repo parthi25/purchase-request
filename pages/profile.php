@@ -59,15 +59,18 @@
         const alertContainer = document.getElementById('alert-container');
 
         // Load current email from API
-        axios.get('/p_r/api/get-profile.php')
-            .then(res => {
-                if(res.data.status === 'success') {
-                    document.getElementById('email').value = res.data.data.email;
+        fetch('../api/get-profile.php')
+            .then(res => res.json())
+            .then(data => {
+                if(data.status === 'success') {
+                    document.getElementById('email').value = data.data.email;
+                } else {
+                    showAlert(data.message || 'Failed to load profile data', 'error');
                 }
             })
             .catch(err => {
-                const msg = err.response?.data?.message || 'Failed to load profile data';
-                showAlert(msg, 'error');
+                showAlert('Failed to load profile data', 'error');
+                console.error('Error loading profile:', err);
             });
 
         form.addEventListener('submit', async (e) => {
@@ -105,16 +108,24 @@
             };
 
             try {
-                const response = await axios.post('/p_r/api/change-password.php', payload);
-                showAlert(response.data.message, response.data.status);
-                if(response.data.status === 'success') {
+                const response = await fetch('../api/change-password.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+                
+                const data = await response.json();
+                showAlert(data.message, data.status);
+                if(data.status === 'success') {
                     document.getElementById('old_password').value = '';
                     document.getElementById('new_password').value = '';
                     document.getElementById('confirm_password').value = '';
                 }
             } catch(err) {
-                const msg = err.response?.data?.message || 'An error occurred';
-                showAlert(msg, 'error');
+                showAlert('An error occurred while updating profile', 'error');
+                console.error('Error updating profile:', err);
             }
         });
 

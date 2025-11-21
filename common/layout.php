@@ -35,7 +35,7 @@ $currentPage = basename($_SERVER['PHP_SELF']);
     <link href="../assets/css/daisyui@5.css" rel="stylesheet" type="text/css" />
     <script src="../assets/js/browser@4.js"></script>
     <link href="../assets/css/themes.css" rel="stylesheet" type="text/css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="../assets/css/font-awesome-6.0.0.min.css">
     <link rel="stylesheet" href="../assets/css/sweetalert2.min.css">
     <script src="../assets/js/sweetalert2.all.min.js"></script>
     <link rel="stylesheet" href="../assets/css/flatpickr.min.css">

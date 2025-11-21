@@ -142,7 +142,7 @@
                     </div>
 
                     <!-- Buyer PR Count Chart -->
-                    <div class="bg-base-200 p-6 rounded-lg lg:col-span-2">
+                    <div class="bg-base-200 p-6 rounded-lg lg:col-span-2 hidden">
                         <h3 class="text-xl font-semibold mb-4">PR Count by Buyer</h3>
                         <div class="relative" style="height: 400px;">
                             <canvas id="buyerChart"></canvas>

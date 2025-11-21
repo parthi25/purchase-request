@@ -5,14 +5,30 @@
  */
 
 require_once __DIR__ . '/../config/env.php';
-require_once __DIR__ . '/../config/db.php';
 
-// Get database connection details
+// Get database connection details from environment
 $host = $_ENV['DB_HOST'] ?? '127.0.0.1';
 $user = $_ENV['DB_USER'] ?? 'root';
 $pass = $_ENV['DB_PASS'] ?? '';
-$dbname = $_ENV['DB_NAME'] ?? 'jcrc';
+$defaultDbname = $_ENV['DB_NAME'] ?? 'jcrc';
 $port = $_ENV['DB_PORT'] ?? 3307;
+
+// Prompt for database name if running from command line
+if (php_sapi_name() === 'cli') {
+    echo "Available databases from .env file: $defaultDbname\n";
+    echo "Enter database name to migrate (press Enter for '$defaultDbname'): ";
+    $handle = fopen("php://stdin", "r");
+    $dbname = trim(fgets($handle));
+    fclose($handle);
+    
+    if (empty($dbname)) {
+        $dbname = $defaultDbname;
+    }
+    
+    echo "Selected database: $dbname\n\n";
+} else {
+    $dbname = $defaultDbname;
+}
 
 // Get migration file from command line argument or use default
 $migrationFile = $argv[1] ?? 'create_status_permissions_tables.sql';

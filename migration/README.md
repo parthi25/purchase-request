@@ -1,193 +1,153 @@
-# Database Migration Guide
+# Database Migration Scripts
 
-This folder contains the complete database migration script that handles table renaming, relationship creation, new tables, and master data insertion.
+This directory contains scripts to run database migrations for the PR Tracker system.
 
-## Files
+## Available Scripts
 
-- **`complete_migration.sql`** - Complete migration script with all operations
-- **`run-migration.bat`** - Windows batch file to run the migration
-- **`README.md`** - This file
+### Windows
+- **run-migration.bat** - Windows batch script for running migrations
 
-## What This Migration Does
+### Linux/Mac
+- **run-migration.sh** - Bash script for running migrations on Linux/Mac systems
 
-The migration script performs the following operations:
-
-### 1. Table Renaming
-Renames old table names to new naming conventions:
-- `po_tracking` → `purchase_requests`
-- `cat` → `categories`
-- `purchase_master` → `purchase_types`
-- `status` → `pr_statuses`
-- `new_supplier` → `supplier_requests`
-- `po_team_member` → `pr_assignments`
-- `po_` → `po_documents`
-- `po_order` → `pr_attachments`
-- `status_permissions` → `role_status_permissions`
-- `status_flow` → `status_transitions`
-- `pr_permissions` → `role_pr_permissions`
-
-### 2. New Table Creation
-Creates new tables if they don't exist:
-- `pr_statuses` - PR status master data
-- `categories` - Product categories
-- `purchase_types` - Purchase type master data
-- `role_status_permissions` - Role-based status permissions
-- `status_transitions` - Status workflow transitions
-- `role_pr_permissions` - Role-based PR permissions
-- `status_modal_fields` - Status modal field configurations
-
-### 3. Foreign Key Relationships
-Adds foreign key constraints to maintain referential integrity:
-- `purchase_requests` → `users`, `suppliers`, `categories`, `purchase_types`, `pr_statuses`
-- `pr_assignments` → `purchase_requests`, `users`
-- `po_documents` → `purchase_requests`
-- `pr_attachments` → `purchase_requests`
-- `role_status_permissions` → `pr_statuses`
-- `status_transitions` → `pr_statuses`
-- `role_pr_permissions` → `pr_statuses`
-- `status_modal_fields` → `pr_statuses`
-
-### 4. Performance Indexes
-Adds indexes on frequently queried columns for better performance.
-
-### 5. Master Data
-Inserts all required master data:
-- 9 PR statuses (Open, Forwarded to Buyer, Awaiting PO, etc.)
-- Role status permissions for all roles
-- Status transition workflows
-- Role PR permissions
-- Status modal field configurations
-
-## How to Run
-
-### Option 1: Using Batch File (Windows)
-
-1. Double-click `run-migration.bat`
-2. Enter MySQL password when prompted (if required)
-3. Wait for migration to complete
-
-### Option 2: Using MySQL Command Line
-
-```bash
-mysql -h 127.0.0.1 -P 3307 -u root -p jcrc < migration/complete_migration.sql
-```
-
-### Option 3: Using PHP Script
-
-You can also use the PHP deployment script from the root directory:
-```bash
-php deploy-master-data.php
-```
+### PHP
+- **../database/run-migration.php** - PHP script for running migrations (cross-platform)
 
 ## Prerequisites
 
-1. **Database Access**: You need MySQL/MariaDB access with appropriate permissions:
-   - `ALTER` - for table renaming and structure changes
-   - `CREATE` - for creating new tables
-   - `INSERT` - for inserting master data
-   - `SELECT` - for checking existing structures
+1. **MySQL/MariaDB** - Database server must be running
+2. **MySQL Command Line Client** - Must be in your system PATH
+3. **PHP** (optional but recommended) - For reading configuration from .env file
+4. **.env file** - Should be in the project root with database configuration
 
-2. **Database Configuration**: Database settings should be configured in `config/env.php` or `.env` file
+## Usage
 
-3. **Existing Tables**: Some tables should already exist (like `users`, `suppliers`, `purchase_requests`, etc.)
+### Windows
 
-## Safety Features
-
-The migration script includes safety features:
-
-- **IF EXISTS checks**: Renames only if tables exist
-- **IF NOT EXISTS checks**: Creates tables only if they don't exist
-- **Duplicate key handling**: Uses `ON DUPLICATE KEY UPDATE` for master data
-- **Foreign key checks**: Temporarily disabled during migration
-- **Transaction support**: Wrapped in a transaction for rollback capability
-
-## After Migration
-
-Once migration is complete, you can:
-
-1. **Create Users**: Create users with appropriate roles:
-   - `admin` - Full system access
-   - `buyer` - Can create PRs and update statuses 3, 4, 5
-   - `B_Head` - Buyer Head, can update statuses 2, 6, 8
-   - `PO_Team` - PO Team Head, can update status 9
-   - `PO_Team_Member` - PO Team Member, can update status 7
-
-2. **Map Categories**: Use the `catbasbh` table to map categories to buyer heads
-   ```sql
-   INSERT INTO catbasbh (user_id, cat) VALUES (buyer_head_id, 'category_name');
+1. Open Command Prompt or PowerShell
+2. Navigate to the migration directory:
+   ```cmd
+   cd migration
    ```
-
-3. **Map Buyers**: Use the `buyers_info` table to map buyers to buyer heads
-   ```sql
-   INSERT INTO buyers_info (b_head, buyer) VALUES (buyer_head_id, buyer_id);
+3. Run the batch script:
+   ```cmd
+   run-migration.bat
    ```
+4. When prompted, enter the database name (or press Enter to use the default from .env)
+5. Enter MySQL password if required
 
-4. **Add Purchase Types**: Add purchase types as needed
-   ```sql
-   INSERT INTO purchase_types (name) VALUES ('Purchase Type Name');
-   ```
+### Linux/Mac
 
-5. **Add Categories**: Add categories as needed
-   ```sql
-   INSERT INTO categories (maincat) VALUES ('Category Name');
+1. Make the script executable (first time only):
+   ```bash
+   chmod +x migration/run-migration.sh
    ```
+2. Navigate to the migration directory:
+   ```bash
+   cd migration
+   ```
+3. Run the shell script:
+   ```bash
+   ./run-migration.sh
+   ```
+4. When prompted, enter the database name (or press Enter to use the default from .env)
+5. Enter MySQL password if required
+
+### PHP Script
+
+1. Navigate to the project root
+2. Run the PHP script:
+   ```bash
+   php database/run-migration.php [migration_file.sql]
+   ```
+3. When prompted, enter the database name (or press Enter to use the default from .env)
+
+## Database Selection
+
+All scripts now support interactive database selection:
+
+- The script will read the default database name from your `.env` file
+- You will be prompted to enter a different database name if needed
+- Press Enter to use the default database from `.env`
+- The selected database will be shown before migration starts
+
+## Configuration
+
+The scripts read database configuration from the `.env` file in the project root:
+
+```env
+DB_HOST=127.0.0.1
+DB_USER=root
+DB_PASS=your_password
+DB_NAME=jcrc_ch
+DB_PORT=3307
+```
+
+If PHP is not available, the scripts will use default values:
+- Host: 127.0.0.1
+- User: root
+- Password: (empty)
+- Database: jcrc_ch
+- Port: 3307
+
+## Migration File
+
+The scripts run the `complete_migration.sql` file which includes:
+- Table renaming
+- New table creation
+- Foreign key relationships
+- Indexes
+- Master data insertion
 
 ## Troubleshooting
 
-### Error: Table doesn't exist
-- **Solution**: Some tables need to exist before migration. Ensure core tables like `users`, `suppliers`, `purchase_requests` exist.
+### MySQL not found
+- Ensure MySQL is installed
+- Add MySQL bin directory to your system PATH
+- On Windows: Add `C:\Program Files\MySQL\MySQL Server X.X\bin` to PATH
+- On Linux: Usually `/usr/bin/mysql` or `/usr/local/mysql/bin/mysql`
 
-### Error: Access denied
-- **Solution**: Check database credentials in `config/env.php` or `.env` file
-- Ensure the database user has ALTER, CREATE, INSERT permissions
+### Permission denied (Linux/Mac)
+- Make the script executable: `chmod +x run-migration.sh`
 
-### Error: Foreign key constraint fails
-- **Solution**: The script handles this by checking if constraints exist before adding them
-- If issues persist, check that referenced tables and columns exist
+### Database connection failed
+- Check database server is running
+- Verify credentials in `.env` file
+- Ensure database exists
+- Check user has necessary permissions (ALTER, CREATE, INSERT, etc.)
 
-### Error: Duplicate key
-- **Note**: This is normal if master data already exists. The script uses `ON DUPLICATE KEY UPDATE` to handle this gracefully.
+### Migration file not found
+- Ensure `complete_migration.sql` exists in the `migration` directory
+- Check you're running the script from the correct directory
 
-### Migration partially completed
-- **Solution**: The script is idempotent - you can run it multiple times safely
-- It will skip operations that are already completed
+## What Gets Migrated
 
-## Verification
+1. **Table Renaming** - Renames tables to follow better naming conventions
+2. **New Tables** - Creates permission and workflow tables
+3. **Foreign Keys** - Adds foreign key relationships
+4. **Indexes** - Adds performance indexes
+5. **Master Data** - Inserts statuses, permissions, and workflows
 
-After migration, verify the changes:
+## Post-Migration Steps
 
-```sql
--- Check renamed tables exist
-SHOW TABLES LIKE 'purchase_requests';
-SHOW TABLES LIKE 'pr_statuses';
-SHOW TABLES LIKE 'role_status_permissions';
+After successful migration:
 
--- Check statuses
-SELECT * FROM pr_statuses ORDER BY id;
+1. Create users with appropriate roles:
+   - admin
+   - buyer
+   - B_Head
+   - PO_Team
+   - PO_Team_Member
 
--- Check role permissions
-SELECT * FROM role_status_permissions;
+2. Map categories to buyer heads using `catbasbh` table
 
--- Check status transitions
-SELECT * FROM status_transitions;
+3. Map buyers to buyer heads using `buyers_info` table
 
--- Check foreign keys
-SELECT 
-    TABLE_NAME,
-    CONSTRAINT_NAME,
-    REFERENCED_TABLE_NAME,
-    REFERENCED_COLUMN_NAME
-FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE
-WHERE TABLE_SCHEMA = DATABASE()
-AND REFERENCED_TABLE_NAME IS NOT NULL;
-```
+4. Start using the system!
 
-## Support
+## Notes
 
-If you encounter issues:
-1. Check the error messages in the migration output
-2. Verify database connection settings
-3. Ensure all required tables exist
-4. Check database user permissions
-5. Review the SQL file for specific operations that failed
-
+- The migration scripts will modify your database structure and data
+- Always backup your database before running migrations
+- Some errors (like "table already exists") are expected if running migrations multiple times
+- The scripts will continue even if some statements fail (for idempotency)

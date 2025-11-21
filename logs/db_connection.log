@@ -1,0 +1,28 @@
+[2025-11-20 07:46:08] DB Connection SUCCESS - Host: 127.0.0.1, Database: jcrc, Port: 3307
+[2025-11-20 07:46:09] DB Connection SUCCESS - Host: 127.0.0.1, Database: jcrc, Port: 3307
+[2025-11-20 07:46:09] DB Connection SUCCESS - Host: 127.0.0.1, Database: jcrc, Port: 3307
+[2025-11-20 07:48:16] DB Connection SUCCESS - Host: 127.0.0.1, Database: jcrc_ch, Port: 3307
+[2025-11-20 07:48:42] DB Connection SUCCESS - Host: 127.0.0.1, Database: jcrc_ch, Port: 3307
+[2025-11-20 07:51:09] DB Connection SUCCESS - Host: 127.0.0.1, User: root, Database: jcrc_ch, Port: 3307, Source: .env file
+[2025-11-20 07:52:44] DB Connection SUCCESS - Host: 127.0.0.1, User: root, Database: jcrc, Port: 3307, Source: .env file
+[2025-11-20 07:52:45] DB Connection SUCCESS - Host: 127.0.0.1, User: root, Database: jcrc, Port: 3307, Source: .env file
+[2025-11-20 07:52:45] DB Connection SUCCESS - Host: 127.0.0.1, User: root, Database: jcrc, Port: 3307, Source: .env file
+[2025-11-20 07:53:04] DB Connection SUCCESS - Host: 127.0.0.1, User: root, Database: jcrc, Port: 3307, Source: .env file
+[2025-11-20 07:53:04] DB Connection SUCCESS - Host: 127.0.0.1, User: root, Database: jcrc, Port: 3307, Source: .env file
+[2025-11-20 07:53:04] DB Connection SUCCESS - Host: 127.0.0.1, User: root, Database: jcrc, Port: 3307, Source: .env file
+[2025-11-20 07:55:31] DB Connection SUCCESS - Host: localhost, User: root, Database: jcrc_ch, Port: 3307, Source: .env file
+[2025-11-20 07:55:40] DB Connection SUCCESS - Host: localhost, User: root, Database: jcrc, Port: 3307, Source: .env file
+[2025-11-20 07:55:40] DB Connection SUCCESS - Host: localhost, User: root, Database: jcrc, Port: 3307, Source: .env file
+[2025-11-20 07:55:40] DB Connection SUCCESS - Host: localhost, User: root, Database: jcrc, Port: 3307, Source: .env file
+[2025-11-20 07:56:45] DB Connection SUCCESS - Host: localhost, User: root, Database: jcrc, Port: 3307, Source: .env file
+[2025-11-20 07:56:45] DB Connection SUCCESS - Host: localhost, User: root, Database: jcrc, Port: 3307, Source: .env file
+[2025-11-20 08:07:54] DB Connection SUCCESS - Host: localhost, User: root, Database: jcrc, Port: 3307, Source: .env file
+[2025-11-20 08:07:54] DB Connection SUCCESS - Host: localhost, User: root, Database: jcrc, Port: 3307, Source: .env file
+[2025-11-20 08:27:05] DB Connection SUCCESS - Host: localhost, User: root, Database: jcrc, Port: 3307, Source: .env file
+[2025-11-20 08:33:21] DB Connection SUCCESS - Host: localhost, User: root, Database: jcrc, Port: 3307, Source: .env file
+[2025-11-20 08:38:54] DB Connection SUCCESS - Host: localhost, User: root, Database: jcrc, Port: 3307, Source: .env file
+[2025-11-21 06:40:06] DB Connection SUCCESS - Host: localhost, User: root, Database: jcrc, Port: 3307, Source: .env file
+[2025-11-21 06:40:08] DB Connection SUCCESS - Host: localhost, User: root, Database: jcrc, Port: 3307, Source: .env file
+[2025-11-21 06:40:08] DB Connection SUCCESS - Host: localhost, User: root, Database: jcrc, Port: 3307, Source: .env file
+[2025-11-21 06:40:15] DB Connection SUCCESS - Host: localhost, User: root, Database: jcrc, Port: 3307, Source: .env file
+[2025-11-21 06:41:43] DB Connection SUCCESS - Host: localhost, User: root, Database: jcrc, Port: 3307, Source: .env file
