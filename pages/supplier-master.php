@@ -186,6 +186,17 @@ $currentPage = 'supplier-master.php';
                 <h5 class="text-xl font-semibold">No suppliers found</h5>
                 <p>Add a new supplier to get started</p>
             </div>
+            <div id="paginationContainer" class="flex justify-center items-center gap-2 mt-4 hidden">
+                <button id="prevPage" class="btn btn-sm btn-outline">
+                    <i class="fas fa-chevron-left"></i> Previous
+                </button>
+                <div class="flex gap-1">
+                    <span id="pageInfo" class="btn btn-sm btn-disabled"></span>
+                </div>
+                <button id="nextPage" class="btn btn-sm btn-outline">
+                    Next <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -193,18 +204,35 @@ $currentPage = 'supplier-master.php';
 <script src="../assets/js/xlsx.full.min.js"></script>
 <script src="../assets/js/FileSaver.min.js"></script>
 <script>
-function loadSuppliers() {
-    $.get("../api/admin/suppliers.php?action=read_all", function(data) {
+let currentPage = 1;
+let totalPages = 1;
+let searchQuery = '';
+const itemsPerPage = 10;
+
+function loadSuppliers(page = 1, search = '') {
+    currentPage = page;
+    searchQuery = search;
+    
+    const url = `../api/admin/suppliers.php?action=read_all&page=${page}&limit=${itemsPerPage}${search ? '&search=' + encodeURIComponent(search) : ''}`;
+    
+    $.get(url, function(data) {
         if (data.status === 'success') {
-            const suppliers = data.data || [];
+            const suppliers = data.data?.data || [];
+            const pagination = data.data?.pagination || {};
+            
+            totalPages = pagination.total_pages || 1;
+            currentPage = pagination.current_page || 1;
+            
             if (suppliers.length === 0) {
                 $('#supplierTable').addClass('hidden');
                 $('#emptyState').removeClass('hidden');
+                $('#paginationContainer').addClass('hidden');
                 return;
             }
             
             $('#supplierTable').removeClass('hidden');
             $('#emptyState').addClass('hidden');
+            $('#paginationContainer').removeClass('hidden');
             
             let rows = '';
             suppliers.forEach(supplier => {
@@ -228,10 +256,19 @@ function loadSuppliers() {
                     </tr>`;
             });
             $('#supplierTable tbody').html(rows);
+            
+            // Update pagination info
+            updatePaginationInfo();
         }
     }, 'json').fail(function() {
         Swal.fire('Error', 'Failed to load suppliers', 'error');
     });
+}
+
+function updatePaginationInfo() {
+    $('#pageInfo').text(`Page ${currentPage} of ${totalPages}`);
+    $('#prevPage').prop('disabled', currentPage <= 1);
+    $('#nextPage').prop('disabled', currentPage >= totalPages);
 }
 
 function editSupplier(supplier) {
@@ -300,7 +337,7 @@ function deleteSupplier(id) {
                             showConfirmButton: false
                         });
                         setTimeout(() => {
-                            loadSuppliers();
+                            loadSuppliers(currentPage, searchQuery);
                         }, 500);
                     } else {
                         Swal.fire({
@@ -351,7 +388,7 @@ $('#supplierForm').submit(function(e) {
                             showConfirmButton: false
                         });
                         resetForm();
-                        loadSuppliers();
+                        loadSuppliers(1, searchQuery);
                     } else {
                         Swal.fire({
                             icon: 'error',
@@ -371,81 +408,117 @@ $('#resetBtn').click(function() {
 
 $('#refreshBtn').click(function() {
     $(this).find('i').addClass('fa-spin');
-    loadSuppliers();
+    loadSuppliers(currentPage, searchQuery);
     setTimeout(() => {
         $(this).find('i').removeClass('fa-spin');
     }, 700);
 });
 
+let searchTimeout;
 $('#searchInput').on('keyup', function() {
-    const value = $(this).val().toLowerCase();
-    $("#supplierTable tbody tr").each(function() {
-        const rowText = $(this).text().toLowerCase();
-        if (rowText.indexOf(value) > -1) {
-            $(this).removeClass('hidden');
-        } else {
-            $(this).addClass('hidden');
-        }
-    });
+    const value = $(this).val().trim();
     
-    const visibleRows = $('#supplierTable tbody tr').not('.hidden').length;
-    if (visibleRows === 0) {
-        $('#emptyState').removeClass('hidden');
-        $('#emptyState h5').text('No matching suppliers found');
-    } else {
-        $('#emptyState').addClass('hidden');
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(function() {
+        loadSuppliers(1, value);
+    }, 500);
+});
+
+$('#prevPage').click(function() {
+    if (currentPage > 1) {
+        loadSuppliers(currentPage - 1, searchQuery);
+    }
+});
+
+$('#nextPage').click(function() {
+    if (currentPage < totalPages) {
+        loadSuppliers(currentPage + 1, searchQuery);
     }
 });
 
 function exportToExcel() {
-    const date = new Date();
-    const dateStr = date.toISOString().split('T')[0];
-    const ws = XLSX.utils.table_to_sheet(document.getElementById('supplierTable'));
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Suppliers");
-    XLSX.writeFile(wb, `Supplier_List_${dateStr}.xlsx`);
-    Swal.fire({
-        icon: 'success',
-        title: 'Export Successful',
-        text: 'Supplier list has been exported to Excel',
-        timer: 1500,
-        showConfirmButton: false
+    // Fetch all data for export
+    const url = `../api/admin/suppliers.php?action=read_all&page=1&limit=10000${searchQuery ? '&search=' + encodeURIComponent(searchQuery) : ''}`;
+    $.get(url, function(data) {
+        if (data.status === 'success') {
+            const suppliers = data.data?.data || [];
+            
+            // Create table data
+            const headers = ['ID', 'Supplier ID', 'Supplier Name', 'Agent', 'City'];
+            const rows = suppliers.map(supplier => [
+                supplier.id,
+                supplier.supplier_id || '-',
+                supplier.supplier || '-',
+                supplier.agent || '-',
+                supplier.city || '-'
+            ]);
+            
+            const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Suppliers");
+            const date = new Date();
+            const dateStr = date.toISOString().split('T')[0];
+            XLSX.writeFile(wb, `Supplier_List_${dateStr}.xlsx`);
+            Swal.fire({
+                icon: 'success',
+                title: 'Export Successful',
+                text: 'Supplier list has been exported to Excel',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        }
+    }, 'json').fail(function() {
+        Swal.fire('Error', 'Failed to export suppliers', 'error');
     });
 }
 
 function exportToCSV() {
-    const table = document.getElementById('supplierTable');
-    const rows = Array.from(table.querySelectorAll('tr'));
-    const headers = Array.from(rows.shift().querySelectorAll('th'))
-        .map(header => header.textContent.trim());
-    const csvData = rows.map(row => {
-        return Array.from(row.querySelectorAll('td'))
-            .map(cell => {
-                let text = cell.textContent.trim();
-                if (text.includes(',')) {
-                    text = `"${text.replace(/"/g, '""')}"`;
-                }
-                return text;
-            })
-            .join(',');
-    });
-    csvData.unshift(headers.join(','));
-    const csvContent = csvData.join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const date = new Date();
-    const dateStr = date.toISOString().split('T')[0];
-    saveAs(blob, `Supplier_List_${dateStr}.csv`);
-    Swal.fire({
-        icon: 'success',
-        title: 'Export Successful',
-        text: 'Supplier list has been exported to CSV',
-        timer: 1500,
-        showConfirmButton: false
+    // Fetch all data for export
+    const url = `../api/admin/suppliers.php?action=read_all&page=1&limit=10000${searchQuery ? '&search=' + encodeURIComponent(searchQuery) : ''}`;
+    $.get(url, function(data) {
+        if (data.status === 'success') {
+            const suppliers = data.data?.data || [];
+            
+            // Create CSV data
+            const headers = ['ID', 'Supplier ID', 'Supplier Name', 'Agent', 'City'];
+            const csvRows = suppliers.map(supplier => {
+                const row = [
+                    supplier.id,
+                    supplier.supplier_id || '-',
+                    supplier.supplier || '-',
+                    supplier.agent || '-',
+                    supplier.city || '-'
+                ];
+                return row.map(cell => {
+                    let text = String(cell);
+                    if (text.includes(',') || text.includes('"') || text.includes('\n')) {
+                        text = `"${text.replace(/"/g, '""')}"`;
+                    }
+                    return text;
+                }).join(',');
+            });
+            
+            csvRows.unshift(headers.join(','));
+            const csvContent = csvRows.join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const date = new Date();
+            const dateStr = date.toISOString().split('T')[0];
+            saveAs(blob, `Supplier_List_${dateStr}.csv`);
+            Swal.fire({
+                icon: 'success',
+                title: 'Export Successful',
+                text: 'Supplier list has been exported to CSV',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        }
+    }, 'json').fail(function() {
+        Swal.fire('Error', 'Failed to export suppliers', 'error');
     });
 }
 
 $(document).ready(function() {
-    loadSuppliers();
+    loadSuppliers(1, '');
     
     $('#exportExcel').click(function(e) {
         e.preventDefault();

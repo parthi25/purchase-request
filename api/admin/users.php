@@ -22,10 +22,72 @@ $action = $_GET['action'] ?? $_POST['action'] ?? '';
 
 switch ($action) {
     case 'list':
-        $res = $conn->query("SELECT id, fullname, email, phone, username, role, is_active FROM users ORDER BY id DESC");
-        $data = [];
-        while ($row = $res->fetch_assoc()) $data[] = $row;
-        sendResponse(200, "success", "Users retrieved successfully", $data);
+        try {
+            // Get pagination and search parameters
+            $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+            $limit = isset($_GET['limit']) ? max(1, intval($_GET['limit'])) : 10;
+            $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+            $offset = ($page - 1) * $limit;
+            
+            // Build WHERE clause for search
+            $whereClause = '';
+            $params = [];
+            $types = '';
+            
+            if (!empty($search)) {
+                $whereClause = "WHERE fullname LIKE ? OR email LIKE ? OR phone LIKE ? OR username LIKE ? OR role LIKE ?";
+                $searchParam = "%{$search}%";
+                $params = [$searchParam, $searchParam, $searchParam, $searchParam, $searchParam];
+                $types = "sssss";
+            }
+            
+            // Get total count
+            $countSql = "SELECT COUNT(*) as total FROM users {$whereClause}";
+            $countStmt = $conn->prepare($countSql);
+            if (!empty($search)) {
+                $countStmt->bind_param($types, ...$params);
+            }
+            $countStmt->execute();
+            $countResult = $countStmt->get_result();
+            $totalRecords = $countResult->fetch_assoc()['total'];
+            $countStmt->close();
+            
+            // Get paginated data
+            $sql = "SELECT id, fullname, email, phone, username, role, is_active FROM users {$whereClause} ORDER BY id DESC LIMIT ? OFFSET ?";
+            $stmt = $conn->prepare($sql);
+            
+            if (!empty($search)) {
+                $params[] = $limit;
+                $params[] = $offset;
+                $types .= "ii";
+                $stmt->bind_param($types, ...$params);
+            } else {
+                $stmt->bind_param("ii", $limit, $offset);
+            }
+            
+            $stmt->execute();
+            $result = $stmt->get_result();
+            $data = [];
+            
+            while ($row = $result->fetch_assoc()) {
+                $data[] = $row;
+            }
+            $stmt->close();
+            
+            $totalPages = ceil($totalRecords / $limit);
+            
+            sendResponse(200, "success", "Users retrieved successfully", [
+                'data' => $data,
+                'pagination' => [
+                    'current_page' => $page,
+                    'total_pages' => $totalPages,
+                    'total_records' => $totalRecords,
+                    'per_page' => $limit
+                ]
+            ]);
+        } catch (Exception $e) {
+            sendResponse(500, "error", $e->getMessage());
+        }
         break;
 
     case 'add':

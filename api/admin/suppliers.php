@@ -73,17 +73,68 @@ if ($action === 'create') {
 // Read operation
 if ($action === 'read_all') {
     try {
-        $sql = "SELECT * FROM suppliers ORDER BY supplier ASC";
-        $result = $conn->query($sql);
-        $suppliers = [];
-        if ($result && is_object($result)) {
-            while ($row = $result->fetch_assoc()) {
-                $suppliers[] = $row;
-            }
-            sendResponse(200, "success", "Suppliers retrieved successfully", $suppliers);
-        } else {
-            sendResponse(500, "error", "Error fetching suppliers: " . $conn->error);
+        // Get pagination and search parameters
+        $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+        $limit = isset($_GET['limit']) ? max(1, intval($_GET['limit'])) : 10;
+        $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+        $offset = ($page - 1) * $limit;
+        
+        // Build WHERE clause for search
+        $whereClause = '';
+        $params = [];
+        $types = '';
+        
+        if (!empty($search)) {
+            $whereClause = "WHERE supplier LIKE ? OR supplier_id LIKE ? OR agent LIKE ? OR city LIKE ?";
+            $searchParam = "%{$search}%";
+            $params = [$searchParam, $searchParam, $searchParam, $searchParam];
+            $types = "ssss";
         }
+        
+        // Get total count
+        $countSql = "SELECT COUNT(*) as total FROM suppliers {$whereClause}";
+        $countStmt = $conn->prepare($countSql);
+        if (!empty($search)) {
+            $countStmt->bind_param($types, ...$params);
+        }
+        $countStmt->execute();
+        $countResult = $countStmt->get_result();
+        $totalRecords = $countResult->fetch_assoc()['total'];
+        $countStmt->close();
+        
+        // Get paginated data
+        $sql = "SELECT * FROM suppliers {$whereClause} ORDER BY supplier ASC LIMIT ? OFFSET ?";
+        $stmt = $conn->prepare($sql);
+        
+        if (!empty($search)) {
+            $params[] = $limit;
+            $params[] = $offset;
+            $types .= "ii";
+            $stmt->bind_param($types, ...$params);
+        } else {
+            $stmt->bind_param("ii", $limit, $offset);
+        }
+        
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $suppliers = [];
+        
+        while ($row = $result->fetch_assoc()) {
+            $suppliers[] = $row;
+        }
+        $stmt->close();
+        
+        $totalPages = ceil($totalRecords / $limit);
+        
+        sendResponse(200, "success", "Suppliers retrieved successfully", [
+            'data' => $suppliers,
+            'pagination' => [
+                'current_page' => $page,
+                'total_pages' => $totalPages,
+                'total_records' => $totalRecords,
+                'per_page' => $limit
+            ]
+        ]);
     } catch (Exception $e) {
         sendResponse(500, "error", $e->getMessage());
     }

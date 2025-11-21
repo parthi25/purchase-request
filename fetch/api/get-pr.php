@@ -18,11 +18,24 @@ try {
         SELECT pt.*, 
                s.supplier, s.agent, s.city, 
                c.maincat AS category,
-               u.username as bhead_name
+               u.username as bhead_name,
+               pt.b_head as bhead_id,
+               bu.username as buyer_name,
+               po.username as po_team_name,
+               st.status as status_name,
+               ptm.po_team_member,
+               ptm.buyername as po_team_member_buyername,
+               ptm.po_number,
+               upo.username as po_team_member_name
         FROM purchase_requests pt
         LEFT JOIN suppliers s ON pt.supplier_id = s.id
         LEFT JOIN categories c ON pt.category_id = c.id
         LEFT JOIN users u ON pt.b_head = u.id
+        LEFT JOIN users bu ON pt.buyer = bu.id
+        LEFT JOIN users po ON pt.po_team = po.id
+        LEFT JOIN pr_statuses st ON pt.po_status = st.id
+        LEFT JOIN pr_assignments ptm ON pt.id = ptm.ord_id
+        LEFT JOIN users upo ON ptm.po_team_member = upo.id
         WHERE pt.id = ?
     ";
 

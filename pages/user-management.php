@@ -168,6 +168,17 @@ $currentPage = 'user-management.php';
                 <h5 class="text-xl font-semibold">No users found</h5>
                 <p>Add a new user to get started</p>
             </div>
+            <div id="paginationContainer" class="flex justify-center items-center gap-2 mt-4 hidden">
+                <button id="prevPage" class="btn btn-sm btn-outline">
+                    <i class="fas fa-chevron-left"></i> Previous
+                </button>
+                <div class="flex gap-1">
+                    <span id="pageInfo" class="btn btn-sm btn-disabled"></span>
+                </div>
+                <button id="nextPage" class="btn btn-sm btn-outline">
+                    Next <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -192,20 +203,38 @@ function loadRoles() {
     }, 'json');
 }
 
-function loadUsers() {
-    $.get('../api/admin/users.php?action=list', function(response) {
-        const data = (typeof response === 'object' && response.data) ? response.data : response;
-        if (!data || data.length === 0) {
+let currentPage = 1;
+let totalPages = 1;
+let searchQuery = '';
+const itemsPerPage = 10;
+
+function loadUsers(page = 1, search = '') {
+    currentPage = page;
+    searchQuery = search;
+    
+    const url = `../api/admin/users.php?action=list&page=${page}&limit=${itemsPerPage}${search ? '&search=' + encodeURIComponent(search) : ''}`;
+    
+    $.get(url, function(response) {
+        const responseData = (typeof response === 'object' && response.data) ? response.data : response;
+        const users = responseData?.data || responseData || [];
+        const pagination = responseData?.pagination || {};
+        
+        totalPages = pagination.total_pages || 1;
+        currentPage = pagination.current_page || 1;
+        
+        if (!users || users.length === 0) {
             $('#userTable').addClass('hidden');
             $('#emptyState').removeClass('hidden');
+            $('#paginationContainer').addClass('hidden');
             return;
         }
         
         $('#userTable').removeClass('hidden');
         $('#emptyState').addClass('hidden');
+        $('#paginationContainer').removeClass('hidden');
         
         let rows = '';
-        data.forEach(user => {
+        users.forEach(user => {
             const isActive = user.is_active == 1 || user.is_active === true;
             const statusBadge = isActive ? 
                 '<span class="badge badge-success">Active</span>' : 
@@ -245,9 +274,18 @@ function loadUsers() {
                 </tr>`;
         });
         $('#userTable tbody').html(rows);
+        
+        // Update pagination info
+        updatePaginationInfo();
     }, 'json').fail(function() {
         Swal.fire('Error', 'Failed to load users', 'error');
     });
+}
+
+function updatePaginationInfo() {
+    $('#pageInfo').text(`Page ${currentPage} of ${totalPages}`);
+    $('#prevPage').prop('disabled', currentPage <= 1);
+    $('#nextPage').prop('disabled', currentPage >= totalPages);
 }
 
 function editUser(user) {
@@ -296,7 +334,7 @@ function toggleUserStatus(userId, newStatus) {
                         timer: 1500,
                         showConfirmButton: false
                     });
-                    loadUsers();
+                    loadUsers(currentPage, searchQuery);
                 } else {
                     const errorMsg = typeof response === 'object' ? response.message : 'Failed to update user status.';
                     Swal.fire({
@@ -351,7 +389,7 @@ function deleteUser(id) {
                         showConfirmButton: false
                     });
                     setTimeout(() => {
-                        loadUsers();
+                        loadUsers(currentPage, searchQuery);
                     }, 500);
                 } else {
                     const errorMsg = typeof response === 'object' ? response.message : 'Failed to delete user.';
@@ -406,7 +444,7 @@ $('#userForm').submit(function(e) {
                         showConfirmButton: false
                     });
                     resetForm();
-                    loadUsers();
+                    loadUsers(currentPage, searchQuery);
                 } else {
                     const errorMsg = typeof response === 'object' ? response.message : 'Failed to process your request.';
                     Swal.fire({
@@ -437,81 +475,119 @@ $('#resetBtn').click(function() {
 
 $('#refreshBtn').click(function() {
     $(this).find('i').addClass('fa-spin');
-    loadUsers();
+    loadUsers(currentPage, searchQuery);
     setTimeout(() => {
         $(this).find('i').removeClass('fa-spin');
     }, 700);
 });
 
+let searchTimeout;
 $('#searchInput').on('keyup', function() {
-    const value = $(this).val().toLowerCase();
-    $("#userTable tbody tr").each(function() {
-        const rowText = $(this).text().toLowerCase();
-        if (rowText.indexOf(value) > -1) {
-            $(this).removeClass('hidden');
-        } else {
-            $(this).addClass('hidden');
-        }
-    });
+    const value = $(this).val().trim();
     
-    const visibleRows = $('#userTable tbody tr').not('.hidden').length;
-    if (visibleRows === 0) {
-        $('#emptyState').removeClass('hidden');
-        $('#emptyState h5').text('No matching users found');
-    } else {
-        $('#emptyState').addClass('hidden');
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(function() {
+        loadUsers(1, value);
+    }, 500);
+});
+
+$('#prevPage').click(function() {
+    if (currentPage > 1) {
+        loadUsers(currentPage - 1, searchQuery);
+    }
+});
+
+$('#nextPage').click(function() {
+    if (currentPage < totalPages) {
+        loadUsers(currentPage + 1, searchQuery);
     }
 });
 
 function exportToExcel() {
-    const date = new Date();
-    const dateStr = date.toISOString().split('T')[0];
-    const ws = XLSX.utils.table_to_sheet(document.getElementById('userTable'));
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Users");
-    XLSX.writeFile(wb, `User_List_${dateStr}.xlsx`);
-    Swal.fire({
-        icon: 'success',
-        title: 'Export Successful',
-        text: 'User list has been exported to Excel',
-        timer: 1500,
-        showConfirmButton: false
+    // Fetch all data for export
+    const url = `../api/admin/users.php?action=list&page=1&limit=10000${searchQuery ? '&search=' + encodeURIComponent(searchQuery) : ''}`;
+    $.get(url, function(response) {
+        const responseData = (typeof response === 'object' && response.data) ? response.data : response;
+        const users = responseData?.data || responseData || [];
+        
+        // Create table data
+        const headers = ['ID', 'Name', 'Email', 'Phone', 'Username', 'Role', 'Status'];
+        const rows = users.map(user => [
+            user.id,
+            user.fullname || 'N/A',
+            user.email || 'N/A',
+            user.phone || 'N/A',
+            user.username,
+            user.role.replace('_', ' '),
+            (user.is_active == 1 || user.is_active === true) ? 'Active' : 'Inactive'
+        ]);
+        
+        const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Users");
+        const date = new Date();
+        const dateStr = date.toISOString().split('T')[0];
+        XLSX.writeFile(wb, `User_List_${dateStr}.xlsx`);
+        Swal.fire({
+            icon: 'success',
+            title: 'Export Successful',
+            text: 'User list has been exported to Excel',
+            timer: 1500,
+            showConfirmButton: false
+        });
+    }, 'json').fail(function() {
+        Swal.fire('Error', 'Failed to export users', 'error');
     });
 }
 
 function exportToCSV() {
-    const table = document.getElementById('userTable');
-    const rows = Array.from(table.querySelectorAll('tr'));
-    const headers = Array.from(rows.shift().querySelectorAll('th'))
-        .map(header => header.textContent.trim());
-    const csvData = rows.map(row => {
-        return Array.from(row.querySelectorAll('td'))
-            .map(cell => {
-                let text = cell.textContent.trim();
-                if (text.includes(',')) {
+    // Fetch all data for export
+    const url = `../api/admin/users.php?action=list&page=1&limit=10000${searchQuery ? '&search=' + encodeURIComponent(searchQuery) : ''}`;
+    $.get(url, function(response) {
+        const responseData = (typeof response === 'object' && response.data) ? response.data : response;
+        const users = responseData?.data || responseData || [];
+        
+        // Create CSV data
+        const headers = ['ID', 'Name', 'Email', 'Phone', 'Username', 'Role', 'Status'];
+        const csvRows = users.map(user => {
+            const row = [
+                user.id,
+                user.fullname || 'N/A',
+                user.email || 'N/A',
+                user.phone || 'N/A',
+                user.username,
+                user.role.replace('_', ' '),
+                (user.is_active == 1 || user.is_active === true) ? 'Active' : 'Inactive'
+            ];
+            return row.map(cell => {
+                let text = String(cell);
+                if (text.includes(',') || text.includes('"') || text.includes('\n')) {
                     text = `"${text.replace(/"/g, '""')}"`;
                 }
                 return text;
-            })
-            .join(',');
-    });
-    csvData.unshift(headers.join(','));
-    const csvContent = csvData.join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const date = new Date();
-    const dateStr = date.toISOString().split('T')[0];
-    saveAs(blob, `User_List_${dateStr}.csv`);
-    Swal.fire({
-        icon: 'success',
-        title: 'Export Successful',
-        text: 'User list has been exported to CSV',
-        timer: 1500,
-        showConfirmButton: false
+            }).join(',');
+        });
+        
+        csvRows.unshift(headers.join(','));
+        const csvContent = csvRows.join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const date = new Date();
+        const dateStr = date.toISOString().split('T')[0];
+        saveAs(blob, `User_List_${dateStr}.csv`);
+        Swal.fire({
+            icon: 'success',
+            title: 'Export Successful',
+            text: 'User list has been exported to CSV',
+            timer: 1500,
+            showConfirmButton: false
+        });
+    }, 'json').fail(function() {
+        Swal.fire('Error', 'Failed to export users', 'error');
     });
 }
 
 $(document).ready(function() {
-    loadUsers();
+    loadUsers(1, '');
     loadRoles();
     
     $('#exportExcel').click(function(e) {
