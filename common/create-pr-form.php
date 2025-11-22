@@ -7,7 +7,7 @@
         <div class="relative">
             <input type="text" class="input input-bordered w-full pr-10" id="supplierInput" name="supplierInput"
                 required autocomplete="off" placeholder="Type to search suppliers..." oninput="searchSupplierAPI()"
-                onfocus="showSupplierDropdown()" onkeydown="handleSupplierKeydown(event)">
+                onfocus="showSupplierDropdown()" onkeydown="handleSupplierKeydown(event)" onblur="checkNewSupplier()">
             <div id="supplierDropdown" class="absolute top-full left-0 right-0 z-10 mt-1 hidden">
                 <ul class="menu bg-base-200 rounded-box shadow-lg max-h-60 overflow-y-auto" id="supplierList"></ul>
             </div>
@@ -91,7 +91,7 @@
     </div>
 
     <!-- File Upload -->
-    <div class="form-control">
+    <div class="form-control" id="productImageUploadSection">
         <label class="label"><span class="label-text">Upload Product Images</span></label>
         <input type="file" id="fileInput" name="files[]" accept="image/*" multiple
             class="file-input file-input-bordered w-full" />

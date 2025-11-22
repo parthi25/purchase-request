@@ -438,6 +438,31 @@ async function loadPRData(data) {
     document.getElementById("remarkInput").value = data.remark || "";
     document.getElementById("purchInput").value = data.purch_id || "";
 
+    // Handle NEW SUPPLIER - check if supplier_id is 99999 or if new_supplier exists
+    const supplierId = data.supplier_id;
+    const isNewSupplier = supplierId === "99999" || supplierId === 99999 || data.supplier === "NEW SUPPLIER" || data.new_supplier;
+    const newSupplierContainer = document.getElementById("newSupplierContainer");
+    const newSupplierInput = document.getElementById("newSupplierInput");
+    
+    if (isNewSupplier && newSupplierContainer) {
+        newSupplierContainer.classList.remove("hidden");
+        newSupplierContainer.classList.add("form-control");
+        if (newSupplierInput) {
+            newSupplierInput.value = data.supplier || "";
+        }
+        const agentInput = document.getElementById("agentInput");
+        const cityInput = document.getElementById("cityInput");
+        if (agentInput) agentInput.readOnly = false;
+        if (cityInput) cityInput.readOnly = false;
+    } else if (newSupplierContainer) {
+        newSupplierContainer.classList.add("hidden");
+        newSupplierContainer.classList.remove("form-control");
+        const agentInput = document.getElementById("agentInput");
+        const cityInput = document.getElementById("cityInput");
+        if (agentInput) agentInput.readOnly = true;
+        if (cityInput) cityInput.readOnly = true;
+    }
+
     // Fill workflow fields (only if they have values)
     if (data.po_status) {
         document.getElementById("statusSelect").value = data.po_status;
@@ -479,60 +504,36 @@ document.getElementById('editPRForm').addEventListener('submit', async function(
     const formData = new FormData(this);
 
     if (!formData.get('supplierId') || !formData.get('categoryId')) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Validation Error',
-            text: 'Please fill all required fields',
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 3000
-        });
+        showToast('Please fill all required fields', 'warning');
         return;
     }
 
-    Swal.fire({
-        title: 'Update PR?',
-        text: 'Are you sure you want to update this Purchase Request?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, update it!',
-        cancelButtonText: 'Cancel',
-    }).then(async (result) => {
-        if (result.isConfirmed) {
-            try {
-                const res = await fetch('../api/update-pr.php', { method: 'POST', body: formData });
-                const json = await res.json();
+    const confirmResult = await showConfirm(
+        'Update PR?',
+        'Are you sure you want to update this Purchase Request?',
+        'Yes, update it!',
+        'Cancel'
+    );
+    
+    if (confirmResult.isConfirmed) {
+        try {
+            const res = await fetch('../api/update-pr.php', { method: 'POST', body: formData });
+            const json = await res.json();
 
-                if (json.status === 'success') {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: 'PR updated successfully (ID: ' + json.data.po_id + ')',
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
-                    // Reload the PR data to show updated values
-                    setTimeout(() => {
-                        searchPR();
-                    }, 1000);
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: json.message || 'Failed to update PR',
-                    });
-                }
-            } catch (err) {
-                console.error(err);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Failed to update PR',
-                });
+            if (json.status === 'success') {
+                showToast('PR updated successfully (ID: ' + json.data.po_id + ')', 'success', 2000);
+                // Reload the PR data to show updated values
+                setTimeout(() => {
+                    searchPR();
+                }, 1000);
+            } else {
+                showToast(json.message || 'Failed to update PR', 'error');
             }
+        } catch (err) {
+            console.error(err);
+            showToast('Failed to update PR', 'error');
         }
-    });
+    }
 });
 
 // Reset form
@@ -554,69 +555,47 @@ document.getElementById('searchRefId').addEventListener('keypress', function(e) 
 });
 
 // Delete PR
-document.getElementById('deleteBtn').addEventListener('click', function() {
+document.getElementById('deleteBtn').addEventListener('click', async function() {
     const prId = document.getElementById('prId').value;
     if (!prId) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'No PR Selected',
-            text: 'Please search for a PR first',
-        });
+        showToast('Please search for a PR first', 'warning');
         return;
     }
 
-    Swal.fire({
-        title: 'Are you sure?',
-        text: 'You are about to delete PR #' + prId + '. This action cannot be undone!',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Yes, delete it!',
-        cancelButtonText: 'Cancel'
-    }).then(async (result) => {
-        if (result.isConfirmed) {
-            try {
-                const formData = new FormData();
-                formData.append('id', prId);
-                
-                const res = await fetch('../api/delete-pr.php', { 
-                    method: 'POST', 
-                    body: formData 
-                });
-                const json = await res.json();
+    const confirmResult = await showConfirm(
+        'Are you sure?',
+        'You are about to delete PR #' + prId + '. This action cannot be undone!',
+        'Yes, delete it!',
+        'Cancel'
+    );
+    
+    if (confirmResult.isConfirmed) {
+        try {
+            const formData = new FormData();
+            formData.append('id', prId);
+            
+            const res = await fetch('../api/delete-pr.php', { 
+                method: 'POST', 
+                body: formData 
+            });
+            const json = await res.json();
 
-                if (json.status === 'success') {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Deleted!',
-                        text: 'PR #' + prId + ' has been deleted successfully',
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
-                    
-                    // Clear form and hide it
-                    document.getElementById('editFormCard').classList.add('hidden');
-                    document.getElementById('searchRefId').value = '';
-                    document.getElementById('editPRForm').reset();
-                    currentPRData = null;
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: json.message || 'Failed to delete PR',
-                    });
-                }
-            } catch (err) {
-                console.error(err);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Failed to delete PR',
-                });
+            if (json.status === 'success') {
+                showToast('PR #' + prId + ' has been deleted successfully', 'success', 2000);
+                
+                // Clear form and hide it
+                document.getElementById('editFormCard').classList.add('hidden');
+                document.getElementById('searchRefId').value = '';
+                document.getElementById('editPRForm').reset();
+                currentPRData = null;
+            } else {
+                showToast(json.message || 'Failed to delete PR', 'error');
             }
+        } catch (err) {
+            console.error(err);
+            showToast('Failed to delete PR', 'error');
         }
-    });
+    }
 });
 
 // Initialize

@@ -36,9 +36,8 @@ $currentPage = basename($_SERVER['PHP_SELF']);
     <script src="../assets/js/browser@4.js"></script>
     <link href="../assets/css/themes.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="../assets/css/font-awesome-6.0.0.min.css">
-    <link rel="stylesheet" href="../assets/css/sweetalert2.min.css">
-    <script src="../assets/js/sweetalert2.all.min.js"></script>
     <link rel="stylesheet" href="../assets/css/flatpickr.min.css">
+    <script src="../common/js/notifications.js"></script>
     <script src="../assets/js/flatpickr.min.js"></script>
     <script src="../assets/js/jquery.min.js"></script>
     <link rel="stylesheet" href="../assets/css/select2.min.css">

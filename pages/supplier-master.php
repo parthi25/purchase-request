@@ -19,8 +19,8 @@ $userid = $_SESSION['user_id'] ?? 0;
 $currentPage = 'supplier-master.php';
 ?>
 <?php include '../common/layout.php'; ?>
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold">Supplier Master</h1>
+    <div class="flex justify-between items-center mb-4 sm:mb-6">
+        <h1 class="text-2xl sm:text-3xl font-bold">Supplier Master</h1>
     </div>
     
     <!-- Form Card -->
@@ -30,7 +30,7 @@ $currentPage = 'supplier-master.php';
                 <i class="fas fa-building"></i>
                 <span id="formTitle">Add New Supplier</span>
             </h2>
-            <form id="supplierForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <form id="supplierForm" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <input type="hidden" name="id" id="supplierId">
                 <input type="hidden" name="supplier_id" id="supplier_id">
                 
@@ -118,16 +118,16 @@ $currentPage = 'supplier-master.php';
                     <input type="text" name="search_term" id="search_term" class="input input-bordered w-full" placeholder="Search term">
                 </div>
                 
-                <div class="form-control md:col-span-2 lg:col-span-3 flex flex-row justify-between items-center mt-4">
-                    <button type="button" id="resetBtn" class="btn btn-outline">
+                <div class="form-control md:col-span-2 lg:col-span-3 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2 mt-4">
+                    <button type="button" id="resetBtn" class="btn btn-outline btn-sm sm:btn-md">
                         <i class="fas fa-undo"></i> Reset
                     </button>
                     <div class="flex gap-2">
-                        <button type="button" id="deleteBtn" class="btn btn-error">
-                            <i class="fas fa-trash"></i> Delete
+                        <button type="button" id="deleteBtn" class="btn btn-error btn-sm sm:btn-md">
+                            <i class="fas fa-trash"></i> <span class="hidden sm:inline">Delete</span>
                         </button>
-                        <button type="submit" class="btn btn-primary" id="submitBtn">
-                            <i class="fas fa-save"></i> Save Supplier
+                        <button type="submit" class="btn btn-primary btn-sm sm:btn-md" id="submitBtn">
+                            <i class="fas fa-save"></i> <span class="hidden sm:inline">Save Supplier</span><span class="sm:hidden">Save</span>
                         </button>
                     </div>
                 </div>
@@ -138,36 +138,38 @@ $currentPage = 'supplier-master.php';
     <!-- Suppliers Table Card -->
     <div class="card bg-base-100 shadow-xl">
         <div class="card-body">
-            <div class="flex justify-between items-center mb-4">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                 <h2 class="card-title">
-                    <i class="fas fa-list"></i> Supplier List
+                    <i class="fas fa-list"></i> <span class="hidden sm:inline">Supplier List</span><span class="sm:hidden">Suppliers</span>
                 </h2>
-                <div class="flex gap-2">
-                    <div class="form-control">
-                        <div class="join">
-                            <input type="text" id="searchInput" class="input input-bordered join-item" placeholder="Search suppliers...">
+                <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                    <div class="form-control w-full sm:w-auto">
+                        <div class="join w-full sm:w-auto">
+                            <input type="text" id="searchInput" class="input input-bordered join-item flex-1" placeholder="Search suppliers...">
                             <button class="btn btn-square join-item">
                                 <i class="fas fa-search"></i>
                             </button>
                         </div>
                     </div>
-                    <div class="dropdown dropdown-end">
-                        <label tabindex="0" class="btn btn-success">
-                            <i class="fas fa-file-export"></i> Export
-                        </label>
-                        <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-                            <li><a id="exportExcel"><i class="fas fa-file-excel text-success"></i> Export as Excel</a></li>
-                            <li><a id="exportCSV"><i class="fas fa-file-csv text-primary"></i> Export as CSV</a></li>
-                        </ul>
+                    <div class="flex gap-2">
+                        <div class="dropdown dropdown-end">
+                            <label tabindex="0" class="btn btn-success btn-sm sm:btn-md">
+                                <i class="fas fa-file-export"></i> <span class="hidden sm:inline">Export</span>
+                            </label>
+                            <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+                                <li><a id="exportExcel"><i class="fas fa-file-excel text-success"></i> Export as Excel</a></li>
+                                <li><a id="exportCSV"><i class="fas fa-file-csv text-primary"></i> Export as CSV</a></li>
+                            </ul>
+                        </div>
+                        <button id="refreshBtn" class="btn btn-outline btn-sm sm:btn-md">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
                     </div>
-                    <button id="refreshBtn" class="btn btn-outline">
-                        <i class="fas fa-sync-alt"></i>
-                    </button>
                 </div>
             </div>
             
-            <div class="overflow-x-auto">
-                <table class="table table-zebra w-full" id="supplierTable">
+            <div class="overflow-x-auto -mx-4 sm:mx-0">
+                <table class="table table-zebra w-full text-sm sm:text-base" id="supplierTable">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -186,15 +188,15 @@ $currentPage = 'supplier-master.php';
                 <h5 class="text-xl font-semibold">No suppliers found</h5>
                 <p>Add a new supplier to get started</p>
             </div>
-            <div id="paginationContainer" class="flex justify-center items-center gap-2 mt-4 hidden">
-                <button id="prevPage" class="btn btn-sm btn-outline">
-                    <i class="fas fa-chevron-left"></i> Previous
+            <div id="paginationContainer" class="flex flex-col sm:flex-row justify-center items-center gap-2 mt-4 hidden">
+                <button id="prevPage" class="btn btn-sm btn-outline w-full sm:w-auto">
+                    <i class="fas fa-chevron-left"></i> <span class="hidden sm:inline">Previous</span><span class="sm:hidden">Prev</span>
                 </button>
                 <div class="flex gap-1">
                     <span id="pageInfo" class="btn btn-sm btn-disabled"></span>
                 </div>
-                <button id="nextPage" class="btn btn-sm btn-outline">
-                    Next <i class="fas fa-chevron-right"></i>
+                <button id="nextPage" class="btn btn-sm btn-outline w-full sm:w-auto">
+                    <span class="hidden sm:inline">Next</span><span class="sm:hidden">Next</span> <i class="fas fa-chevron-right"></i>
                 </button>
             </div>
         </div>
@@ -261,7 +263,7 @@ function loadSuppliers(page = 1, search = '') {
             updatePaginationInfo();
         }
     }, 'json').fail(function() {
-        Swal.fire('Error', 'Failed to load suppliers', 'error');
+        showToast('Failed to load suppliers', 'error');
     });
 }
 
@@ -306,50 +308,37 @@ function resetForm() {
     $('tr').removeClass('bg-primary bg-opacity-10');
 }
 
-function deleteSupplier(id) {
-    Swal.fire({
-        title: 'Are you sure?',
-        text: 'You will not be able to recover this supplier!',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, delete it!',
-        cancelButtonText: 'Cancel',
-        confirmButtonColor: '#ef4444',
-    }).then(result => {
-        if (result.isConfirmed) {
-            const formData = new FormData();
-            formData.append('action', 'delete');
-            formData.append('id', id);
-            
-            $.ajax({
-                url: '../api/admin/suppliers.php',
-                type: 'POST',
-                data: formData,
-                processData: false,
-                contentType: false,
-                success: function(response) {
-                    if (response.status === 'success') {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Deleted!',
-                            text: response.message,
-                            timer: 1500,
-                            showConfirmButton: false
-                        });
-                        setTimeout(() => {
-                            loadSuppliers(currentPage, searchQuery);
-                        }, 500);
-                    } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error!',
-                            text: response.message || 'Failed to delete supplier.',
-                        });
-                    }
+async function deleteSupplier(id) {
+    const confirmResult = await showConfirm(
+        'Are you sure?',
+        'You will not be able to recover this supplier!',
+        'Yes, delete it!',
+        'Cancel'
+    );
+    
+    if (confirmResult.isConfirmed) {
+        const formData = new FormData();
+        formData.append('action', 'delete');
+        formData.append('id', id);
+        
+        $.ajax({
+            url: '../api/admin/suppliers.php',
+            type: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function(response) {
+                if (response.status === 'success') {
+                    showToast(response.message, 'success', 1500);
+                    setTimeout(() => {
+                        loadSuppliers(currentPage, searchQuery);
+                    }, 500);
+                } else {
+                    showToast(response.message || 'Failed to delete supplier.', 'error');
                 }
-            });
-        }
-    });
+            }
+        });
+    }
 }
 
 $('#supplierForm').submit(function(e) {
@@ -363,15 +352,15 @@ $('#supplierForm').submit(function(e) {
         formData.set('supplier_id', Math.floor(100000 + Math.random() * 900000));
     }
 
-    Swal.fire({
-        title: action === 'add' ? 'Add Supplier?' : 'Update Supplier?',
-        text: action === 'add' ? 'New supplier will be added to the system.' : 'Supplier information will be updated.',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, proceed',
-        cancelButtonText: 'Cancel',
-    }).then(result => {
-        if (result.isConfirmed) {
+    (async () => {
+        const confirmResult = await showConfirm(
+            action === 'add' ? 'Add Supplier?' : 'Update Supplier?',
+            action === 'add' ? 'New supplier will be added to the system.' : 'Supplier information will be updated.',
+            'Yes, proceed',
+            'Cancel'
+        );
+        
+        if (confirmResult.isConfirmed) {
             $.ajax({
                 url: '../api/admin/suppliers.php',
                 type: 'POST',
@@ -380,26 +369,16 @@ $('#supplierForm').submit(function(e) {
                 contentType: false,
                 success: function(response) {
                     if (response.status === 'success') {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success!',
-                            text: response.message,
-                            timer: 1500,
-                            showConfirmButton: false
-                        });
+                        showToast(response.message, 'success', 1500);
                         resetForm();
                         loadSuppliers(1, searchQuery);
                     } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error!',
-                            text: response.message || 'Failed to process your request.',
-                        });
+                        showToast(response.message || 'Failed to process your request.', 'error');
                     }
                 }
             });
         }
-    });
+    })();
 });
 
 $('#resetBtn').click(function() {
@@ -437,83 +416,117 @@ $('#nextPage').click(function() {
 });
 
 function exportToExcel() {
+    // Check if XLSX is available
+    if (typeof XLSX === 'undefined') {
+        showToast('Excel export library not loaded. Please refresh the page.', 'error');
+        return;
+    }
+    
     // Fetch all data for export
     const url = `../api/admin/suppliers.php?action=read_all&page=1&limit=10000${searchQuery ? '&search=' + encodeURIComponent(searchQuery) : ''}`;
+    
+    showToast('Exporting... Please wait', 'info');
+    
     $.get(url, function(data) {
-        if (data.status === 'success') {
-            const suppliers = data.data?.data || [];
-            
-            // Create table data
-            const headers = ['ID', 'Supplier ID', 'Supplier Name', 'Agent', 'City'];
-            const rows = suppliers.map(supplier => [
-                supplier.id,
-                supplier.supplier_id || '-',
-                supplier.supplier || '-',
-                supplier.agent || '-',
-                supplier.city || '-'
-            ]);
-            
-            const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Suppliers");
-            const date = new Date();
-            const dateStr = date.toISOString().split('T')[0];
-            XLSX.writeFile(wb, `Supplier_List_${dateStr}.xlsx`);
-            Swal.fire({
-                icon: 'success',
-                title: 'Export Successful',
-                text: 'Supplier list has been exported to Excel',
-                timer: 1500,
-                showConfirmButton: false
-            });
-        }
-    }, 'json').fail(function() {
-        Swal.fire('Error', 'Failed to export suppliers', 'error');
-    });
-}
-
-function exportToCSV() {
-    // Fetch all data for export
-    const url = `../api/admin/suppliers.php?action=read_all&page=1&limit=10000${searchQuery ? '&search=' + encodeURIComponent(searchQuery) : ''}`;
-    $.get(url, function(data) {
-        if (data.status === 'success') {
-            const suppliers = data.data?.data || [];
-            
-            // Create CSV data
-            const headers = ['ID', 'Supplier ID', 'Supplier Name', 'Agent', 'City'];
-            const csvRows = suppliers.map(supplier => {
-                const row = [
+        try {
+            if (data.status === 'success') {
+                const suppliers = data.data?.data || [];
+                
+                if (suppliers.length === 0) {
+                    showToast('No suppliers found to export', 'warning');
+                    return;
+                }
+                
+                // Create table data
+                const headers = ['ID', 'Supplier ID', 'Supplier Name', 'Agent', 'City'];
+                const rows = suppliers.map(supplier => [
                     supplier.id,
                     supplier.supplier_id || '-',
                     supplier.supplier || '-',
                     supplier.agent || '-',
                     supplier.city || '-'
-                ];
-                return row.map(cell => {
-                    let text = String(cell);
-                    if (text.includes(',') || text.includes('"') || text.includes('\n')) {
-                        text = `"${text.replace(/"/g, '""')}"`;
-                    }
-                    return text;
-                }).join(',');
-            });
-            
-            csvRows.unshift(headers.join(','));
-            const csvContent = csvRows.join('\n');
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const date = new Date();
-            const dateStr = date.toISOString().split('T')[0];
-            saveAs(blob, `Supplier_List_${dateStr}.csv`);
-            Swal.fire({
-                icon: 'success',
-                title: 'Export Successful',
-                text: 'Supplier list has been exported to CSV',
-                timer: 1500,
-                showConfirmButton: false
-            });
+                ]);
+                
+                const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Suppliers");
+                const date = new Date();
+                const dateStr = date.toISOString().split('T')[0];
+                XLSX.writeFile(wb, `Supplier_List_${dateStr}.xlsx`);
+                
+                showToast('Supplier list has been exported to Excel', 'success', 1500);
+            } else {
+                showToast(data.message || 'Failed to export suppliers', 'error');
+            }
+        } catch (error) {
+            console.error('Export error:', error);
+            showToast('An error occurred while exporting: ' + error.message, 'error');
         }
-    }, 'json').fail(function() {
-        Swal.fire('Error', 'Failed to export suppliers', 'error');
+    }, 'json').fail(function(xhr, status, error) {
+        console.error('Export request failed:', error);
+        showToast('Failed to fetch data for export: ' + error, 'error');
+    });
+}
+
+function exportToCSV() {
+    // Check if FileSaver is available
+    if (typeof saveAs === 'undefined') {
+        showToast('FileSaver library not loaded. Please refresh the page.', 'error');
+        return;
+    }
+    
+    // Fetch all data for export
+    const url = `../api/admin/suppliers.php?action=read_all&page=1&limit=10000${searchQuery ? '&search=' + encodeURIComponent(searchQuery) : ''}`;
+    
+    showToast('Exporting... Please wait', 'info');
+    
+    $.get(url, function(data) {
+        try {
+            if (data.status === 'success') {
+                const suppliers = data.data?.data || [];
+                
+                if (suppliers.length === 0) {
+                    showToast('No suppliers found to export', 'warning');
+                    return;
+                }
+                
+                // Create CSV data
+                const headers = ['ID', 'Supplier ID', 'Supplier Name', 'Agent', 'City'];
+                const csvRows = suppliers.map(supplier => {
+                    const row = [
+                        supplier.id,
+                        supplier.supplier_id || '-',
+                        supplier.supplier || '-',
+                        supplier.agent || '-',
+                        supplier.city || '-'
+                    ];
+                    return row.map(cell => {
+                        let text = String(cell);
+                        if (text.includes(',') || text.includes('"') || text.includes('\n')) {
+                            text = `"${text.replace(/"/g, '""')}"`;
+                        }
+                        return text;
+                    }).join(',');
+                });
+                
+                csvRows.unshift(headers.join(','));
+                const csvContent = csvRows.join('\n');
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const date = new Date();
+                const dateStr = date.toISOString().split('T')[0];
+                saveAs(blob, `Supplier_List_${dateStr}.csv`);
+                
+                showToast('Supplier list has been exported to CSV', 'success', 1500);
+            } else {
+                showToast(data.message || 'Failed to export suppliers', 'error');
+            }
+        } catch (error) {
+            console.error('Export error:', error);
+            showToast('An error occurred while exporting: ' + error.message, 'error');
+        }
+    }, 'json').fail(function(xhr, status, error) {
+        console.error('Export request failed:', error);
+        showToast('Failed to fetch data for export: ' + error, 'error');
     });
 }
 

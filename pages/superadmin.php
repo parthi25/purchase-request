@@ -163,7 +163,7 @@ include '../common/layout.php'; ?>
                     <label class="label">
                         <span class="label-text">Role</span>
                     </label>
-                    <select id="permissionRole" class="select select-bordered w-full" required>
+                    <select id="permissionRole" name="role" class="select select-bordered w-full" required>
                         <option value="">Select Role</option>
                     </select>
                 </div>
@@ -172,7 +172,7 @@ include '../common/layout.php'; ?>
                     <label class="label">
                         <span class="label-text">Status</span>
                     </label>
-                    <select id="permissionStatus" class="select select-bordered w-full" required>
+                    <select id="permissionStatus" name="status_id" class="select select-bordered w-full" required>
                         <option value="">Select Status</option>
                     </select>
                 </div>
@@ -207,7 +207,7 @@ include '../common/layout.php'; ?>
                     <label class="label">
                         <span class="label-text">From Status</span>
                     </label>
-                    <select id="flowFromStatus" class="select select-bordered w-full" required>
+                    <select id="flowFromStatus" name="from_status_id" class="select select-bordered w-full" required>
                         <option value="">Select From Status</option>
                     </select>
                 </div>
@@ -216,7 +216,7 @@ include '../common/layout.php'; ?>
                     <label class="label">
                         <span class="label-text">To Status</span>
                     </label>
-                    <select id="flowToStatus" class="select select-bordered w-full" required>
+                    <select id="flowToStatus" name="to_status_id" class="select select-bordered w-full" required>
                         <option value="">Select To Status</option>
                     </select>
                 </div>
@@ -225,7 +225,7 @@ include '../common/layout.php'; ?>
                     <label class="label">
                         <span class="label-text">Role</span>
                     </label>
-                    <select id="flowRole" class="select select-bordered w-full" required>
+                    <select id="flowRole" name="role" class="select select-bordered w-full" required>
                         <option value="">Select Role</option>
                     </select>
                 </div>
@@ -241,7 +241,7 @@ include '../common/layout.php'; ?>
                     <label class="label">
                         <span class="label-text">Priority</span>
                     </label>
-                    <input type="number" id="flowPriority" class="input input-bordered w-full" value="0" min="0">
+                    <input type="number" id="flowPriority" name="priority" class="input input-bordered w-full" value="0" min="0">
                 </div>
                 
                 <div class="form-control mb-4">
@@ -274,7 +274,7 @@ include '../common/layout.php'; ?>
                     <label class="label">
                         <span class="label-text">Role</span>
                     </label>
-                    <select id="prPermissionRole" class="select select-bordered w-full" required>
+                    <select id="prPermissionRole" name="role" class="select select-bordered w-full" required>
                         <option value="">Select Role</option>
                     </select>
                 </div>
@@ -297,7 +297,7 @@ include '../common/layout.php'; ?>
                     <label class="label">
                         <span class="label-text">Can Edit When Status (leave empty for any status)</span>
                     </label>
-                    <select id="prPermissionEditStatus" class="select select-bordered w-full">
+                    <select id="prPermissionEditStatus" name="can_edit_status" class="select select-bordered w-full">
                         <option value="">Any Status</option>
                     </select>
                 </div>
@@ -332,7 +332,7 @@ include '../common/layout.php'; ?>
                     <label class="label">
                         <span class="label-text">Status</span>
                     </label>
-                    <select id="modalFieldStatus" class="select select-bordered w-full" required>
+                    <select id="modalFieldStatus" name="status_id" class="select select-bordered w-full" required>
                         <option value="">Select Status</option>
                     </select>
                 </div>
@@ -341,7 +341,7 @@ include '../common/layout.php'; ?>
                     <label class="label">
                         <span class="label-text">Field Name</span>
                     </label>
-                    <select id="modalFieldName" class="select select-bordered w-full" required>
+                    <select id="modalFieldName" name="field_name" class="select select-bordered w-full" required>
                         <option value="">Select Field</option>
                         <option value="buyer">Buyer</option>
                         <option value="po_head">PO Head</option>
@@ -355,7 +355,7 @@ include '../common/layout.php'; ?>
                 <div class="form-control mb-4">
                     <label class="label cursor-pointer">
                         <span class="label-text">Required</span>
-                        <input type="checkbox" id="modalFieldRequired" class="toggle toggle-primary">
+                        <input type="checkbox" id="modalFieldRequired" name="is_required" class="toggle toggle-primary">
                     </label>
                 </div>
                 
@@ -363,7 +363,7 @@ include '../common/layout.php'; ?>
                     <label class="label">
                         <span class="label-text">Field Order</span>
                     </label>
-                    <input type="number" id="modalFieldOrder" class="input input-bordered w-full" value="0" min="0" required>
+                    <input type="number" id="modalFieldOrder" name="field_order" class="input input-bordered w-full" value="0" min="0" required>
                 </div>
                 
                 <div class="modal-action">

@@ -4,7 +4,7 @@ include '../config/db.php';
 include '../config/response.php';
 
 // Check if user is logged in and has appropriate role
-if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role'], ['B_Head', 'PO_Team', 'PO_Team_Member'])) {
+if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role'], ['B_Head', 'PO_Team', 'PO_Team_Member','admin'])) {
     sendResponse(403, "error", "Unauthorized access");
 }
 

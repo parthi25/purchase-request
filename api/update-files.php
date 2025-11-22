@@ -74,6 +74,57 @@ if (!isset($allowedTables[$type])) {
 
 $table = $allowedTables[$type];
 
+// Check file upload permissions from database
+$userRole = $_SESSION['role'] ?? '';
+$statusStmt = $conn->prepare("SELECT po_status FROM purchase_requests WHERE id = ?");
+if (!$statusStmt) {
+    sendResponse(500, "error", "Database query preparation failed");
+}
+$statusStmt->bind_param("i", $order_id);
+$statusStmt->execute();
+$statusResult = $statusStmt->get_result();
+if ($statusResult->num_rows === 0) {
+    $statusStmt->close();
+    sendResponse(404, "error", "PR not found.");
+}
+$prData = $statusResult->fetch_assoc();
+$prStatus = (int)$prData['po_status'];
+$statusStmt->close();
+
+// Check if permissions table exists
+$tableCheck = $conn->query("SHOW TABLES LIKE 'file_upload_permissions'");
+$hasPermission = false;
+
+if ($tableCheck && $tableCheck->num_rows > 0) {
+    // Table exists, check permission from database
+    $permStmt = $conn->prepare("SELECT can_upload FROM file_upload_permissions 
+                                 WHERE role = ? AND file_type = ? AND status_id = ? AND is_active = 1");
+    if ($permStmt) {
+        $permStmt->bind_param("ssi", $userRole, $type, $prStatus);
+        if ($permStmt->execute()) {
+            $permResult = $permStmt->get_result();
+            if ($permResult->num_rows > 0) {
+                $permData = $permResult->fetch_assoc();
+                $hasPermission = (bool)$permData['can_upload'];
+            }
+        }
+        $permStmt->close();
+    }
+} else {
+    // Table doesn't exist, use fallback hardcoded permissions
+    if ($type === 'proforma') {
+        $hasPermission = in_array($prStatus, [1, 5]) && in_array($userRole, ['B_Head', 'bhead']);
+    } else if ($type === 'po') {
+        $hasPermission = $prStatus === 7 && in_array($userRole, ['PO_Team', 'PO_Team_Member', 'pohead', 'poteammember']);
+    } else if ($type === 'product') {
+        $hasPermission = in_array($prStatus, [1, 2, 3, 4, 5]) && in_array($userRole, ['B_Head', 'buyer', 'admin', 'bhead']);
+    }
+}
+
+if (!$hasPermission) {
+    sendResponse(403, "error", "You do not have permission to upload files for this status.");
+}
+
 // Process uploaded file with enhanced security
 $file = $_FILES["file"];
 

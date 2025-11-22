@@ -267,8 +267,15 @@ try {
     $sql = "SELECT DISTINCT
                 pt.id,
                 pt.created_at,
+                pt.updated_at,
                 pt.status_1, pt.status_2, pt.status_3, pt.status_4, pt.status_5, pt.status_6,
                 pt.po_status,
+                pt.qty,
+                pt.uom,
+                pt.remark,
+                pt.category_id,
+                pt.purch_id,
+                pt.created_by,
                 bh.username AS b_head,
                 COALESCE(
                     b.username, 
@@ -277,7 +284,7 @@ try {
                     'Unknown'
                 ) AS buyer,
                 s.supplier,
-                s.id as supplier_id,
+                s.supplier_id AS supplier_code,
                 st.status AS status,
                 (SELECT ptm2.buyername FROM pr_assignments ptm2 WHERE ptm2.ord_id = pt.id LIMIT 1) AS buyername,
                 pt.po_date as status_7,
@@ -288,11 +295,13 @@ try {
                 poh.username AS pohead,
                 pm.name as purch_type,
                 (SELECT ptm4.po_number FROM pr_assignments ptm4 WHERE ptm4.ord_id = pt.id LIMIT 1) AS po_number,
-                (SELECT GROUP_CONCAT(DISTINCT c.maincat SEPARATOR ', ') 
+                (SELECT c.maincat 
                  FROM catbasbh cb
                  JOIN categories c ON c.maincat = cb.cat
                  WHERE cb.user_id = pt.b_head
-                 LIMIT 50) AS categories
+                 LIMIT 1) AS categories,
+                c.maincat AS category_name,
+                u.username AS created_by_name
             FROM purchase_requests pt
             LEFT JOIN users bh ON pt.b_head = bh.id
             LEFT JOIN users b ON pt.buyer = b.id
@@ -300,6 +309,8 @@ try {
             LEFT JOIN pr_statuses st ON pt.po_status = st.id
             LEFT JOIN users poh ON poh.id = pt.po_team
             LEFT JOIN purchase_types pm ON pm.id = pt.purch_id
+            LEFT JOIN categories c ON c.id = pt.category_id
+            LEFT JOIN users u ON u.id = pt.created_by
             $where
             ORDER BY pt.created_at DESC
             LIMIT ?, ?";

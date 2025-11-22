@@ -154,11 +154,42 @@
                 <div class="bg-base-200 p-6 rounded-lg">
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
                         <h2 class="text-2xl font-semibold">Purchase Orders</h2>
-                        <div class="flex flex-wrap gap-2">
+                        <div class="flex flex-wrap gap-2 items-center">
                             <div class="badge badge-primary badge-lg">Total: <span id="totalRecords">0</span></div>
                             <div class="badge badge-success badge-lg">Completed: <span id="completedBadge">0</span></div>
+                            <button id="columnToggleBtn" class="btn btn-outline btn-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                                </svg>
+                                Columns
+                            </button>
+                            <button id="downloadBtn" class="btn btn-primary btn-sm">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                                Download
+                            </button>
                         </div>
                     </div>
+
+                    <!-- Column Selection Modal -->
+                    <dialog id="columnModal" class="modal">
+                        <div class="modal-box max-w-2xl">
+                            <h3 class="font-bold text-lg mb-4">Select Columns</h3>
+                            <div class="space-y-2 max-h-96 overflow-y-auto" id="columnCheckboxes">
+                                <!-- Column checkboxes will be inserted here -->
+                            </div>
+                            <div class="modal-action">
+                                <button class="btn btn-primary" id="applyColumnsBtn">Apply</button>
+                                <form method="dialog">
+                                    <button class="btn">Close</button>
+                                </form>
+                            </div>
+                        </div>
+                        <form method="dialog" class="modal-backdrop">
+                            <button>close</button>
+                        </form>
+                    </dialog>
 
                     <!-- Loading State -->
                     <div id="loadingState" class="flex justify-center items-center py-12">
@@ -167,22 +198,9 @@
 
                     <!-- Table -->
                     <div class="overflow-x-auto" id="tableContainer" style="display: none;">
-                        <table class="table table-zebra">
-                            <thead>
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Status</th>
-                                    <th>Supplier</th>
-                                    <th>Buyer Head</th>
-                                    <th>Buyer</th>
-                                    <th>PO Team Member</th>
-                                    <th>Purchase Type</th>
-                                    <th>Created Date</th>
-                                    <th>PO Number</th>
-                                    <th>PO Date</th>
-                                    <th>Categories</th>
-                                    <th>Actions</th>
-                                </tr>
+                        <table class="table table-zebra" id="dataTable">
+                            <thead id="tableHead">
+                                <!-- Headers will be dynamically generated -->
                             </thead>
                             <tbody id="tableBody">
                                 <!-- Data will be inserted here -->
@@ -237,6 +255,8 @@
 
     <!-- Chart.js -->
     <script src="../assets/js/chart.umd.min.js"></script>
+    <!-- XLSX for Excel export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
 
 
@@ -257,17 +277,226 @@
                 buyerChart: null,
                 filtersInitialized: false,
                 lastOptionsHash: null,
-                abortController: null
+                abortController: null,
+                // Column visibility management
+                availableColumns: [
+                    { key: 'id', label: 'ID', visible: true, order: 1 },
+                    { key: 'status', label: 'Status', visible: true, order: 2 },
+                    { key: 'supplier', label: 'Supplier', visible: true, order: 3 },
+                    { key: 'supplier_code', label: 'Supplier Code', visible: false, order: 4 },
+                    { key: 'b_head', label: 'Buyer Head', visible: true, order: 5 },
+                    { key: 'buyer', label: 'Buyer', visible: true, order: 6 },
+                    { key: 'buyername', label: 'Buyer Name', visible: false, order: 7 },
+                    { key: 'po_team_member', label: 'PO Team Member', visible: true, order: 8 },
+                    { key: 'pohead', label: 'PO Head', visible: false, order: 9 },
+                    { key: 'purch_type', label: 'Purchase Type', visible: true, order: 10 },
+                    { key: 'categories', label: 'Category', visible: true, order: 11 },
+                    { key: 'category_name', label: 'Category Name', visible: false, order: 12 },
+                    { key: 'qty', label: 'Quantity', visible: false, order: 13 },
+                    { key: 'uom', label: 'UOM', visible: false, order: 14 },
+                    { key: 'remark', label: 'Remark', visible: false, order: 15 },
+                    { key: 'created_at', label: 'Created Date', visible: true, order: 16 },
+                    { key: 'created_by_name', label: 'Created By', visible: false, order: 17 },
+                    { key: 'updated_at', label: 'Updated Date', visible: false, order: 18 },
+                    { key: 'po_number', label: 'PO Number', visible: true, order: 19 },
+                    { key: 'po_date', label: 'PO Date', visible: true, order: 20 },
+                    { key: 'status_1', label: 'Status 1 Date', visible: false, order: 21 },
+                    { key: 'status_2', label: 'Status 2 Date', visible: false, order: 22 },
+                    { key: 'status_3', label: 'Status 3 Date', visible: false, order: 23 },
+                    { key: 'status_4', label: 'Status 4 Date', visible: false, order: 24 },
+                    { key: 'status_5', label: 'Status 5 Date', visible: false, order: 25 },
+                    { key: 'status_6', label: 'Status 6 Date', visible: false, order: 26 },
+                    { key: 'status_7', label: 'Status 7 Date', visible: false, order: 27 }
+                ],
+                visibleColumns: []
             },
 
             init() {
                 this.setupDefaultDates();
                 this.bindEvents();
                 this.initCharts();
+                this.initColumnManagement();
                 
                 // Load filters and data in parallel, but prioritize data
                 this.loadFilters();
                 this.loadData();
+            },
+
+            initColumnManagement() {
+                // Initialize visible columns from available columns
+                this.state.visibleColumns = this.state.availableColumns
+                    .filter(col => col.visible)
+                    .sort((a, b) => a.order - b.order);
+                
+                // Load saved column preferences from localStorage
+                const savedColumns = localStorage.getItem('dashboard_columns');
+                if (savedColumns) {
+                    try {
+                        const saved = JSON.parse(savedColumns);
+                        this.state.availableColumns.forEach(col => {
+                            const savedCol = saved.find(s => s.key === col.key);
+                            if (savedCol) {
+                                col.visible = savedCol.visible;
+                                col.order = savedCol.order;
+                            }
+                        });
+                        this.state.visibleColumns = this.state.availableColumns
+                            .filter(col => col.visible)
+                            .sort((a, b) => a.order - b.order);
+                    } catch (e) {
+                        console.error('Error loading saved columns:', e);
+                    }
+                }
+                
+                // Setup column toggle button
+                document.getElementById('columnToggleBtn').addEventListener('click', () => {
+                    this.showColumnModal();
+                });
+                
+                // Setup download button
+                document.getElementById('downloadBtn').addEventListener('click', () => {
+                    this.downloadData();
+                });
+                
+                // Setup apply columns button
+                document.getElementById('applyColumnsBtn').addEventListener('click', () => {
+                    this.applyColumnSelection();
+                });
+            },
+
+            showColumnModal() {
+                const container = document.getElementById('columnCheckboxes');
+                container.innerHTML = '';
+                
+                // Sort columns by order
+                const sortedColumns = [...this.state.availableColumns].sort((a, b) => a.order - b.order);
+                
+                // Create a sortable list
+                const list = document.createElement('div');
+                list.id = 'sortableColumnList';
+                list.className = 'space-y-2';
+                
+                sortedColumns.forEach((col, index) => {
+                    const item = document.createElement('div');
+                    item.className = 'flex items-center gap-2 p-2 hover:bg-base-200 rounded cursor-move border border-base-300';
+                    item.draggable = true;
+                    item.dataset.key = col.key;
+                    item.dataset.order = col.order;
+                    item.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-base-content/50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                        <input type="checkbox" class="checkbox checkbox-primary" 
+                               data-key="${col.key}" ${col.visible ? 'checked' : ''}>
+                        <span class="label-text flex-1">${col.label}</span>
+                    `;
+                    
+                    // Drag and drop handlers
+                    item.addEventListener('dragstart', (e) => {
+                        e.dataTransfer.effectAllowed = 'move';
+                        e.dataTransfer.setData('text/html', item.outerHTML);
+                        e.dataTransfer.setData('text/key', col.key);
+                        item.classList.add('opacity-50');
+                    });
+                    
+                    item.addEventListener('dragend', (e) => {
+                        item.classList.remove('opacity-50');
+                    });
+                    
+                    item.addEventListener('dragover', (e) => {
+                        e.preventDefault();
+                        e.dataTransfer.dropEffect = 'move';
+                        const afterElement = this.getDragAfterElement(list, e.clientY);
+                        const dragging = document.querySelector('.opacity-50');
+                        if (dragging && afterElement == null) {
+                            list.appendChild(dragging);
+                        } else if (dragging && afterElement) {
+                            list.insertBefore(dragging, afterElement);
+                        }
+                    });
+                    
+                    item.addEventListener('drop', (e) => {
+                        e.preventDefault();
+                        const draggedKey = e.dataTransfer.getData('text/key');
+                        const draggedItem = list.querySelector(`[data-key="${draggedKey}"]`);
+                        if (draggedItem && draggedItem !== item) {
+                            const allItems = Array.from(list.children);
+                            const draggedIndex = allItems.indexOf(draggedItem);
+                            const targetIndex = allItems.indexOf(item);
+                            
+                            if (draggedIndex < targetIndex) {
+                                list.insertBefore(draggedItem, item.nextSibling);
+                            } else {
+                                list.insertBefore(draggedItem, item);
+                            }
+                            
+                            // Update order values
+                            Array.from(list.children).forEach((el, idx) => {
+                                const key = el.dataset.key;
+                                const col = this.state.availableColumns.find(c => c.key === key);
+                                if (col) {
+                                    col.order = idx + 1;
+                                }
+                            });
+                        }
+                    });
+                    
+                    list.appendChild(item);
+                });
+                
+                container.appendChild(list);
+                document.getElementById('columnModal').showModal();
+            },
+
+            getDragAfterElement(container, y) {
+                const draggableElements = [...container.querySelectorAll('div[draggable]:not(.opacity-50)')];
+                
+                return draggableElements.reduce((closest, child) => {
+                    const box = child.getBoundingClientRect();
+                    const offset = y - box.top - box.height / 2;
+                    
+                    if (offset < 0 && offset > closest.offset) {
+                        return { offset: offset, element: child };
+                    } else {
+                        return closest;
+                    }
+                }, { offset: Number.NEGATIVE_INFINITY }).element;
+            },
+
+            applyColumnSelection() {
+                const list = document.getElementById('sortableColumnList');
+                const checkboxes = list.querySelectorAll('input[type="checkbox"]');
+                
+                // Update visibility from checkboxes
+                checkboxes.forEach(cb => {
+                    const col = this.state.availableColumns.find(c => c.key === cb.dataset.key);
+                    if (col) {
+                        col.visible = cb.checked;
+                    }
+                });
+                
+                // Update order from DOM position
+                Array.from(list.children).forEach((el, idx) => {
+                    const key = el.dataset.key;
+                    const col = this.state.availableColumns.find(c => c.key === key);
+                    if (col) {
+                        col.order = idx + 1;
+                    }
+                });
+                
+                // Update visible columns
+                this.state.visibleColumns = this.state.availableColumns
+                    .filter(col => col.visible)
+                    .sort((a, b) => a.order - b.order);
+                
+                // Save to localStorage
+                localStorage.setItem('dashboard_columns', JSON.stringify(this.state.availableColumns));
+                
+                // Re-render table
+                this.renderTable();
+                
+                // Close modal
+                document.getElementById('columnModal').close();
             },
 
             loadFilters() {
@@ -1129,6 +1358,7 @@
             renderTable() {
                 // Batch all DOM reads first to prevent forced reflow
                 const tbody = document.getElementById('tableBody');
+                const thead = document.getElementById('tableHead');
                 const tableContainer = document.getElementById('tableContainer');
                 const emptyState = document.getElementById('emptyState');
                 const hasData = this.state.data && this.state.data.length > 0;
@@ -1144,31 +1374,88 @@
                     tableContainer.style.display = 'block';
                     emptyState.style.display = 'none';
 
+                    // Render table headers based on visible columns
+                    const headerRow = document.createElement('tr');
+                    this.state.visibleColumns.forEach(col => {
+                        const th = document.createElement('th');
+                        th.textContent = col.label;
+                        headerRow.appendChild(th);
+                    });
+                    // Always show Actions column
+                    const actionsTh = document.createElement('th');
+                    actionsTh.textContent = 'Actions';
+                    headerRow.appendChild(actionsTh);
+                    thead.innerHTML = '';
+                    thead.appendChild(headerRow);
+
                     // Use DocumentFragment for better performance
                     const fragment = document.createDocumentFragment();
+                    
+                    // Helper function to get cell value
+                    const getCellValue = (row, key) => {
+                        switch(key) {
+                            case 'id': return row.id || '-';
+                            case 'status': return row.status || '-';
+                            case 'supplier': return row.supplier_name || row.supplier || '-';
+                            case 'supplier_code': return row.supplier_code || '-';
+                            case 'b_head': return row.b_head || '-';
+                            case 'buyer': return row.buyer || row.buyername || '-';
+                            case 'buyername': return row.buyername || '-';
+                            case 'po_team_member': return row.po_team_member || '-';
+                            case 'pohead': return row.pohead || '-';
+                            case 'purch_type': return row.purch_type || '-';
+                            case 'categories': return row.categories ? row.categories.split(',')[0].trim() : '-';
+                            case 'category_name': return row.category_name || '-';
+                            case 'qty': return row.qty || '-';
+                            case 'uom': return row.uom || '-';
+                            case 'remark': return row.remark || '-';
+                            case 'created_at': return this.formatDate(row.created_at);
+                            case 'created_by_name': return row.created_by_name || '-';
+                            case 'updated_at': return row.updated_at ? this.formatDate(row.updated_at) : '-';
+                            case 'po_number': return row.po_number || '-';
+                            case 'po_date': return this.formatDate(row.po_date);
+                            case 'status_1': return row.status_1 ? this.formatDate(row.status_1) : '-';
+                            case 'status_2': return row.status_2 ? this.formatDate(row.status_2) : '-';
+                            case 'status_3': return row.status_3 ? this.formatDate(row.status_3) : '-';
+                            case 'status_4': return row.status_4 ? this.formatDate(row.status_4) : '-';
+                            case 'status_5': return row.status_5 ? this.formatDate(row.status_5) : '-';
+                            case 'status_6': return row.status_6 ? this.formatDate(row.status_6) : '-';
+                            case 'status_7': return row.status_7 ? this.formatDate(row.status_7) : '-';
+                            default: return row[key] || '-';
+                        }
+                    };
                     
                     // Pre-compute all HTML to avoid multiple reflows
                     const rows = this.state.data.map(row => {
                         const tr = document.createElement('tr');
                         const statusColor = this.getStatusTextColor(row.status);
-                        tr.innerHTML = `
-                            <td class="font-semibold">${row.id || '-'}</td>
-                            <td class="${statusColor}">${row.status || '-'}</td>
-                            <td>${row.supplier_name || row.supplier || '-'}</td>
-                            <td>${row.b_head || '-'}</td>
-                            <td>${row.buyer || row.buyername || '-'}</td>
-                            <td>${row.po_team_member || '-'}</td>
-                            <td>${row.purch_type || '-'}</td>
-                            <td>${this.formatDate(row.created_at)}</td>
-                            <td>${row.po_number || '-'}</td>
-                            <td>${this.formatDate(row.po_date)}</td>
-                            <td><div class="max-w-xs truncate" title="${row.categories || '-'}">${row.categories || '-'}</div></td>
-                            <td>
-                                <button class="btn btn-sm btn-primary" onclick="Dashboard.viewDetails(${row.id})">
-                                    View
-                                </button>
-                            </td>
+                        
+                        // Add cells for visible columns
+                        this.state.visibleColumns.forEach(col => {
+                            const td = document.createElement('td');
+                            if (col.key === 'status') {
+                                td.className = statusColor;
+                            } else if (col.key === 'id') {
+                                td.className = 'font-semibold';
+                            } else if (col.key === 'categories') {
+                                const value = getCellValue(row, col.key);
+                                td.innerHTML = `<div class="max-w-xs truncate" title="${value}">${value}</div>`;
+                                tr.appendChild(td);
+                                return;
+                            }
+                            td.textContent = getCellValue(row, col.key);
+                            tr.appendChild(td);
+                        });
+                        
+                        // Always add Actions column
+                        const actionsTd = document.createElement('td');
+                        actionsTd.innerHTML = `
+                            <button class="btn btn-sm btn-primary" onclick="Dashboard.viewDetails(${row.id})">
+                                View
+                            </button>
                         `;
+                        tr.appendChild(actionsTd);
+                        
                         return tr;
                     });
                     
@@ -1317,6 +1604,100 @@
                 container.appendChild(nextBtn);
             },
 
+            async downloadData() {
+                // Check if XLSX is available
+                if (typeof XLSX === 'undefined') {
+                    showToast('Excel export library not loaded. Please refresh the page.', 'error');
+                    return;
+                }
+                
+                showToast('Fetching all data for export...', 'info');
+                
+                try {
+                    // Fetch all data without pagination
+                    const params = new URLSearchParams({
+                        page: 1,
+                        per_page: 100000, // Large number to get all data
+                        include_all_data: true
+                    });
+
+                    // Add current filters
+                    if (this.state.searchQuery) {
+                        params.append('search', this.state.searchQuery);
+                    }
+
+                    const filterIds = ['statusFilter', 'buyerHeadFilter', 'buyerFilter', 'supplierFilter', 'categoryFilter', 'purchFilter', 'poTeamMemberFilter'];
+                    filterIds.forEach(filterId => {
+                        const values = this.getMultiselectValues(filterId);
+                        if (values && values.length > 0) {
+                            params.append(filterId.replace('Filter', ''), values.join(','));
+                        }
+                    });
+
+                    const startDate = document.getElementById('startDate').value;
+                    const endDate = document.getElementById('endDate').value;
+                    if (startDate) params.append('start_date', startDate);
+                    if (endDate) params.append('end_date', endDate);
+
+                    const response = await fetch(`../fetch/fetch-dash.php?${params.toString()}`);
+                    const result = await response.json();
+
+                    if (result.status !== 'success' || !result.data || result.data.length === 0) {
+                        showToast('No data found to export', 'warning');
+                        return;
+                    }
+
+                    const allData = result.data;
+                    
+                    // Prepare headers based on visible columns
+                    const headers = this.state.visibleColumns.map(col => col.label);
+                    
+                    // Helper function to get cell value
+                    const getCellValue = (row, key) => {
+                        switch(key) {
+                            case 'id': return row.id || '-';
+                            case 'status': return row.status || '-';
+                            case 'supplier': return row.supplier_name || row.supplier || '-';
+                            case 'b_head': return row.b_head || '-';
+                            case 'buyer': return row.buyer || row.buyername || '-';
+                            case 'po_team_member': return row.po_team_member || '-';
+                            case 'purch_type': return row.purch_type || '-';
+                            case 'created_at': return row.created_at ? this.formatDate(row.created_at) : '-';
+                            case 'po_number': return row.po_number || '-';
+                            case 'po_date': return row.po_date ? this.formatDate(row.po_date) : '-';
+                            case 'categories': return row.categories ? row.categories.split(',')[0].trim() : '-';
+                            case 'pohead': return row.pohead || '-';
+                            case 'supplier_id': return row.supplier_id || '-';
+                            case 'buyername': return row.buyername || '-';
+                            default: return row[key] || '-';
+                        }
+                    };
+                    
+                    // Prepare rows
+                    const rows = allData.map(row => {
+                        return this.state.visibleColumns.map(col => getCellValue(row, col.key));
+                    });
+                    
+                    // Create worksheet
+                    const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+                    const wb = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(wb, ws, "Dashboard Data");
+                    
+                    // Generate filename
+                    const date = new Date();
+                    const dateStr = date.toISOString().split('T')[0];
+                    const filename = `Dashboard_Export_${dateStr}.xlsx`;
+                    
+                    // Download file
+                    XLSX.writeFile(wb, filename);
+                    
+                    showToast(`Exported ${allData.length} records successfully`, 'success');
+                } catch (error) {
+                    console.error('Export error:', error);
+                    showToast('An error occurred while exporting: ' + error.message, 'error');
+                }
+            },
+
             viewDetails(orderId) {
                 const order = this.state.data.find(o => o.id == orderId) || 
                              this.state.allFilteredData.find(o => o.id == orderId);
@@ -1325,6 +1706,9 @@
 
                 document.getElementById('modalOrderId').textContent = order.id;
                 const tbody = document.getElementById('detailsTableBody');
+                
+                // Show only first category
+                const category = order.categories ? order.categories.split(',')[0].trim() : '-';
                 
                 tbody.innerHTML = `
                     <tr><th>PO Number</th><td>${order.po_number || '-'}</td></tr>
@@ -1335,7 +1719,7 @@
                     <tr><th>PO Team Member</th><td>${order.po_team_member || '-'}</td></tr>
                     <tr><th>PO Head</th><td>${order.pohead || '-'}</td></tr>
                     <tr><th>Purchase Type</th><td>${order.purch_type || '-'}</td></tr>
-                    <tr><th>Categories</th><td>${order.categories || '-'}</td></tr>
+                    <tr><th>Category</th><td>${category}</td></tr>
                     <tr><th>Created Date</th><td>${this.formatDate(order.created_at)}</td></tr>
                     <tr><th>PO Date</th><td>${this.formatDate(order.po_date)}</td></tr>
                 `;
@@ -1344,25 +1728,7 @@
             },
 
             showError(message) {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: message
-                    });
-                } else {
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: message,
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 3000
-                        });
-                    }
-                }
+                showToast(message, 'error');
             }
         };
 

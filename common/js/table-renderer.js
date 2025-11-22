@@ -17,8 +17,12 @@ function openFileModal(type, id, statusId, role) {
   };
 
   // Check permissions for upload/delete (viewing is always allowed)
+  // Permissions are now checked dynamically via API in file-upload.js
+  // This function is kept for backward compatibility but permissions are handled in file-upload.js
   let uploadAllowed = false;
   let deleteAllowed = false;
+  
+  // Fallback permissions (file-upload.js will override with database permissions)
   if (type === 'proforma') {
     uploadAllowed = [1, 5].includes(parseInt(statusId));
     deleteAllowed = uploadAllowed;
@@ -90,22 +94,16 @@ function renderFileList(files, currentUrls, currentType, uploadAllowed, deleteAl
     delBtn.addEventListener('click', async (e) => {
       e.preventDefault();
       const fileId = delBtn.dataset.id;
-      if (typeof Swal === 'undefined') {
-        if (!confirm('Are you sure you want to delete this file?')) return;
-      } else {
-        const confirmResult = await Swal.fire({
-          title: 'Are you sure?',
-          text: 'Are you sure you want to delete this file?',
-          icon: 'warning',
-          showCancelButton: true,
-          confirmButtonColor: '#d33',
-          cancelButtonColor: '#3085d6',
-          confirmButtonText: 'Yes, delete it!',
-          cancelButtonText: 'Cancel'
-        });
-        
-        if (!confirmResult.isConfirmed) return;
-      }
+      
+      // Use DaisyUI confirm dialog
+      const confirmResult = await showConfirm(
+        'Are you sure?',
+        'Are you sure you want to delete this file?',
+        'Yes, delete it!',
+        'Cancel'
+      );
+      
+      if (!confirmResult.isConfirmed) return;
 
       try {
         delBtn.disabled = true;
@@ -155,29 +153,8 @@ function getFileIcon(fileUrl) {
 }
 
 function showAlert(message, type = 'info') {
-  if (typeof Swal !== 'undefined') {
-    Swal.fire({
-      icon: type,
-      title: message,
-      toast: true,
-      position: 'top-end',
-      showConfirmButton: false,
-      timer: 3000,
-      timerProgressBar: true,
-    });
-  } else {
-    if (typeof Swal !== 'undefined') {
-      Swal.fire({
-        icon: type,
-        title: message,
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-      });
-    }
-  }
+  // Use DaisyUI toast notification
+  showToast(message, type, 3000);
 }
 
 // Table configurations
@@ -191,11 +168,13 @@ const TableConfigs = {
       { key: "supplier", label: "Supplier", sortable: true },
       { key: "b_head", label: "B Head", sortable: true },
       { key: "buyer", label: "Buyer", sortable: true },
+      { key: "po_head", label: "PO Head", sortable: true },
+      { key: "po_team", label: "PO Team", sortable: true },
       { key: "category", label: "Category", sortable: true },
       { key: "qty", label: "Quantity", sortable: true },
-      { key: "images", label: "Pic", sortable: true },
-      { key: "created_by", label: "Created", sortable: true },
-      { key: "created_at", label: "Created", sortable: true },
+
+      { key: "created_by", label: "Created By", sortable: true },
+      { key: "created_at", label: "Created On", sortable: true },
       { key: "actions", label: "Actions", sortable: false },
     ],
     showButtons: { edit: true, proforma: true, po: true },
@@ -210,11 +189,13 @@ const TableConfigs = {
       { key: "supplier", label: "Supplier", sortable: true },
       { key: "b_head", label: "B Head", sortable: true },
       { key: "buyer", label: "Buyer", sortable: true },
+      { key: "po_head", label: "PO Head", sortable: true },
+      { key: "po_team", label: "PO Team", sortable: true },
       { key: "category", label: "Category", sortable: true },
       { key: "qty", label: "Quantity", sortable: true },
-      { key: "images", label: "Pic", sortable: true },
-      { key: "created_by", label: "Created", sortable: true },
-      { key: "created_at", label: "Created", sortable: true },
+
+      { key: "created_by", label: "Created By", sortable: true },
+      { key: "created_at", label: "Created On", sortable: true },
       { key: "actions", label: "Actions", sortable: false },
     ],
     showButtons: { edit: true, proforma: true, po: true },
@@ -230,11 +211,13 @@ const TableConfigs = {
       { key: "supplier", label: "Supplier", sortable: true },
       { key: "b_head", label: "B Head", sortable: true },
       { key: "buyer", label: "Buyer", sortable: true },
+      { key: "po_head", label: "PO Head", sortable: true },
+      { key: "po_team", label: "PO Team", sortable: true },
       { key: "category", label: "Category", sortable: true },
       { key: "qty", label: "Quantity", sortable: true },
-      { key: "images", label: "Pic", sortable: true },
-      { key: "created_by", label: "Created", sortable: true },
-      { key: "created_at", label: "Created", sortable: true },
+
+      { key: "created_by", label: "Created By", sortable: true },
+      { key: "created_at", label: "Created On", sortable: true },
       { key: "actions", label: "Actions", sortable: false },
     ],
     showButtons: { edit: true, proforma: true, po: true },
@@ -249,11 +232,13 @@ const TableConfigs = {
       { key: "supplier", label: "Supplier", sortable: true },
       { key: "b_head", label: "B Head", sortable: true },
       { key: "buyer", label: "Buyer", sortable: true },
+      { key: "po_head", label: "PO Head", sortable: true },
+      { key: "po_team", label: "PO Team", sortable: true },
       { key: "category", label: "Category", sortable: true },
       { key: "qty", label: "Quantity", sortable: true },
-      { key: "images", label: "Pic", sortable: true },
-      { key: "created_by", label: "Created", sortable: true },
-      { key: "created_at", label: "Created", sortable: true },
+      
+      { key: "created_by", label: "Created By", sortable: true },
+      { key: "created_at", label: "Created On", sortable: true },
       { key: "actions", label: "Actions", sortable: false },
     ],
     showButtons: { edit: false, proforma: true, po: true },
@@ -268,11 +253,13 @@ const TableConfigs = {
       { key: "supplier", label: "Supplier", sortable: true },
       { key: "b_head", label: "B Head", sortable: true },
       { key: "buyer", label: "Buyer", sortable: true },
+      { key: "po_head", label: "PO Head", sortable: true },
+      { key: "po_team", label: "PO Team", sortable: true },
       { key: "category", label: "Category", sortable: true },
       { key: "qty", label: "Quantity", sortable: true },
-      { key: "images", label: "Pic", sortable: true },
-      { key: "created_by", label: "Created", sortable: true },
-      { key: "created_at", label: "Created", sortable: true },
+
+      { key: "created_by", label: "Created By", sortable: true },
+      { key: "created_at", label: "Created On", sortable: true },
       { key: "actions", label: "Actions", sortable: false },
     ],
     showButtons: { edit: false, proforma: true, po: true },
@@ -287,11 +274,13 @@ const TableConfigs = {
       { key: "supplier", label: "Supplier", sortable: true },
       { key: "b_head", label: "B Head", sortable: true },
       { key: "buyer", label: "Buyer", sortable: true },
+      { key: "po_head", label: "PO Head", sortable: true },
+      { key: "po_team", label: "PO Team", sortable: true },
       { key: "category", label: "Category", sortable: true },
       { key: "qty", label: "Quantity", sortable: true },
-      { key: "images", label: "Pic", sortable: true },
-      { key: "created_by", label: "Created", sortable: true },
-      { key: "created_at", label: "Created", sortable: true },
+
+      { key: "created_by", label: "Created By", sortable: true },
+      { key: "created_at", label: "Created On", sortable: true },
       { key: "actions", label: "Actions", sortable: false },
     ],
     showButtons: { edit: false, proforma: true, po: true },
@@ -424,30 +413,34 @@ class TableRenderer {
 formatCell(row, column) {
     switch (column.key) {
         case "id":
-            return row.id || "-";
+            return row.id || "Unknown";
         case "po_status":
             return (
                 this.config.statusBadges[String(row.po_status)] ||
                 '<span class="text-base-content/50">Unknown</span>'
             );
         case "supplier":
-            return row.supplier || "-";
+            return row.supplier || "Unknown";
         case "b_head":
-            return row.b_head || "-";
+            return row.b_head || "Unknown";
         case "buyer":
-            return row.buyer || "-";
+            return row.buyer || "Unknown";
+        case "po_head":
+            return row.po_team || "-";
+        case "po_team":
+            return row.po_team_member || "-";
         case "category":
-            return row.category_name || "-";
+            return row.category_name || "Unknown";
         case "qty":
-            return row.qty || "-";
-        case "images":
-            return row.images && row.images.length > 0 
-                ? `<span class="text-green-500">✓ (${row.images.length})</span>`
-                : '<span class="text-gray-400">✗</span>';
+            return row.qty || "Unknown";
+        // case "images":
+        //     return row.images && row.images.length > 0 
+        //         ? `<span class="text-green-500">✓ (${row.images.length})</span>`
+        //         : '<span class="text-gray-400">✗</span>';
         case "created_by":
-            return row.created_by || "-";
+            return row.created_by || "Unknown";
         case "created_at":
-            return row.created_at ? new Date(row.created_at).toLocaleDateString() : "-";
+            return row.created_at ? new Date(row.created_at).toLocaleDateString() : "Unknown";
         case "actions":
             let buttons = '<div class="flex gap-1">';
             buttons += `<button class="btn btn-sm btn-outline read-more-toggle" data-id='${row.id}'>remarks</button>`;

@@ -37,21 +37,11 @@ document.addEventListener('click', async (e) => {
         document.getElementById('readMoreModalBody').innerHTML = content;
         document.getElementById('readMoreModal').showModal();
       } else {
-        // Using SweetAlert2 for better alerts (since you have it included)
-        Swal.fire({
-          icon: 'info',
-          title: 'No remarks found',
-          text: 'No remarks found for this record',
-          timer: 2000
-        });
+        showToast('No remarks found for this record', 'info', 2000);
       }
     } catch (err) {
       console.error(err);
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: 'Failed to fetch remarks'
-      });
+      showToast('Failed to fetch remarks', 'error');
     }
   }
 });

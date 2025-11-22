@@ -19,8 +19,8 @@ $userid = $_SESSION['user_id'] ?? 0;
 $currentPage = 'user-management.php';
 ?>
 <?php include '../common/layout.php'; ?>
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold">User Management</h1>
+    <div class="flex justify-between items-center mb-4 sm:mb-6">
+        <h1 class="text-2xl sm:text-3xl font-bold">User Management</h1>
         <input type="hidden" id="currentRole" value="<?= htmlspecialchars($role) ?>">
     </div>
 
@@ -31,7 +31,7 @@ $currentPage = 'user-management.php';
                 <i class="fas fa-user-plus"></i>
                 <span id="formTitle">Add New User</span>
             </h2>
-            <form id="userForm" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <form id="userForm" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 <input type="hidden" name="id" id="userId">
                 
                 <div class="form-control">
@@ -103,12 +103,12 @@ $currentPage = 'user-management.php';
                     </label>
                 </div>
                 
-                <div class="form-control md:col-span-2 lg:col-span-3 flex flex-row justify-between items-center mt-4">
-                    <button type="button" id="resetBtn" class="btn btn-outline">
+                <div class="form-control md:col-span-2 lg:col-span-3 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2 mt-4">
+                    <button type="button" id="resetBtn" class="btn btn-outline btn-sm sm:btn-md">
                         <i class="fas fa-undo"></i> Reset
                     </button>
-                    <button type="submit" class="btn btn-primary" id="submitBtn">
-                        <i class="fas fa-user-plus"></i> Add User
+                    <button type="submit" class="btn btn-primary btn-sm sm:btn-md" id="submitBtn">
+                        <i class="fas fa-user-plus"></i> <span class="hidden sm:inline">Add User</span><span class="sm:hidden">Add</span>
                     </button>
                 </div>
             </form>
@@ -118,36 +118,38 @@ $currentPage = 'user-management.php';
     <!-- Users Table Card -->
     <div class="card bg-base-100 shadow-xl">
         <div class="card-body">
-            <div class="flex justify-between items-center mb-4">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                 <h2 class="card-title">
-                    <i class="fas fa-users"></i> User List
+                    <i class="fas fa-users"></i> <span class="hidden sm:inline">User List</span><span class="sm:hidden">Users</span>
                 </h2>
-                <div class="flex gap-2">
-                    <div class="form-control">
-                        <div class="join">
-                            <input type="text" id="searchInput" class="input input-bordered join-item" placeholder="Search users...">
+                <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
+                    <div class="form-control w-full sm:w-auto">
+                        <div class="join w-full sm:w-auto">
+                            <input type="text" id="searchInput" class="input input-bordered join-item flex-1" placeholder="Search users...">
                             <button class="btn btn-square join-item">
                                 <i class="fas fa-search"></i>
                             </button>
                         </div>
                     </div>
-                    <div class="dropdown dropdown-end">
-                        <label tabindex="0" class="btn btn-success">
-                            <i class="fas fa-file-export"></i> Export
-                        </label>
-                        <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-                            <li><a id="exportExcel"><i class="fas fa-file-excel text-success"></i> Export as Excel</a></li>
-                            <li><a id="exportCSV"><i class="fas fa-file-csv text-primary"></i> Export as CSV</a></li>
-                        </ul>
+                    <div class="flex gap-2">
+                        <div class="dropdown dropdown-end">
+                            <label tabindex="0" class="btn btn-success btn-sm sm:btn-md">
+                                <i class="fas fa-file-export"></i> <span class="hidden sm:inline">Export</span>
+                            </label>
+                            <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+                                <li><a id="exportExcel"><i class="fas fa-file-excel text-success"></i> Export as Excel</a></li>
+                                <li><a id="exportCSV"><i class="fas fa-file-csv text-primary"></i> Export as CSV</a></li>
+                            </ul>
+                        </div>
+                        <button id="refreshBtn" class="btn btn-outline btn-sm sm:btn-md">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
                     </div>
-                    <button id="refreshBtn" class="btn btn-outline">
-                        <i class="fas fa-sync-alt"></i>
-                    </button>
                 </div>
             </div>
             
-            <div class="overflow-x-auto">
-                <table class="table table-zebra w-full" id="userTable">
+            <div class="overflow-x-auto -mx-4 sm:mx-0">
+                <table class="table table-zebra w-full text-sm sm:text-base" id="userTable">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -168,15 +170,15 @@ $currentPage = 'user-management.php';
                 <h5 class="text-xl font-semibold">No users found</h5>
                 <p>Add a new user to get started</p>
             </div>
-            <div id="paginationContainer" class="flex justify-center items-center gap-2 mt-4 hidden">
-                <button id="prevPage" class="btn btn-sm btn-outline">
-                    <i class="fas fa-chevron-left"></i> Previous
+            <div id="paginationContainer" class="flex flex-col sm:flex-row justify-center items-center gap-2 mt-4 hidden">
+                <button id="prevPage" class="btn btn-sm btn-outline w-full sm:w-auto">
+                    <i class="fas fa-chevron-left"></i> <span class="hidden sm:inline">Previous</span><span class="sm:hidden">Prev</span>
                 </button>
                 <div class="flex gap-1">
                     <span id="pageInfo" class="btn btn-sm btn-disabled"></span>
                 </div>
-                <button id="nextPage" class="btn btn-sm btn-outline">
-                    Next <i class="fas fa-chevron-right"></i>
+                <button id="nextPage" class="btn btn-sm btn-outline w-full sm:w-auto">
+                    <span class="hidden sm:inline">Next</span><span class="sm:hidden">Next</span> <i class="fas fa-chevron-right"></i>
                 </button>
             </div>
         </div>
@@ -278,7 +280,7 @@ function loadUsers(page = 1, search = '') {
         // Update pagination info
         updatePaginationInfo();
     }, 'json').fail(function() {
-        Swal.fire('Error', 'Failed to load users', 'error');
+        showToast('Failed to load users', 'error');
     });
 }
 
@@ -307,56 +309,39 @@ function editUser(user) {
     $(`tr[data-id="${user.id}"]`).addClass('bg-primary bg-opacity-10');
 }
 
-function toggleUserStatus(userId, newStatus) {
+async function toggleUserStatus(userId, newStatus) {
     const action = newStatus == 1 ? 'activate' : 'deactivate';
     const actionText = newStatus == 1 ? 'activate' : 'deactivate';
     
-    Swal.fire({
-        title: `Are you sure?`,
-        text: `Do you want to ${actionText} this user?`,
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: `Yes, ${actionText} it!`,
-        cancelButtonText: 'Cancel',
-        confirmButtonColor: newStatus == 1 ? '#10b981' : '#ef4444',
-    }).then(result => {
-        if (result.isConfirmed) {
-            $.post('../api/admin/users.php', { 
-                action: 'toggle_status', 
-                id: userId,
-                is_active: newStatus
-            }, function(response) {
-                if (typeof response === 'object' && response.status === 'success') {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success!',
-                        text: response.message || `User ${actionText}d successfully.`,
-                        timer: 1500,
-                        showConfirmButton: false
-                    });
-                    loadUsers(currentPage, searchQuery);
-                } else {
-                    const errorMsg = typeof response === 'object' ? response.message : 'Failed to update user status.';
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error!',
-                        text: errorMsg,
-                    });
-                }
-            }, 'json').fail(function(xhr) {
-                let errorMsg = 'Failed to update user status.';
-                try {
-                    const response = JSON.parse(xhr.responseText);
-                    errorMsg = response.message || errorMsg;
-                } catch(e) {}
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error!',
-                    text: errorMsg,
-                });
-            });
-        }
-    });
+    const confirmResult = await showConfirm(
+        'Are you sure?',
+        `Do you want to ${actionText} this user?`,
+        `Yes, ${actionText} it!`,
+        'Cancel'
+    );
+    
+    if (confirmResult.isConfirmed) {
+        $.post('../api/admin/users.php', { 
+            action: 'toggle_status', 
+            id: userId,
+            is_active: newStatus
+        }, function(response) {
+            if (typeof response === 'object' && response.status === 'success') {
+                showToast(response.message || `User ${actionText}d successfully.`, 'success', 1500);
+                loadUsers(currentPage, searchQuery);
+            } else {
+                const errorMsg = typeof response === 'object' ? response.message : 'Failed to update user status.';
+                showToast(errorMsg, 'error');
+            }
+        }, 'json').fail(function(xhr) {
+            let errorMsg = 'Failed to update user status.';
+            try {
+                const response = JSON.parse(xhr.responseText);
+                errorMsg = response.message || errorMsg;
+            } catch(e) {}
+            showToast(errorMsg, 'error');
+        });
+    }
 }
 
 function resetForm() {
@@ -368,51 +353,34 @@ function resetForm() {
     $('tr').removeClass('bg-primary bg-opacity-10');
 }
 
-function deleteUser(id) {
-    Swal.fire({
-        title: 'Are you sure?',
-        text: 'You will not be able to recover this user!',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, delete it!',
-        cancelButtonText: 'Cancel',
-        confirmButtonColor: '#ef4444',
-    }).then(result => {
-        if (result.isConfirmed) {
-            $.post('../api/admin/users.php', { action: 'delete', id: id }, function(response) {
-                if (typeof response === 'object' && response.status === 'success') {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Deleted!',
-                        text: response.message || 'User has been deleted successfully.',
-                        timer: 1500,
-                        showConfirmButton: false
-                    });
-                    setTimeout(() => {
-                        loadUsers(currentPage, searchQuery);
-                    }, 500);
-                } else {
-                    const errorMsg = typeof response === 'object' ? response.message : 'Failed to delete user.';
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error!',
-                        text: errorMsg,
-                    });
-                }
-            }, 'json').fail(function(xhr) {
-                let errorMsg = 'Failed to delete user.';
-                try {
-                    const response = JSON.parse(xhr.responseText);
-                    errorMsg = response.message || errorMsg;
-                } catch(e) {}
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error!',
-                    text: errorMsg,
-                });
-            });
-        }
-    });
+async function deleteUser(id) {
+    const confirmResult = await showConfirm(
+        'Are you sure?',
+        'You will not be able to recover this user!',
+        'Yes, delete it!',
+        'Cancel'
+    );
+    
+    if (confirmResult.isConfirmed) {
+        $.post('../api/admin/users.php', { action: 'delete', id: id }, function(response) {
+            if (typeof response === 'object' && response.status === 'success') {
+                showToast(response.message || 'User has been deleted successfully.', 'success', 1500);
+                setTimeout(() => {
+                    loadUsers(currentPage, searchQuery);
+                }, 500);
+            } else {
+                const errorMsg = typeof response === 'object' ? response.message : 'Failed to delete user.';
+                showToast(errorMsg, 'error');
+            }
+        }, 'json').fail(function(xhr) {
+            let errorMsg = 'Failed to delete user.';
+            try {
+                const response = JSON.parse(xhr.responseText);
+                errorMsg = response.message || errorMsg;
+            } catch(e) {}
+            showToast(errorMsg, 'error');
+        });
+    }
 }
 
 $('#userForm').submit(function(e) {
@@ -425,33 +393,23 @@ $('#userForm').submit(function(e) {
     form.push({ name: 'is_active', value: isActive });
     form.push({ name: 'action', value: action });
 
-    Swal.fire({
-        title: action === 'add' ? 'Add User?' : 'Update User?',
-        text: action === 'add' ? 'New user will be added to the system.' : 'User information will be updated.',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, proceed',
-        cancelButtonText: 'Cancel',
-    }).then(result => {
-        if (result.isConfirmed) {
+    (async () => {
+        const confirmResult = await showConfirm(
+            action === 'add' ? 'Add User?' : 'Update User?',
+            action === 'add' ? 'New user will be added to the system.' : 'User information will be updated.',
+            'Yes, proceed',
+            'Cancel'
+        );
+        
+        if (confirmResult.isConfirmed) {
             $.post('../api/admin/users.php', form, function(response) {
                 if (typeof response === 'object' && response.status === 'success') {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success!',
-                        text: response.message || `User ${action === 'add' ? 'added' : 'updated'} successfully.`,
-                        timer: 1500,
-                        showConfirmButton: false
-                    });
+                    showToast(response.message || `User ${action === 'add' ? 'added' : 'updated'} successfully.`, 'success', 1500);
                     resetForm();
                     loadUsers(currentPage, searchQuery);
                 } else {
                     const errorMsg = typeof response === 'object' ? response.message : 'Failed to process your request.';
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error!',
-                        text: errorMsg,
-                    });
+                    showToast(errorMsg, 'error');
                 }
             }, 'json').fail(function(xhr) {
                 let errorMsg = 'Failed to process your request.';
@@ -459,14 +417,10 @@ $('#userForm').submit(function(e) {
                     const response = JSON.parse(xhr.responseText);
                     errorMsg = response.message || errorMsg;
                 } catch(e) {}
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error!',
-                    text: errorMsg,
-                });
+                showToast(errorMsg, 'error');
             });
         }
-    });
+    })();
 });
 
 $('#resetBtn').click(function() {
@@ -504,53 +458,30 @@ $('#nextPage').click(function() {
 });
 
 function exportToExcel() {
+    // Check if XLSX is available
+    if (typeof XLSX === 'undefined') {
+        showToast('Excel export library not loaded. Please refresh the page.', 'error');
+        return;
+    }
+    
     // Fetch all data for export
     const url = `../api/admin/users.php?action=list&page=1&limit=10000${searchQuery ? '&search=' + encodeURIComponent(searchQuery) : ''}`;
+    
+    showToast('Exporting... Please wait', 'info');
+    
     $.get(url, function(response) {
-        const responseData = (typeof response === 'object' && response.data) ? response.data : response;
-        const users = responseData?.data || responseData || [];
-        
-        // Create table data
-        const headers = ['ID', 'Name', 'Email', 'Phone', 'Username', 'Role', 'Status'];
-        const rows = users.map(user => [
-            user.id,
-            user.fullname || 'N/A',
-            user.email || 'N/A',
-            user.phone || 'N/A',
-            user.username,
-            user.role.replace('_', ' '),
-            (user.is_active == 1 || user.is_active === true) ? 'Active' : 'Inactive'
-        ]);
-        
-        const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Users");
-        const date = new Date();
-        const dateStr = date.toISOString().split('T')[0];
-        XLSX.writeFile(wb, `User_List_${dateStr}.xlsx`);
-        Swal.fire({
-            icon: 'success',
-            title: 'Export Successful',
-            text: 'User list has been exported to Excel',
-            timer: 1500,
-            showConfirmButton: false
-        });
-    }, 'json').fail(function() {
-        Swal.fire('Error', 'Failed to export users', 'error');
-    });
-}
-
-function exportToCSV() {
-    // Fetch all data for export
-    const url = `../api/admin/users.php?action=list&page=1&limit=10000${searchQuery ? '&search=' + encodeURIComponent(searchQuery) : ''}`;
-    $.get(url, function(response) {
-        const responseData = (typeof response === 'object' && response.data) ? response.data : response;
-        const users = responseData?.data || responseData || [];
-        
-        // Create CSV data
-        const headers = ['ID', 'Name', 'Email', 'Phone', 'Username', 'Role', 'Status'];
-        const csvRows = users.map(user => {
-            const row = [
+        try {
+            const responseData = (typeof response === 'object' && response.data) ? response.data : response;
+            const users = responseData?.data || responseData || [];
+            
+            if (users.length === 0) {
+                showToast('No users found to export', 'warning');
+                return;
+            }
+            
+            // Create table data
+            const headers = ['ID', 'Name', 'Email', 'Phone', 'Username', 'Role', 'Status'];
+            const rows = users.map(user => [
                 user.id,
                 user.fullname || 'N/A',
                 user.email || 'N/A',
@@ -558,31 +489,84 @@ function exportToCSV() {
                 user.username,
                 user.role.replace('_', ' '),
                 (user.is_active == 1 || user.is_active === true) ? 'Active' : 'Inactive'
-            ];
-            return row.map(cell => {
-                let text = String(cell);
-                if (text.includes(',') || text.includes('"') || text.includes('\n')) {
-                    text = `"${text.replace(/"/g, '""')}"`;
-                }
-                return text;
-            }).join(',');
-        });
-        
-        csvRows.unshift(headers.join(','));
-        const csvContent = csvRows.join('\n');
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const date = new Date();
-        const dateStr = date.toISOString().split('T')[0];
-        saveAs(blob, `User_List_${dateStr}.csv`);
-        Swal.fire({
-            icon: 'success',
-            title: 'Export Successful',
-            text: 'User list has been exported to CSV',
-            timer: 1500,
-            showConfirmButton: false
-        });
-    }, 'json').fail(function() {
-        Swal.fire('Error', 'Failed to export users', 'error');
+            ]);
+            
+            const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Users");
+            const date = new Date();
+            const dateStr = date.toISOString().split('T')[0];
+            XLSX.writeFile(wb, `User_List_${dateStr}.xlsx`);
+            
+            showToast('User list has been exported to Excel', 'success', 1500);
+        } catch (error) {
+            console.error('Export error:', error);
+            showToast('An error occurred while exporting: ' + error.message, 'error');
+        }
+    }, 'json').fail(function(xhr, status, error) {
+        console.error('Export request failed:', error);
+        showToast('Failed to fetch data for export: ' + error, 'error');
+    });
+}
+
+function exportToCSV() {
+    // Check if FileSaver is available
+    if (typeof saveAs === 'undefined') {
+        showToast('FileSaver library not loaded. Please refresh the page.', 'error');
+        return;
+    }
+    
+    // Fetch all data for export
+    const url = `../api/admin/users.php?action=list&page=1&limit=10000${searchQuery ? '&search=' + encodeURIComponent(searchQuery) : ''}`;
+    
+    showToast('Exporting... Please wait', 'info');
+    
+    $.get(url, function(response) {
+        try {
+            const responseData = (typeof response === 'object' && response.data) ? response.data : response;
+            const users = responseData?.data || responseData || [];
+            
+            if (users.length === 0) {
+                showToast('No users found to export', 'warning');
+                return;
+            }
+            
+            // Create CSV data
+            const headers = ['ID', 'Name', 'Email', 'Phone', 'Username', 'Role', 'Status'];
+            const csvRows = users.map(user => {
+                const row = [
+                    user.id,
+                    user.fullname || 'N/A',
+                    user.email || 'N/A',
+                    user.phone || 'N/A',
+                    user.username,
+                    user.role.replace('_', ' '),
+                    (user.is_active == 1 || user.is_active === true) ? 'Active' : 'Inactive'
+                ];
+                return row.map(cell => {
+                    let text = String(cell);
+                    if (text.includes(',') || text.includes('"') || text.includes('\n')) {
+                        text = `"${text.replace(/"/g, '""')}"`;
+                    }
+                    return text;
+                }).join(',');
+            });
+            
+            csvRows.unshift(headers.join(','));
+            const csvContent = csvRows.join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const date = new Date();
+            const dateStr = date.toISOString().split('T')[0];
+            saveAs(blob, `User_List_${dateStr}.csv`);
+            
+            showToast('User list has been exported to CSV', 'success', 1500);
+        } catch (error) {
+            console.error('Export error:', error);
+            showToast('An error occurred while exporting: ' + error.message, 'error');
+        }
+    }, 'json').fail(function(xhr, status, error) {
+        console.error('Export request failed:', error);
+        showToast('Failed to fetch data for export: ' + error, 'error');
     });
 }
 

@@ -65,14 +65,20 @@ async function openPRModal(prId = null) {
     // Update modal title and submit button based on mode
     const modalTitle = document.querySelector('#create_modal .modal-box h3');
     const submitBtn = document.querySelector('#CreatePRForm button[type="submit"]');
+    const productImageSection = document.getElementById('productImageUploadSection');
+    
     if (prId) {
         // Edit mode
         if (modalTitle) modalTitle.textContent = 'Update PR';
         if (submitBtn) submitBtn.textContent = 'Update';
+        // Hide product image upload section in update mode
+        if (productImageSection) productImageSection.style.display = 'none';
     } else {
         // Create mode
         if (modalTitle) modalTitle.textContent = 'Create PR';
         if (submitBtn) submitBtn.textContent = 'Create PR';
+        // Show product image upload section in create mode
+        if (productImageSection) productImageSection.style.display = '';
     }
 
     if (prId) {
@@ -82,17 +88,7 @@ async function openPRModal(prId = null) {
             const json = await res.json();
 
             if (json.status !== "success") {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: "Error fetching PR: " + json.message,
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 3000
-                    });
-                }
+                showToast("Error fetching PR: " + json.message, 'error');
                 return;
             }
 
@@ -116,25 +112,32 @@ async function openPRModal(prId = null) {
 
             // Show NEW SUPPLIER container if needed
             const newSupplierContainer = document.getElementById("newSupplierContainer");
-            if (data.supplier === "NEW SUPPLIER" && newSupplierContainer) {
+            const newSupplierInput = document.getElementById("newSupplierInput");
+            const supplierId = data.supplier_id;
+            const isNewSupplier = supplierId === "99999" || supplierId === 99999 || data.supplier === "NEW SUPPLIER" || data.new_supplier;
+            
+            if (isNewSupplier && newSupplierContainer) {
                 newSupplierContainer.classList.remove("hidden");
-                document.getElementById("agentInput").readOnly = false;
-                document.getElementById("cityInput").readOnly = false;
+                newSupplierContainer.classList.add("form-control");
+                if (newSupplierInput) {
+                    newSupplierInput.value = data.supplier || "";
+                }
+                const agentInput = document.getElementById("agentInput");
+                const cityInput = document.getElementById("cityInput");
+                if (agentInput) agentInput.readOnly = false;
+                if (cityInput) cityInput.readOnly = false;
+            } else if (newSupplierContainer) {
+                newSupplierContainer.classList.add("hidden");
+                newSupplierContainer.classList.remove("form-control");
+                const agentInput = document.getElementById("agentInput");
+                const cityInput = document.getElementById("cityInput");
+                if (agentInput) agentInput.readOnly = true;
+                if (cityInput) cityInput.readOnly = true;
             }
 
         } catch (err) {
             console.error(err);
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: "Failed to fetch PR data",
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 3000
-                });
-            }
+            showToast("Failed to fetch PR data", 'error');
         }
     }
 
@@ -152,17 +155,7 @@ if (form) {
         const formData = new FormData(this);
 
         if (!formData.get('supplierId') || !formData.get('categoryId')) {
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    icon: 'warning',
-                    title: 'Validation Error',
-                    text: 'Please fill all required fields',
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 3000
-                });
-            }
+            showToast('Please fill all required fields', 'warning');
             return;
         }
 
@@ -178,17 +171,7 @@ if (form) {
             console.log('PR Response:', json);
 
             if (json.status === 'success') {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: (currentPRId ? 'PR updated' : 'PR created') + ' successfully (ID: ' + json.data.po_id + ')',
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 3000
-                    });
-                }
+                showToast((currentPRId ? 'PR updated' : 'PR created') + ' successfully (ID: ' + json.data.po_id + ')', 'success');
                 document.getElementById('create_modal')?.close();
                 currentPRId = null;
                 // Reload page after successful create/update
@@ -196,31 +179,11 @@ if (form) {
                   window.location.reload();
                 }, 1000);
             } else {
-                if (typeof Swal !== 'undefined') {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'Error: ' + json.message,
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 3000
-                    });
-                }
+                showToast('Error: ' + json.message, 'error');
             }
         } catch (err) {
             console.error(err);
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'Network or server error',
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 3000
-                });
-            }
+            showToast('Network or server error', 'error');
         }
     });
 }
@@ -233,6 +196,9 @@ function resetForm() {
     document.getElementById("supplierDropdown")?.classList.add("hidden");
     document.getElementById("categoryDropdown")?.classList.add("hidden");
     document.getElementById("newSupplierContainer")?.classList.add("hidden");
+    // Show product image upload section when resetting (for create mode)
+    const productImageSection = document.getElementById('productImageUploadSection');
+    if (productImageSection) productImageSection.style.display = '';
     form.reset();
 }
 
@@ -242,6 +208,10 @@ function resetForm() {
 async function searchSupplierAPI() {
   const input = document.getElementById("supplierInput");
   const query = input?.value.trim();
+  
+  // Check if user typed "NEW SUPPLIER"
+  checkNewSupplier();
+  
   if (!query) {
     document.getElementById("supplierDropdown")?.classList.add("hidden");
     return;
@@ -260,9 +230,6 @@ async function searchSupplierAPI() {
 
     const json = await res.json();
     supplierResults = json.data || [];
-
-    // Add "NEW SUPPLIER" as a selectable option at the bottom
-    // supplierResults.push({ id: "new", supplier: "NEW SUPPLIER", agent: "", city: "" });
 
     supplierFocus = -1;
     renderSupplierList();
@@ -299,23 +266,57 @@ function selectSupplier(id, name, agent, city) {
   const cityInput = document.getElementById("cityInput");
 
   if (input) input.value = name;
-  if (supplierId) supplierId.value = id;
+  // Set supplierId - use the id from database (99999 for NEW SUPPLIER)
+  if (supplierId) {
+    supplierId.value = id;
+  }
   if (agentInput) agentInput.value = agent || "";
   if (cityInput) cityInput.value = city || "";
 
   document.getElementById("supplierDropdown")?.classList.add("hidden");
   supplierFocus = -1;
 
-  // Handle NEW SUPPLIER logic
+  // Handle NEW SUPPLIER logic - check by id (99999) or name
   const newSupplierField = document.getElementById("newSupplierContainer");
-  if (name === "NEW SUPPLIER" && newSupplierField) {
+  if ((id === 99999 || id === "99999" || name === "NEW SUPPLIER") && newSupplierField) {
+    newSupplierField.classList.remove("hidden");
     newSupplierField.classList.add("form-control");
-    agentInput.readOnly = false;
-    cityInput.readOnly = false;
+    if (agentInput) agentInput.readOnly = false;
+    if (cityInput) cityInput.readOnly = false;
   } else if (newSupplierField) {
+    newSupplierField.classList.add("hidden");
     newSupplierField.classList.remove("form-control");
-    agentInput.readOnly = true;
-    cityInput.readOnly = true;
+    if (agentInput) agentInput.readOnly = true;
+    if (cityInput) cityInput.readOnly = true;
+  }
+}
+
+// Check if supplier input is "NEW SUPPLIER" and show container accordingly
+function checkNewSupplier() {
+  const input = document.getElementById("supplierInput");
+  const supplierId = document.getElementById("supplierId");
+  const newSupplierField = document.getElementById("newSupplierContainer");
+  const agentInput = document.getElementById("agentInput");
+  const cityInput = document.getElementById("cityInput");
+  
+  if (!input || !newSupplierField) return;
+  
+  const value = input.value.trim().toUpperCase();
+  const currentSupplierId = supplierId ? supplierId.value : "";
+  
+  // Check by supplier ID (99999) or by name
+  if (value === "NEW SUPPLIER" || currentSupplierId === "99999" || currentSupplierId === 99999) {
+    if (supplierId && !supplierId.value) supplierId.value = "99999";
+    newSupplierField.classList.remove("hidden");
+    newSupplierField.classList.add("form-control");
+    if (agentInput) agentInput.readOnly = false;
+    if (cityInput) cityInput.readOnly = false;
+  } else if (value !== "" && currentSupplierId && currentSupplierId !== "99999" && currentSupplierId !== 99999) {
+    // Only hide if it's not a new supplier
+    newSupplierField.classList.add("hidden");
+    newSupplierField.classList.remove("form-control");
+    if (agentInput) agentInput.readOnly = true;
+    if (cityInput) cityInput.readOnly = true;
   }
 }
 

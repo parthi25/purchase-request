@@ -4,7 +4,7 @@
     <!-- Header -->
     <div class="text-center mb-8">
       <h1 class="text-4xl font-bold text-primary mb-2">Update Profile</h1>
-      <p class="text-base-content">Update your email and password</p>
+      <p class="text-base-content">Update your password</p>
     </div>
 
     <!-- Profile Form Card -->
@@ -18,11 +18,12 @@
           <div class="form-control">
             <label class="label">
               <span class="label-text font-semibold">Email</span>
+              <span class="label-text-alt text-gray-500">(Cannot be changed)</span>
             </label>
-            <input type="email" id="email" class="input input-bordered w-full" required readonly>
+            <input type="email" id="email" class="input input-bordered w-full bg-base-200" disabled readonly>
           </div>
 
-          <div class="divider">Change Password (Optional)</div>
+          <div class="divider">Change Password</div>
 
           <div class="form-control">
             <label class="label">
@@ -77,31 +78,22 @@
             e.preventDefault();
             alertContainer.innerHTML = '';
 
-            const email = document.getElementById('email').value;
             const oldPassword = document.getElementById('old_password').value;
             const newPassword = document.getElementById('new_password').value;
             const confirmPassword = document.getElementById('confirm_password').value;
 
             // Client-side validation
-            if (!email) {
-                showAlert('Email is required', 'warning');
+            if (!oldPassword || !newPassword || !confirmPassword) {
+                showAlert('All password fields are required', 'warning');
                 return;
             }
 
-            if (oldPassword || newPassword || confirmPassword) {
-                if (!oldPassword || !newPassword || !confirmPassword) {
-                    showAlert('To change password, fill all password fields', 'warning');
-                    return;
-                }
-
-                if (newPassword !== confirmPassword) {
-                    showAlert('New passwords do not match', 'warning');
-                    return;
-                }
+            if (newPassword !== confirmPassword) {
+                showAlert('New passwords do not match', 'warning');
+                return;
             }
 
             const payload = {
-                email: email,
                 old_password: oldPassword,
                 new_password: newPassword,
                 confirm_password: confirmPassword

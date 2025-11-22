@@ -16,7 +16,10 @@ if ($id <= 0) {
 try {
     $query = "
         SELECT pt.*, 
-               s.supplier, s.agent, s.city, 
+               COALESCE(s.supplier, sr.supplier) as supplier,
+               COALESCE(s.agent, sr.agent) as agent,
+               COALESCE(s.city, sr.city) as city,
+               pt.supplier_id,
                c.maincat AS category,
                u.username as bhead_name,
                pt.b_head as bhead_id,
@@ -29,6 +32,7 @@ try {
                upo.username as po_team_member_name
         FROM purchase_requests pt
         LEFT JOIN suppliers s ON pt.supplier_id = s.id
+        LEFT JOIN supplier_requests sr ON pt.new_supplier = sr.id
         LEFT JOIN categories c ON pt.category_id = c.id
         LEFT JOIN users u ON pt.b_head = u.id
         LEFT JOIN users bu ON pt.buyer = bu.id

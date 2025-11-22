@@ -83,11 +83,11 @@ function renderCountBox(counts) {
 
     const defaultCounts = [
         { status_id: 1, status_key: 'Open', count: 0, label: 'Open' },
-        { status_id: 2, status_key: 'Forwarded to Buyer', count: 0, label: 'Forwarded to Buyer' },
+        { status_id: 2, status_key: 'Forwarded to Buyer', count: 0, label: 'To Buyer' },
         { status_id: 3, status_key: 'awaiting_po', count: 0, label: 'Awaiting PO' },
         { status_id: 4, status_key: 'proforma', count: 0, label: 'Proforma' },
         { status_id: 5, status_key: 'to_buyer_head', count: 0, label: 'To Buyer Head' },
-        { status_id: 6, status_key: 'to_po_hed', count: 0, label: 'To PO Head' }, // Fixed syntax error
+        { status_id: 6, status_key: 'to_po_hed', count: 0, label: 'To PO Head' },
         { status_id: 9, status_key: 'Forwarded to PO Team', count: 0, label: 'To PO Team' },
         { status_id: 7, status_key: 'po_generated', count: 0, label: 'PO Generated' },
         { status_id: 8, status_key: 'rejected', count: 0, label: 'Rejected' }
@@ -95,18 +95,25 @@ function renderCountBox(counts) {
 
     let countData = (Array.isArray(counts) && counts.length > 0) ? counts : defaultCounts;
 
+    // Helper function to remove "Forward" or "Forwarded" from labels
+    const cleanLabel = (label) => {
+        if (!label) return label;
+        return label.replace(/^Forwarded\s+/i, '').replace(/^Forward\s+/i, '');
+    };
+
     let html = '';
     countData.forEach(item => {
+        const displayLabel = cleanLabel(item.label);
         html += `
             <div class="flex flex-col items-center gap-2 count-box-wrapper" 
                  data-status="${item.status_id}" 
                  data-key="${item.status_key}">
-                <span class="text-sm font-semibold text-center hidden">${item.label}</span>
+                <span class="text-sm font-semibold text-center hidden">${displayLabel}</span>
                 <button class="btn btn-outline btn-sm count-box" 
                      data-status="${item.status_id}" 
                      data-key="${item.status_key}" 
-                     title="Click to filter by ${item.label}">
-                    ${item.label}
+                     title="Click to filter by ${displayLabel}">
+                    ${displayLabel}
                 </button>
             </div>
         `;
@@ -158,17 +165,7 @@ function handleCountBoxClick(event) {
         } 
         catch (error) { 
           console.error(error); 
-          if (typeof Swal !== 'undefined') {
-            Swal.fire({
-              icon: 'error',
-              title: 'Error',
-              text: 'Status filter failed: ' + error.message,
-              toast: true,
-              position: 'top-end',
-              showConfirmButton: false,
-              timer: 3000
-            });
-          }
+          showToast('Status filter failed: ' + error.message, 'error');
         }
     }
 }

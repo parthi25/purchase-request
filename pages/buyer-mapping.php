@@ -19,11 +19,11 @@ $userid = $_SESSION['user_id'] ?? 0;
 $currentPage = 'buyer-mapping.php';
 ?>
 <?php include '../common/layout.php'; ?>
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold">Buyer Mapping</h1>
+    <div class="flex justify-between items-center mb-4 sm:mb-6">
+        <h1 class="text-2xl sm:text-3xl font-bold">Buyer Mapping</h1>
     </div>
     
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         <!-- Form Card -->
         <div class="lg:col-span-1">
             <div class="card bg-base-100 shadow-xl">
@@ -81,21 +81,21 @@ $currentPage = 'buyer-mapping.php';
         <div class="lg:col-span-2">
             <div class="card bg-base-100 shadow-xl">
                 <div class="card-body">
-                    <div class="flex justify-between items-center mb-4">
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                         <h2 class="card-title">
                             <i class="fas fa-list-check"></i> Buyer Mappings
                         </h2>
                         <div class="flex gap-2">
                             <div class="dropdown dropdown-end">
-                                <label tabindex="0" class="btn btn-success">
-                                    <i class="fas fa-file-export"></i> Export
+                                <label tabindex="0" class="btn btn-success btn-sm sm:btn-md">
+                                    <i class="fas fa-file-export"></i> <span class="hidden sm:inline">Export</span>
                                 </label>
                                 <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
                                     <li><a id="exportExcel"><i class="fas fa-file-excel text-success"></i> Export as Excel</a></li>
                                     <li><a id="exportCSV"><i class="fas fa-file-csv text-primary"></i> Export as CSV</a></li>
                                 </ul>
                             </div>
-                            <button id="refreshBtn" class="btn btn-outline">
+                            <button id="refreshBtn" class="btn btn-outline btn-sm sm:btn-md">
                                 <i class="fas fa-sync-alt"></i>
                             </button>
                         </div>
@@ -142,15 +142,15 @@ $("#buyerMappingForm").submit(function(e) {
     e.preventDefault();
     const formData = new FormData(this);
 
-    Swal.fire({
-        title: 'Confirm Mapping',
-        text: 'Create/Update this buyer mapping?',
-        icon: 'question',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, save it!',
-        cancelButtonText: 'Cancel',
-    }).then((result) => {
-        if (result.isConfirmed) {
+    (async () => {
+        const confirmResult = await showConfirm(
+            'Confirm Mapping',
+            'Create/Update this buyer mapping?',
+            'Yes, save it!',
+            'Cancel'
+        );
+        
+        if (confirmResult.isConfirmed) {
             $.ajax({
                 url: "../api/admin/buyer-mapping.php",
                 type: "POST",
@@ -159,80 +159,50 @@ $("#buyerMappingForm").submit(function(e) {
                 contentType: false,
                 success: function(response) {
                     if (response.status === 'success') {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Success!',
-                            text: response.message,
-                            timer: 2000,
-                            showConfirmButton: false
-                        });
+                        showToast(response.message, 'success', 2000);
                         resetForm();
                         loadMappings();
                     } else {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error',
-                            text: response.message || 'An error occurred',
-                        });
+                        showToast(response.message || 'An error occurred', 'error');
                     }
                 },
                 error: function(err) {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: 'An error occurred while processing your request.',
-                    });
+                    showToast('An error occurred while processing your request.', 'error');
                 }
             });
         }
-    });
+    })();
 });
 
 $("#deleteBtn").click(function() {
     deleteMapping();
 });
 
-function deleteMapping() {
+async function deleteMapping() {
     const id = $("#mappingId").val();
     if (!id) {
-        return Swal.fire({
-            icon: 'warning',
-            title: 'No Selection',
-            text: 'Please select a mapping to delete first.',
-        });
+        showToast('Please select a mapping to delete first.', 'warning');
+        return;
     }
 
-    Swal.fire({
-        title: 'Delete Mapping?',
-        text: 'This will permanently delete this buyer mapping.',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Yes, delete it!',
-        cancelButtonText: 'Cancel',
-        confirmButtonColor: '#ef4444',
-    }).then((result) => {
-        if (result.isConfirmed) {
-            $.post("../api/admin/buyer-mapping.php", { delete_id: id }, function(response) {
-                if (response.status === 'success') {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'Deleted!',
-                        text: response.message,
-                        timer: 2000,
-                        showConfirmButton: false
-                    });
-                    resetForm();
-                    loadMappings();
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: response.message || 'Failed to delete mapping',
-                    });
-                }
-            }, 'json');
-        }
-    });
+    const confirmResult = await showConfirm(
+        'Delete Mapping?',
+        'This will permanently delete this buyer mapping.',
+        'Yes, delete it!',
+        'Cancel'
+    );
+    
+    if (confirmResult.isConfirmed) {
+        $.post("../api/admin/buyer-mapping.php", { delete_id: id }, function(response) {
+            if (response.status === 'success') {
+                showToast(response.message, 'success', 2000);
+                resetForm();
+                loadMappings();
+            } else {
+                showToast(response.message || 'Failed to delete mapping', 'error');
+            }
+        }, 'json');
+    }
 }
 
 function resetForm() {
@@ -287,11 +257,8 @@ function loadMappings() {
             data = typeof response === 'string' ? JSON.parse(response) : response;
         } catch (e) {
             console.error("Invalid JSON:", e, response);
-            return Swal.fire({
-                icon: 'error',
-                title: 'Error',
-                text: 'Server returned invalid data.',
-            });
+            showToast('Server returned invalid data.', 'error');
+            return;
         }
 
         const container = $("#mappingList");
@@ -370,7 +337,7 @@ function loadMappings() {
             `);
         });
     }, 'json').fail(function() {
-        Swal.fire('Error', 'Failed to load mappings', 'error');
+        showToast('Failed to load mappings', 'error');
     });
 }
 
@@ -431,50 +398,73 @@ $("#refreshBtn").click(function() {
 });
 
 function exportToExcel() {
-    const date = new Date();
-    const dateStr = date.toISOString().split('T')[0];
-    const ws = XLSX.utils.table_to_sheet(document.getElementById('exportTable'));
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Mappings");
-    XLSX.writeFile(wb, `Buyer_Mappings_${dateStr}.xlsx`);
-    Swal.fire({
-        icon: 'success',
-        title: 'Export Successful',
-        text: 'Mappings have been exported to Excel',
-        timer: 1500,
-        showConfirmButton: false
-    });
+    // Check if XLSX is available
+    if (typeof XLSX === 'undefined') {
+        showToast('Excel export library not loaded. Please refresh the page.', 'error');
+        return;
+    }
+    
+    try {
+        const exportTable = document.getElementById('exportTable');
+        if (!exportTable || exportTable.querySelectorAll('tbody tr').length === 0) {
+            showToast('No mappings found to export', 'warning');
+            return;
+        }
+        
+        const date = new Date();
+        const dateStr = date.toISOString().split('T')[0];
+        const ws = XLSX.utils.table_to_sheet(exportTable);
+        const wb = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(wb, ws, "Mappings");
+        XLSX.writeFile(wb, `Buyer_Mappings_${dateStr}.xlsx`);
+        
+        showToast('Mappings have been exported to Excel', 'success', 1500);
+    } catch (error) {
+        console.error('Export error:', error);
+        showToast('An error occurred while exporting: ' + error.message, 'error');
+    }
 }
 
 function exportToCSV() {
-    const table = document.getElementById('exportTable');
-    const rows = Array.from(table.querySelectorAll('tr'));
-    const headers = Array.from(rows.shift().querySelectorAll('th'))
-        .map(header => header.textContent.trim());
-    const csvData = rows.map(row => {
-        return Array.from(row.querySelectorAll('td'))
-            .map(cell => {
-                let text = cell.textContent.trim();
-                if (text.includes(',')) {
-                    text = `"${text.replace(/"/g, '""')}"`;
-                }
-                return text;
-            })
-            .join(',');
-    });
-    csvData.unshift(headers.join(','));
-    const csvContent = csvData.join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const date = new Date();
-    const dateStr = date.toISOString().split('T')[0];
-    saveAs(blob, `Buyer_Mappings_${dateStr}.csv`);
-    Swal.fire({
-        icon: 'success',
-        title: 'Export Successful',
-        text: 'Mappings have been exported to CSV',
-        timer: 1500,
-        showConfirmButton: false
-    });
+    // Check if FileSaver is available
+    if (typeof saveAs === 'undefined') {
+        showToast('FileSaver library not loaded. Please refresh the page.', 'error');
+        return;
+    }
+    
+    try {
+        const table = document.getElementById('exportTable');
+        if (!table || table.querySelectorAll('tbody tr').length === 0) {
+            showToast('No mappings found to export', 'warning');
+            return;
+        }
+        
+        const rows = Array.from(table.querySelectorAll('tr'));
+        const headers = Array.from(rows.shift().querySelectorAll('th'))
+            .map(header => header.textContent.trim());
+        const csvData = rows.map(row => {
+            return Array.from(row.querySelectorAll('td'))
+                .map(cell => {
+                    let text = cell.textContent.trim();
+                    if (text.includes(',') || text.includes('"') || text.includes('\n')) {
+                        text = `"${text.replace(/"/g, '""')}"`;
+                    }
+                    return text;
+                })
+                .join(',');
+        });
+        csvData.unshift(headers.join(','));
+        const csvContent = csvData.join('\n');
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const date = new Date();
+        const dateStr = date.toISOString().split('T')[0];
+        saveAs(blob, `Buyer_Mappings_${dateStr}.csv`);
+        
+        showToast('Mappings have been exported to CSV', 'success', 1500);
+    } catch (error) {
+        console.error('Export error:', error);
+        showToast('An error occurred while exporting: ' + error.message, 'error');
+    }
 }
 
 $('#exportExcel').click(function(e) {

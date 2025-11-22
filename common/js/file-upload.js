@@ -1,4 +1,3 @@
-
 document.addEventListener('DOMContentLoaded', () => {
   const modal = document.getElementById('fileModal');
   const fileList = document.getElementById('fileList');
@@ -12,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let statusId = null;
   let uploadAllowed = false;
   let deleteAllowed = false;
+  let filePermissions = null;
 
   // Use event delegation for dynamically created buttons
   document.addEventListener('click', async (e) => {
@@ -35,20 +35,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
     currentPrId = id;
 
-    // Check permissions for upload/delete (viewing is always allowed)
-    // let uploadAllowed = false;
-    // let deleteAllowed = false;
-    if (btn.classList.contains('proforma')) {
-      uploadAllowed = [1, 5].includes(parseInt(statusId)) && ['bhead'].includes(role);
-      console.log("st",statusId,role);
+    // Load permissions from API if not already loaded
+    if (!filePermissions) {
+      try {
+        const permRes = await fetch('../fetch/fetch-file-permissions.php');
+        const permData = await permRes.json();
+        if (permData.status === 'success') {
+          filePermissions = permData.data;
+        }
+      } catch (err) {
+        console.error('Failed to load permissions, using fallback:', err);
+        filePermissions = {};
+      }
+    }
+
+    // Check permissions for upload/delete from database
+    uploadAllowed = false;
+    deleteAllowed = false;
+    
+    if (filePermissions && filePermissions[btn.classList.contains('proforma') ? 'proforma' : btn.classList.contains('po') ? 'po' : 'product']) {
+      const fileType = btn.classList.contains('proforma') ? 'proforma' : btn.classList.contains('po') ? 'po' : 'product';
+      const perms = filePermissions[fileType];
+      const currentStatus = parseInt(statusId);
       
-      deleteAllowed = uploadAllowed;
-    } else if (btn.classList.contains('po')) {
-      uploadAllowed = parseInt(statusId) === 7 && ['pohead', 'poteammember'].includes(role);
-      deleteAllowed = uploadAllowed;
-    } else if (btn.classList.contains('product')) {
-      uploadAllowed = [1, 2, 3, 4, 5].includes(parseInt(statusId)) && ['bhead','buyer','admin'].includes(role);
-      deleteAllowed = uploadAllowed;
+      if (perms.upload_statuses && perms.upload_statuses.includes(currentStatus)) {
+        uploadAllowed = true;
+      }
+      if (perms.delete_statuses && perms.delete_statuses.includes(currentStatus)) {
+        deleteAllowed = true;
+      }
+    } else {
+      // Fallback to hardcoded permissions if API fails
+      if (btn.classList.contains('proforma')) {
+        uploadAllowed = [1, 5].includes(parseInt(statusId)) && ['bhead'].includes(role);
+        deleteAllowed = uploadAllowed;
+      } else if (btn.classList.contains('po')) {
+        uploadAllowed = parseInt(statusId) === 7 && ['pohead', 'poteammember'].includes(role);
+        deleteAllowed = uploadAllowed;
+      } else if (btn.classList.contains('product')) {
+        uploadAllowed = [1, 2, 3, 4, 5].includes(parseInt(statusId)) && ['bhead','buyer','admin'].includes(role);
+        deleteAllowed = uploadAllowed;
+      }
     }
 
     if (btn.classList.contains('proforma')) {
@@ -197,19 +224,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Check upload permissions
     if (!uploadAllowed) {
-      showAlert('You do not have permission to upload files for this status.', 'warning');
+      showToast('You do not have permission to upload files for this status.', 'warning', 4000);
       return;
     }
 
     const file = fileInput.files[0];
     if (!file) {
-      showAlert('Please select a file to upload.', 'warning');
+      showToast('Please select a file to upload.', 'warning');
       return;
     }
 
     // Validate file size (5MB limit)
     if (file.size > 5 * 1024 * 1024) {
-      showAlert('File size must be less than 5MB.', 'error');
+      showToast('File size must be less than 5MB.', 'error');
       return;
     }
 
@@ -243,18 +270,18 @@ document.addEventListener('DOMContentLoaded', () => {
       console.log('Upload response:', uploadData);
 
       if (uploadData.status === 'success') {
-        showAlert('File uploaded successfully!', 'success');
+        showToast('File uploaded successfully!', 'success');
         fileInput.value = ''; // Clear input
         // Reload page after successful upload
         setTimeout(() => {
           window.location.reload();
         }, 1000);
       } else {
-        showAlert(uploadData.message || 'Upload failed', 'error');
+        showToast(uploadData.message || 'Upload failed', 'error');
       }
     } catch (err) {
       console.error('Upload error:', err);
-      showAlert('Upload failed. Please try again.', 'error');
+      showToast('Upload failed. Please try again.', 'error');
     } finally {
       uploadFileBtn.disabled = false;
       uploadFileBtn.textContent = 'Upload New File';
@@ -268,25 +295,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Check delete permissions
     if (!deleteAllowed) {
-      showAlert('You do not have permission to delete files for this status.', 'warning');
+      showToast('You do not have permission to delete files for this status.', 'warning', 4000);
       return;
     }
 
-    if (typeof Swal === 'undefined') {
-      if (!confirm('Are you sure you want to delete this file?')) return;
-    } else {
-      const confirmResult = await Swal.fire({
-        title: 'Are you sure?',
-        text: 'Are you sure you want to delete this file?',
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonColor: '#d33',
-        cancelButtonColor: '#3085d6',
-        confirmButtonText: 'Yes, delete it!',
-        cancelButtonText: 'Cancel'
-      });
-      
-      if (!confirmResult.isConfirmed) return;
+    // Use DaisyUI confirm dialog
+    const confirmResult = await showConfirm(
+      'Are you sure?',
+      'Are you sure you want to delete this file?',
+      'Yes, delete it!',
+      'Cancel'
+    );
+    
+    if (!confirmResult.isConfirmed) {
+      return;
     }
 
     try {
@@ -298,14 +320,14 @@ document.addEventListener('DOMContentLoaded', () => {
       const result = await res.json();
 
       if (result.status === 'success') {
-        showAlert('File deleted successfully!', 'success');
+        showToast('File deleted successfully!', 'success');
         await loadFiles(); // Refresh file list
       } else {
-        showAlert(result.message || 'Failed to delete file', 'error');
+        showToast(result.message || 'Failed to delete file', 'error');
       }
     } catch (err) {
       console.error('Delete error:', err);
-      showAlert('Delete failed. Please try again.', 'error');
+      showToast('Delete failed. Please try again.', 'error');
     } finally {
       deleteBtn.disabled = false;
       deleteBtn.textContent = 'Delete';
@@ -313,31 +335,5 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  function showAlert(message, type = 'info') {
-    // Using SweetAlert2 since it's included in your header
-    if (typeof Swal !== 'undefined') {
-      Swal.fire({
-        icon: type,
-        title: message,
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-      });
-    } else {
-      // Fallback to Swal if available
-      if (typeof Swal !== 'undefined') {
-        Swal.fire({
-          icon: type,
-          title: message,
-          toast: true,
-          position: 'top-end',
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-        });
-      }
-    }
-  }
+  // Remove showAlert function - using showToast directly
 });

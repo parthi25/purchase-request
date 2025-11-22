@@ -129,28 +129,7 @@ document.addEventListener('DOMContentLoaded', function() {
   });
 
   function showAlert(message, type = 'info') {
-    if (typeof Swal !== 'undefined') {
-      Swal.fire({
-        icon: type,
-        title: message,
-        toast: true,
-        position: 'top-end',
-        showConfirmButton: false,
-        timer: 3000,
-        timerProgressBar: true,
-      });
-    } else {
-      if (typeof Swal !== 'undefined') {
-        Swal.fire({
-          icon: type,
-          title: message,
-          toast: true,
-          position: 'top-end',
-          showConfirmButton: false,
-          timer: 3000,
-          timerProgressBar: true,
-        });
-      }
-    }
+    // Use DaisyUI toast notification
+    showToast(message, type, 3000);
   }
 });

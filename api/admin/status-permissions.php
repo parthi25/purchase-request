@@ -62,6 +62,9 @@ try {
             $type = $_POST['type'] ?? 'permission';
             
             if ($type === 'status_modal_fields') {
+                if (!isset($_POST['status_id']) || !isset($_POST['field_name'])) {
+                    sendResponse(400, "error", "Missing required fields: status_id and field_name are required");
+                }
                 $status_id = intval($_POST['status_id']);
                 $field_name = Security::sanitizeInput($_POST['field_name']);
                 $is_required = isset($_POST['is_required']) ? 1 : 0;
@@ -71,6 +74,9 @@ try {
                                        VALUES (?, ?, ?, ?)");
                 $stmt->bind_param("isii", $status_id, $field_name, $is_required, $field_order);
             } elseif ($type === 'role_pr_permissions') {
+                if (!isset($_POST['role'])) {
+                    sendResponse(400, "error", "Missing required field: role is required");
+                }
                 $role = Security::sanitizeInput($_POST['role']);
                 $can_create = isset($_POST['can_create']) ? 1 : 0;
                 $can_edit = isset($_POST['can_edit']) ? 1 : 0;
@@ -87,6 +93,9 @@ try {
                     $stmt->bind_param("siiii", $role, $can_create, $can_edit, $can_edit_status, $is_active);
                 }
             } elseif ($type === 'flow') {
+                if (!isset($_POST['from_status_id']) || !isset($_POST['to_status_id']) || !isset($_POST['role'])) {
+                    sendResponse(400, "error", "Missing required fields: from_status_id, to_status_id, and role are required");
+                }
                 $from_status_id = intval($_POST['from_status_id']);
                 $to_status_id = intval($_POST['to_status_id']);
                 $role = Security::sanitizeInput($_POST['role']);
@@ -98,6 +107,11 @@ try {
                                        VALUES (?, ?, ?, ?, ?, ?)");
                 $stmt->bind_param("iisiii", $from_status_id, $to_status_id, $role, $requires_proforma, $is_active, $priority);
             } else {
+                // Default permission type - validate required fields
+                if (!isset($_POST['role']) || !isset($_POST['status_id'])) {
+                    sendResponse(400, "error", "Missing required fields: role and status_id are required");
+                }
+                
                 $role = Security::sanitizeInput($_POST['role']);
                 $status_id = intval($_POST['status_id']);
                 $is_active = isset($_POST['is_active']) ? 1 : 0;
@@ -127,6 +141,9 @@ try {
             $id = intval($putData['id']);
             
             if ($type === 'status_modal_fields') {
+                if (!isset($putData['status_id']) || !isset($putData['field_name'])) {
+                    sendResponse(400, "error", "Missing required fields: status_id and field_name are required");
+                }
                 $status_id = intval($putData['status_id']);
                 $field_name = Security::sanitizeInput($putData['field_name']);
                 $is_required = isset($putData['is_required']) ? 1 : 0;
@@ -137,6 +154,9 @@ try {
                                        WHERE id = ?");
                 $stmt->bind_param("isiii", $status_id, $field_name, $is_required, $field_order, $id);
             } elseif ($type === 'role_pr_permissions') {
+                if (!isset($putData['role'])) {
+                    sendResponse(400, "error", "Missing required field: role is required");
+                }
                 $role = Security::sanitizeInput($putData['role']);
                 $can_create = isset($putData['can_create']) ? 1 : 0;
                 $can_edit = isset($putData['can_edit']) ? 1 : 0;
@@ -155,6 +175,9 @@ try {
                     $stmt->bind_param("siiiii", $role, $can_create, $can_edit, $can_edit_status, $is_active, $id);
                 }
             } elseif ($type === 'flow') {
+                if (!isset($putData['from_status_id']) || !isset($putData['to_status_id']) || !isset($putData['role'])) {
+                    sendResponse(400, "error", "Missing required fields: from_status_id, to_status_id, and role are required");
+                }
                 $from_status_id = intval($putData['from_status_id']);
                 $to_status_id = intval($putData['to_status_id']);
                 $role = Security::sanitizeInput($putData['role']);
@@ -168,6 +191,11 @@ try {
                                        WHERE id = ?");
                 $stmt->bind_param("iisiiii", $from_status_id, $to_status_id, $role, $requires_proforma, $is_active, $priority, $id);
             } else {
+                // Default permission type - validate required fields
+                if (!isset($putData['role']) || !isset($putData['status_id'])) {
+                    sendResponse(400, "error", "Missing required fields: role and status_id are required");
+                }
+                
                 $role = Security::sanitizeInput($putData['role']);
                 $status_id = intval($putData['status_id']);
                 $is_active = isset($putData['is_active']) ? 1 : 0;

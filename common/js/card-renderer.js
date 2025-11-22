@@ -3,7 +3,7 @@
 const CardConfigs = {
     buyer: {
         role: 'buyer',
-        showFields: { refId:true, poNumber:true, poTeam:true, supplier:true, category:true, purchType:false, qty:true, createdBy:true, createdOn:true, remarks:false },
+        showFields: { refId:true, poNumber:true, poHead:true, poTeam:true, supplier:true, category:true, purchType:false, qty:true, createdBy:true, createdOn:true, remarks:false },
         showButtons: { edit:true, proforma:true, po:true },
         statusBadges: {
             "1": '<span class="text-sm font-semibold text-green-600">Open</span>',
@@ -19,7 +19,7 @@ const CardConfigs = {
     },
     admin: {
         role: 'admin',
-        showFields: { refId:true, poNumber:true, poTeam:true, supplier:true, category:true, purchType:true, qty:true, createdBy:true, createdOn:true, remarks:false },
+        showFields: { refId:true, poNumber:true, poHead:true, poTeam:true, supplier:true, category:true, purchType:true, qty:true, createdBy:true, createdOn:true, remarks:false },
         showButtons: { edit:true, proforma:true, po:true },
         statusBadges: {
             "1": '<span class="text-sm font-semibold text-green-600">Open</span>',
@@ -35,7 +35,7 @@ const CardConfigs = {
     },
     bhead: {
         role: 'bhead',
-        showFields: { refId:true, poNumber:true, poTeam:true, supplier:true, category:true, purchType:false, qty:true, createdBy:true, createdOn:true, remarks:false },
+        showFields: { refId:true, poNumber:true, poHead:true, poTeam:true, supplier:true, category:true, purchType:false, qty:true, createdBy:true, createdOn:true, remarks:false },
         showButtons: { edit:true, proforma:true, po:true },
         statusBadges: {
             "1": '<span class="text-sm font-semibold text-green-600">Open</span>',
@@ -51,7 +51,7 @@ const CardConfigs = {
     },
     pohead: {
         role: 'pohead',
-        showFields: { refId:true, poNumber:true, poTeam:true, supplier:true, category:true, purchType:true, qty:true, createdBy:true, createdOn:true, remarks:false },
+        showFields: { refId:true, poNumber:true, poHead:true, poTeam:true, supplier:true, category:true, purchType:true, qty:true, createdBy:true, createdOn:true, remarks:false },
         showButtons: { edit:false, proforma:true, po:true },
         statusBadges: {
             "1": '<span class="text-sm font-semibold text-green-600">Open</span>',
@@ -67,7 +67,7 @@ const CardConfigs = {
     },
     poteammember: {
         role: 'poteammember',
-        showFields: { refId:true, poNumber:true, poTeam:false, supplier:true, category:true, purchType:true, qty:true, createdBy:true, createdOn:true, remarks:false },
+        showFields: { refId:true, poNumber:true, poHead:true, poTeam:true, supplier:true, category:true, purchType:true, qty:true, createdBy:true, createdOn:true, remarks:false },
         showButtons: { edit:false, proforma:true, po:true },
         statusBadges: {
             "1": '<span class="text-sm font-semibold text-green-600">Open</span>',
@@ -83,7 +83,7 @@ const CardConfigs = {
     },
     dashboard: {
         role: 'dashboard',
-        showFields: { refId:true, poNumber:true, poTeam:true, supplier:true, category:true, purchType:true, qty:true, createdBy:true, createdOn:true, remarks:false },
+        showFields: { refId:true, poNumber:true, poHead:true, poTeam:true, supplier:true, category:true, purchType:true, qty:true, createdBy:true, createdOn:true, remarks:false },
         showButtons: { edit:false, proforma:true, po:true },
         statusBadges: {
             "1": '<span class="text-sm font-semibold text-green-600">Open</span>',
@@ -122,7 +122,8 @@ function renderCards(dataArray, role = 'buyer', containerId = 'cardContainer') {
         const mappedItem = {
             refId: item.id,
             poNumber: item.po_number || '-',
-            poTeam: item.po_team,
+            poHead: item.po_team || '-',
+            poTeam: item.po_team_member || '-',
             supplier: item.supplier,
             category: item.category_name,
             purchType: item.purch_type,
@@ -140,6 +141,7 @@ function renderCards(dataArray, role = 'buyer', containerId = 'cardContainer') {
         const fieldIcons = {
             refId: '<i class="fas fa-hashtag text-blue-500"></i>',
             poNumber: '<i class="fas fa-file-invoice text-blue-500"></i>',
+            poHead: '<i class="fas fa-user-tie text-blue-500"></i>',
             poTeam: '<i class="fas fa-users text-blue-500"></i>',
             supplier: '<i class="fas fa-truck text-blue-500"></i>',
             category: '<i class="fas fa-tags text-blue-500"></i>',

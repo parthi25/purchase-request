@@ -3,9 +3,10 @@
     <div class="bg-base-200 border-base-300 collapse border">
   <input type="checkbox" class="peer" />
   <div
-    class="collapse-title bg-base-200 text-base-content font-semibold"
+    class="collapse-title bg-base-200 text-base-content font-semibold flex items-center justify-between"
   >
-   FILTERS
+   <span>FILTERS</span>
+   <i class="fas fa-filter ml-auto"></i>
   </div>
   <div
     class="collapse-content bg-base-200"
@@ -14,19 +15,19 @@
         <!-- Filter bar -->
         <div class="bg-base-200 rounded-xl shadow border border-base-300">
             <div class="p-4 flex flex-wrap items-center justify-between gap-3">
-                    <!-- Buyer Dropdown + Search + Date Range -->
+                    <!-- Buyer Dropdown + Search + Date Range + Filter Buttons -->
                     <div class="flex flex-wrap items-center gap-3">
                         <select id="buyerSelect" class="select select-bordered w-48">
                             <option value="">Select Buyer</option>
                         </select>
                         <input type="text" id="searchInput" placeholder="Search..." class="input input-bordered w-48 md:w-64" />
                         <input type="text" id="dateRange" placeholder="Select Date Range" class="input input-bordered w-64" />
+                        <button id="applyFilters" class="btn btn-outline btn-primary">Apply</button>
+                        <button id="clearFilters" class="btn btn-outline btn-secondary">Clear</button>
                     </div>
 
                     <!-- Buttons -->
                     <div class="flex flex-wrap items-center gap-3">
-                        <button id="applyFilters" class="btn btn-outline btn-primary">Apply</button>
-                        <button id="clearFilters" class="btn btn-outline btn-secondary">Clear</button>
                         <div class="btn-group">
                             <button class="btn btn-outline view-toggle-btn active" data-view="table">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
@@ -61,8 +62,8 @@
             <i class="fas fa-plus text-xl"></i>
         </button>
     </div>
-    <!-- Create PR Button - Fixed at Top -->
-    <div class="hidden sm:flex justify-end fixed top-24 right-8 z-40">
+    <!-- Create PR Button - Above Filter -->
+    <div class="mb-3 flex justify-end">
         <button id="openCreatePRBtn" class="btn btn-accent shadow-lg">Create PR</button>
     </div>
         <div id="view-container" class="p-2 sm:p-4"></div>
@@ -71,6 +72,8 @@
         <?php include '../common/create-pr-modal.php'; ?>
         <?php include '../common/status-modal.php'; ?>
 
+        <!-- Include notifications.js first -->
+        <script src="../common/js/notifications.js"></script>
         <script src="../common/js/count-box-component.js"></script>
         <!-- Include card-renderer.js first -->
         <script src="../common/js/table-renderer.js"></script>

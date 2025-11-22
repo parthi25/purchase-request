@@ -544,22 +544,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Delete permission
     window.deletePermission = async function(id) {
-        if (typeof Swal === 'undefined') {
-            if (!confirm('Are you sure you want to delete this permission?')) return;
-        } else {
-            const confirmResult = await Swal.fire({
-                title: 'Are you sure?',
-                text: 'Are you sure you want to delete this permission?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, delete it!',
-                cancelButtonText: 'Cancel'
-            });
-            
-            if (!confirmResult.isConfirmed) return;
-        }
+        const confirmResult = await showConfirm(
+            'Are you sure?',
+            'Are you sure you want to delete this permission?',
+            'Yes, delete it!',
+            'Cancel'
+        );
+        
+        if (!confirmResult.isConfirmed) return;
         
         try {
             const formData = new FormData();
@@ -588,22 +580,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Delete flow
     window.deleteFlow = async function(id) {
-        if (typeof Swal === 'undefined') {
-            if (!confirm('Are you sure you want to delete this flow?')) return;
-        } else {
-            const confirmResult = await Swal.fire({
-                title: 'Are you sure?',
-                text: 'Are you sure you want to delete this flow?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, delete it!',
-                cancelButtonText: 'Cancel'
-            });
-            
-            if (!confirmResult.isConfirmed) return;
-        }
+        const confirmResult = await showConfirm(
+            'Are you sure?',
+            'Are you sure you want to delete this flow?',
+            'Yes, delete it!',
+            'Cancel'
+        );
+        
+        if (!confirmResult.isConfirmed) return;
         
         try {
             const formData = new FormData();
@@ -862,22 +846,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Delete Modal Field
     window.deleteModalField = async function(id) {
-        if (typeof Swal === 'undefined') {
-            if (!confirm('Are you sure you want to delete this modal field?')) return;
-        } else {
-            const confirmResult = await Swal.fire({
-                title: 'Are you sure?',
-                text: 'Are you sure you want to delete this modal field?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, delete it!',
-                cancelButtonText: 'Cancel'
-            });
-            
-            if (!confirmResult.isConfirmed) return;
-        }
+        const confirmResult = await showConfirm(
+            'Are you sure?',
+            'Are you sure you want to delete this modal field?',
+            'Yes, delete it!',
+            'Cancel'
+        );
+        
+        if (!confirmResult.isConfirmed) return;
         
         try {
             const formData = new FormData();
@@ -911,22 +887,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Delete PR permission
     window.deletePRPermission = async function(id) {
-        if (typeof Swal === 'undefined') {
-            if (!confirm('Are you sure you want to delete this PR permission?')) return;
-        } else {
-            const confirmResult = await Swal.fire({
-                title: 'Are you sure?',
-                text: 'Are you sure you want to delete this PR permission?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonColor: '#d33',
-                cancelButtonColor: '#3085d6',
-                confirmButtonText: 'Yes, delete it!',
-                cancelButtonText: 'Cancel'
-            });
-            
-            if (!confirmResult.isConfirmed) return;
-        }
+        const confirmResult = await showConfirm(
+            'Are you sure?',
+            'Are you sure you want to delete this PR permission?',
+            'Yes, delete it!',
+            'Cancel'
+        );
+        
+        if (!confirmResult.isConfirmed) return;
         
         try {
             const formData = new FormData();
@@ -955,29 +923,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Show alert
     function showAlert(message, type = 'info') {
-        if (typeof Swal !== 'undefined') {
-            Swal.fire({
-                icon: type,
-                title: message,
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 3000,
-                timerProgressBar: true
-            });
-        } else {
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    icon: type,
-                    title: message,
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 3000,
-                    timerProgressBar: true
-                });
-            }
-        }
+        // Use DaisyUI toast notification
+        showToast(message, type, 3000);
     }
 });
 

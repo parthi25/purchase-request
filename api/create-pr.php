@@ -68,7 +68,9 @@ try {
     }
 
     // Sanitize inputs
-    $supplier = Security::sanitizeInput(trim($_POST['supplier_id'] ?? $_POST['supplierId'] ?? $_POST['supplierInput'] ?? ''));
+    $supplier = trim($_POST['supplier_id'] ?? $_POST['supplierId'] ?? $_POST['supplierInput'] ?? '');
+    // Convert to string for comparison, handle both string and numeric IDs
+    $supplier = is_numeric($supplier) ? (string)$supplier : Security::sanitizeInput($supplier);
     $buyer = isset($_POST['buyer']) ? (int) $_POST['buyer'] : (isset($_POST['buyerId']) ? (int) $_POST['buyerId'] : null);
     $qty = isset($_POST['qty']) ? (int) $_POST['qty'] : (isset($_POST['qtyInput']) ? (int) $_POST['qtyInput'] : 0);
     $uom = Security::sanitizeInput(trim($_POST['uom'] ?? $_POST['uomInput'] ?? ''));
@@ -77,6 +79,12 @@ try {
     $purchType = Security::sanitizeInput(trim($_POST['purchtype'] ?? $_POST['purchInput'] ?? ''));
     $createdBy = $_SESSION['user_id'];
     $poStatus = 1;
+    
+    // If PR is created by buyer, set buyer field to current user
+    $buyerField = null;
+    if ($userRole === 'buyer') {
+        $buyerField = $createdBy;
+    }
 
     // Validate input data
     $validator = new Validator();
@@ -108,10 +116,10 @@ try {
 
     // Handle NEW SUPPLIER with validation
     $newSupplierId = null;
-    if ($supplier === 'NEW SUPPLIER' || $supplier === '99999') {
-        $newsupplier = Security::sanitizeInput(trim($_POST['newsupplier'] ?? ''));
-        $agent = Security::sanitizeInput(trim($_POST['agent'] ?? ''));
-        $city = Security::sanitizeInput(trim($_POST['city'] ?? ''));
+    if ($supplier === 'NEW SUPPLIER' || $supplier === '99999' || (int)$supplier === 99999) {
+        $newsupplier = Security::sanitizeInput(trim($_POST['newsupplier'] ?? $_POST['newSupplierInput'] ?? ''));
+        $agent = Security::sanitizeInput(trim($_POST['agent'] ?? $_POST['agentInput'] ?? ''));
+        $city = Security::sanitizeInput(trim($_POST['city'] ?? $_POST['cityInput'] ?? ''));
         
         if (!$validator->validateNewSupplier(['supplier' => $newsupplier, 'agent' => $agent, 'city' => $city])) {
             sendResponse(400, 'error', $validator->getFirstError());
@@ -127,15 +135,16 @@ try {
     // Insert into purchase_requests
     $stmt = $conn->prepare("
         INSERT INTO purchase_requests (
-            supplier_id, new_supplier, b_head, qty, uom, remark, po_status,
+            supplier_id, new_supplier, b_head, buyer, qty, uom, remark, po_status,
             created_by, created_at, category_id, purch_id
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), ?, ?)
     ");
     $stmt->bind_param(
-        "siissssiii",
+        "siiissssiii",
         $supplier,
         $newSupplierId,
         $buyer,
+        $buyerField,
         $qty,
         $uom,
         $remark,

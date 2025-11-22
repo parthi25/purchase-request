@@ -8,9 +8,8 @@
 <link href="../assets/css/daisyui@5.css" rel="stylesheet" type="text/css" />
 <script src="../assets/js/browser@4.js"></script>
 <link href="../assets/css/themes.css" rel="stylesheet" type="text/css" />
-<link rel="stylesheet" href="../assets/css/sweetalert2.min.css">
-<script src="../assets/js/sweetalert2.all.min.js"></script>
 <link rel="stylesheet" href="../assets/css/flatpickr.min.css">
+<script src="../common/js/notifications.js"></script>
 <script src="../assets/js/flatpickr.min.js"></script>
 <script src="../assets/js/jquery.min.js"></script>
 <link rel="stylesheet" href="../assets/css/select2.min.css">
