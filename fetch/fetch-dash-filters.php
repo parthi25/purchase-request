@@ -17,10 +17,16 @@ try {
     }
 
     // Get status options from database
-    $statusStmt = $conn->query("SELECT DISTINCT status FROM pr_statuses ORDER BY status ASC");
+    $statusResult = $conn->query("SELECT id, status FROM pr_statuses ORDER BY status ASC");
     $statusOptions = [];
-    while ($row = $statusStmt->fetch_assoc()) {
-        $statusOptions[] = $row['status'];
+    if ($statusResult) {
+        while ($row = $statusResult->fetch_assoc()) {
+            $statusOptions[] = [
+                'id' => $row['id'],
+                'status' => $row['status']
+            ];
+        }
+        $statusResult->free();
     }
 
     // Get filter options based on user role
@@ -81,7 +87,7 @@ try {
         }
 
         // PO Team Members (all)
-        $poTeamResult = $conn->query("SELECT id, username FROM users WHERE role = 'PO_Team_Member' ORDER BY username ASC");
+        $poTeamResult = $conn->query("SELECT u.id, u.username FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE r.role_code = 'PO_Team_Member' ORDER BY u.username ASC");
         $options['po_team_member_options'] = [];
         while ($row = $poTeamResult->fetch_assoc()) {
             $options['po_team_member_options'][] = $row;
@@ -130,7 +136,7 @@ try {
         $selfStmt->close();
 
         // PO Team Members (all)
-        $poTeamResult = $conn->query("SELECT id, username FROM users WHERE role = 'PO_Team_Member' ORDER BY username ASC");
+        $poTeamResult = $conn->query("SELECT u.id, u.username FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE r.role_code = 'PO_Team_Member' ORDER BY u.username ASC");
         $options['po_team_member_options'] = [];
         while ($row = $poTeamResult->fetch_assoc()) {
             $options['po_team_member_options'][] = $row;
@@ -144,14 +150,14 @@ try {
         }
 
         // All buyers
-        $buyerResult = $conn->query("SELECT id, username FROM users WHERE role = 'buyer' ORDER BY username ASC");
+        $buyerResult = $conn->query("SELECT u.id, u.username FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE r.role_code = 'buyer' ORDER BY u.username ASC");
         $options['buyer_options'] = [];
         while ($row = $buyerResult->fetch_assoc()) {
             $options['buyer_options'][] = $row;
         }
 
         // All buyer heads
-        $bheadResult = $conn->query("SELECT id, username FROM users WHERE role = 'B_Head' ORDER BY username ASC");
+        $bheadResult = $conn->query("SELECT u.id, u.username FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE r.role_code = 'B_Head' ORDER BY u.username ASC");
         $options['buyer_head_options'] = [];
         while ($row = $bheadResult->fetch_assoc()) {
             $options['buyer_head_options'][] = $row;
@@ -176,19 +182,19 @@ try {
             $options['category_options'][] = $row;
         }
 
-        $buyerResult = $conn->query("SELECT id, username FROM users WHERE role = 'buyer' ORDER BY username ASC");
+        $buyerResult = $conn->query("SELECT u.id, u.username FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE r.role_code = 'buyer' ORDER BY u.username ASC");
         $options['buyer_options'] = [];
         while ($row = $buyerResult->fetch_assoc()) {
             $options['buyer_options'][] = $row;
         }
 
-        $bheadResult = $conn->query("SELECT id, username FROM users WHERE role = 'B_Head' ORDER BY username ASC");
+        $bheadResult = $conn->query("SELECT u.id, u.username FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE r.role_code = 'B_Head' ORDER BY u.username ASC");
         $options['buyer_head_options'] = [];
         while ($row = $bheadResult->fetch_assoc()) {
             $options['buyer_head_options'][] = $row;
         }
 
-        $poTeamResult = $conn->query("SELECT id, username FROM users WHERE role = 'PO_Team_Member' ORDER BY username ASC");
+        $poTeamResult = $conn->query("SELECT u.id, u.username FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE r.role_code = 'PO_Team_Member' ORDER BY u.username ASC");
         $options['po_team_member_options'] = [];
         while ($row = $poTeamResult->fetch_assoc()) {
             $options['po_team_member_options'][] = $row;

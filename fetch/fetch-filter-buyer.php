@@ -19,31 +19,31 @@ try {
     $results = ['results' => [], 'pagination' => ['more' => false]];
 
     // Build query based on role
-    $where = "role = 'buyer'";
+    $where = "r.role_code = 'buyer'";
     $params = [];
     $types = "";
 
     if ($role == 'B_Head') {
         // Get buyers under this buyer head
-        $where .= " AND id IN (SELECT buyer FROM buyers_info WHERE b_head = ?)";
+        $where .= " AND u.id IN (SELECT buyer FROM buyers_info WHERE b_head = ?)";
         $params[] = $userid;
         $types .= 'i';
     } elseif ($role == 'buyer') {
         // Only show self
-        $where .= " AND id = ?";
+        $where .= " AND u.id = ?";
         $params[] = $userid;
         $types .= 'i';
     }
 
     if (!empty($search)) {
-        $where .= " AND username LIKE ?";
+        $where .= " AND u.username LIKE ?";
         $searchTerm = '%' . $search . '%';
         $params[] = $searchTerm;
         $types .= 's';
     }
 
     // Count total
-    $countSql = "SELECT COUNT(*) as total FROM users WHERE $where";
+    $countSql = "SELECT COUNT(*) as total FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE $where";
     $countStmt = $conn->prepare($countSql);
     if (!empty($params)) {
         $countStmt->bind_param($types, ...$params);
@@ -53,7 +53,7 @@ try {
     $countStmt->close();
 
     // Get results
-    $sql = "SELECT id, username FROM users WHERE $where ORDER BY username ASC LIMIT ? OFFSET ?";
+    $sql = "SELECT u.id, u.username FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE $where ORDER BY u.username ASC LIMIT ? OFFSET ?";
     $stmt = $conn->prepare($sql);
     $params[] = $perPage;
     $params[] = $offset;

@@ -22,102 +22,108 @@ $currentPage = 'buyer-mapping.php';
     <div class="flex justify-between items-center mb-4 sm:mb-6">
         <h1 class="text-2xl sm:text-3xl font-bold">Buyer Mapping</h1>
     </div>
-    
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-        <!-- Form Card -->
-        <div class="lg:col-span-1">
-            <div class="card bg-base-100 shadow-xl">
-                <div class="card-body">
-                    <h2 class="card-title mb-4">
-                        <i class="fas fa-users"></i>
-                        <span id="formTitle">Map Buyer</span>
-                    </h2>
-                    <form id="buyerMappingForm">
-                        <input type="hidden" name="id" id="mappingId">
-                        
-                        <div class="form-control mb-4">
-                            <label class="label">
-                                <span class="label-text">Buyer Head</span>
-                            </label>
-                            <div class="join w-full">
-                                <span class="join-item btn btn-disabled bg-base-200"><i class="fas fa-user-tie"></i></span>
-                                <select name="b_head" id="b_head" class="select select-bordered join-item flex-1" required>
-                                    <option value="">Select Buyer Head</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="form-control mb-4">
-                            <label class="label">
-                                <span class="label-text">Buyer</span>
-                            </label>
-                            <div class="join w-full">
-                                <span class="join-item btn btn-disabled bg-base-200"><i class="fas fa-user"></i></span>
-                                <select name="buyer" id="buyer" class="select select-bordered join-item flex-1" required>
-                                    <option value="">Select Buyer</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="flex justify-between gap-2 mt-4">
-                            <button type="button" id="resetBtn" class="btn btn-outline">
-                                <i class="fas fa-undo"></i> Reset
-                            </button>
-                            <div class="flex gap-2">
-                                <button type="button" id="deleteBtn" class="btn btn-error">
-                                    <i class="fas fa-trash"></i> Delete
-                                </button>
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save"></i> Save
-                                </button>
-                            </div>
-                        </div>
-                    </form>
+
+    <!-- Form Card -->
+    <div class="card bg-base-100 shadow-xl mb-6">
+        <div class="card-body">
+            <h2 class="card-title mb-4">
+                <i class="fas fa-users"></i>
+                <span id="formTitle">Map Buyer</span>
+            </h2>
+            <form id="buyerMappingForm" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <input type="hidden" name="id" id="mappingId">
+                
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Buyer Head <span class="text-error">*</span></span>
+                    </label>
+                    <div class="join w-full">
+                        <span class="join-item btn btn-disabled bg-base-200"><i class="fas fa-user-tie"></i></span>
+                        <select name="b_head" id="b_head" class="select select-bordered join-item flex-1" required>
+                            <option value="">Select Buyer Head</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Buyer <span class="text-error">*</span></span>
+                    </label>
+                    <div class="join w-full">
+                        <span class="join-item btn btn-disabled bg-base-200"><i class="fas fa-user"></i></span>
+                        <select name="buyer" id="buyer" class="select select-bordered join-item flex-1" required>
+                            <option value="">Select Buyer</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-control sm:col-span-2 lg:col-span-3">
+                    <div class="flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            <span id="submitBtnText">Add Mapping</span>
+                        </button>
+                        <button type="button" class="btn btn-ghost" id="cancelBtn" style="display: none;">
+                            <i class="fas fa-times"></i>
+                            Cancel
+                        </button>
+                        <button type="button" id="resetBtn" class="btn btn-outline">
+                            <i class="fas fa-undo"></i> Reset
+                        </button>
+                        <button type="button" id="deleteBtn" class="btn btn-error" style="display: none;">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Mappings Table -->
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
+                <h2 class="card-title">
+                    <i class="fas fa-list"></i>
+                    Buyer Mappings
+                </h2>
+                <div class="flex gap-2">
+                    <div class="dropdown dropdown-end">
+                        <label tabindex="0" class="btn btn-success btn-sm sm:btn-md">
+                            <i class="fas fa-file-export"></i> <span class="hidden sm:inline">Export</span>
+                        </label>
+                        <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+                            <li><a id="exportExcel"><i class="fas fa-file-excel text-success"></i> Export as Excel</a></li>
+                            <li><a id="exportCSV"><i class="fas fa-file-csv text-primary"></i> Export as CSV</a></li>
+                        </ul>
+                    </div>
+                    <button id="refreshBtn" class="btn btn-outline btn-sm sm:btn-md">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <input type="text" id="searchInput" placeholder="Search mappings..." class="input input-bordered w-64">
                 </div>
             </div>
-        </div>
-        
-        <!-- Mappings List -->
-        <div class="lg:col-span-2">
-            <div class="card bg-base-100 shadow-xl">
-                <div class="card-body">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-                        <h2 class="card-title">
-                            <i class="fas fa-list-check"></i> Buyer Mappings
-                        </h2>
-                        <div class="flex gap-2">
-                            <div class="dropdown dropdown-end">
-                                <label tabindex="0" class="btn btn-success btn-sm sm:btn-md">
-                                    <i class="fas fa-file-export"></i> <span class="hidden sm:inline">Export</span>
-                                </label>
-                                <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-                                    <li><a id="exportExcel"><i class="fas fa-file-excel text-success"></i> Export as Excel</a></li>
-                                    <li><a id="exportCSV"><i class="fas fa-file-csv text-primary"></i> Export as CSV</a></li>
-                                </ul>
-                            </div>
-                            <button id="refreshBtn" class="btn btn-outline btn-sm sm:btn-md">
-                                <i class="fas fa-sync-alt"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="form-control mb-4">
-                        <div class="join w-full">
-                            <input type="text" id="searchInput" class="input input-bordered join-item flex-1" placeholder="Search mappings...">
-                            <button class="btn btn-square join-item">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div id="mappingList" class="space-y-2"></div>
-                    
-                    <div id="emptyState" class="text-center py-8 hidden">
-                        <i class="fas fa-users text-6xl text-base-content opacity-20 mb-4"></i>
-                        <h5 class="text-xl font-semibold">No mappings found</h5>
-                        <p>Create a new mapping to get started</p>
-                    </div>
-                </div>
+            
+            <div class="overflow-x-auto">
+                <table class="table table-zebra w-full">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Buyer Head</th>
+                            <th>Buyer</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mappingTableBody">
+                        <tr>
+                            <td colspan="4" class="text-center">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="flex justify-center items-center gap-2 mt-4" id="paginationContainer">
             </div>
         </div>
     </div>
@@ -135,22 +141,25 @@ $currentPage = 'buyer-mapping.php';
     </table>
 </div>
 
-<script src="../assets/js/xlsx.full.min.js"></script>
-<script src="../assets/js/FileSaver.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 <script>
 $("#buyerMappingForm").submit(function(e) {
     e.preventDefault();
     const formData = new FormData(this);
 
+    const action = $("#mappingId").val() ? "update" : "create";
+    
     (async () => {
         const confirmResult = await showConfirm(
-            'Confirm Mapping',
-            'Create/Update this buyer mapping?',
+            action === "create" ? 'Confirm Mapping' : 'Update Mapping',
+            action === "create" ? 'Create this buyer mapping?' : 'Update this buyer mapping?',
             'Yes, save it!',
             'Cancel'
         );
         
         if (confirmResult.isConfirmed) {
+            formData.append('action', action);
             $.ajax({
                 url: "../api/admin/buyer-mapping.php",
                 type: "POST",
@@ -209,8 +218,14 @@ function resetForm() {
     $("#buyerMappingForm")[0].reset();
     $("#mappingId").val('');
     $("#formTitle").text('Map Buyer');
-    $(".mapping-item").removeClass('bg-primary bg-opacity-10');
+    $("#submitBtnText").text('Add Mapping');
+    $("#cancelBtn").hide();
+    $("#deleteBtn").hide();
 }
+
+$("#cancelBtn").click(function() {
+    resetForm();
+});
 
 $("#resetBtn").click(function() {
     resetForm();
@@ -250,114 +265,152 @@ function loadBuyers() {
     });
 }
 
-function loadMappings() {
-    $.get("../api/admin/buyer-mapping.php", function(response) {
-        let data;
-        try {
-            data = typeof response === 'string' ? JSON.parse(response) : response;
-        } catch (e) {
-            console.error("Invalid JSON:", e, response);
-            showToast('Server returned invalid data.', 'error');
-            return;
-        }
+let currentPage = 1;
+let searchTimeout = null;
+const itemsPerPage = 10;
 
-        const container = $("#mappingList");
-        const exportTable = $("#exportTable tbody");
-        
-        container.empty();
-        exportTable.empty();
-        
-        if (data.status === 'success' && data.data && data.data.length === 0) {
-            $("#emptyState").removeClass('hidden');
-            return;
-        }
-        
-        if (data.status !== 'success' || !data.data) {
-            $("#emptyState").removeClass('hidden');
-            return;
-        }
-        
-        $("#emptyState").addClass('hidden');
+function loadMappings(page = 1, search = '') {
+    const searchValue = search || $("#searchInput").val().trim();
+    const url = `../api/admin/buyer-mapping.php?page=${page}&limit=${itemsPerPage}${searchValue ? '&search=' + encodeURIComponent(searchValue) : ''}`;
+    
+    $.getJSON(url, function(data) {
+        if (data.status === 'success') {
+            const responseData = data.data || {};
+            const mappings = responseData.data || [];
+            const pagination = responseData.pagination || {};
+            const tbody = $("#mappingTableBody");
+            const exportTable = $("#exportTable tbody");
+            
+            tbody.empty();
+            exportTable.empty();
+            
+            currentPage = pagination.current_page || page;
+            
+            if (mappings.length === 0) {
+                tbody.html('<tr><td colspan="4" class="text-center">No mappings found</td></tr>');
+                renderPagination(pagination);
+                return;
+            }
 
-        data.data.forEach(row => {
-            const item = $(`
-                <div class="card bg-base-200 mapping-item cursor-pointer hover:bg-base-300 transition" data-id="${row.id}">
-                    <div class="card-body py-3">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <div class="avatar placeholder">
-                                    <div class="bg-primary text-primary-content rounded w-10">
-                                        <span><i class="fas fa-users"></i></span>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="text-xs opacity-60">ID: ${row.id}</div>
-                                    <div class="font-semibold">${row.b_head_name}</div>
-                                    <div class="text-sm opacity-70"><i class="fas fa-user"></i> ${row.buyer_name}</div>
-                                </div>
-                            </div>
-                            <div class="flex gap-2">
-                                <button class="btn btn-sm btn-warning btn-edit" data-id="${row.id}">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-sm btn-error btn-delete" data-id="${row.id}">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `);
-            
-            item.find('.btn-edit').click(function(e) {
-                e.stopPropagation();
-                selectMapping(row);
-            });
-            
-            item.find('.btn-delete').click(function(e) {
-                e.stopPropagation();
-                $("#mappingId").val(row.id);
-                deleteMapping();
-            });
-            
-            item.click(function(e) {
-                if (!$(e.target).closest('button').length) {
-                    selectMapping(row);
-                }
-            });
-            
-            container.append(item);
-            
-            exportTable.append(`
+            tbody.html(mappings.map(row => `
                 <tr>
                     <td>${row.id}</td>
-                    <td>${row.b_head_name}</td>
+                    <td><strong>${row.b_head_name}</strong></td>
                     <td>${row.buyer_name}</td>
+                    <td>
+                        <div class="flex gap-2">
+                            <button class="btn btn-sm btn-primary edit-btn" data-id="${row.id}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-error delete-btn" data-id="${row.id}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
                 </tr>
-            `);
-        });
+            `).join(''));
+            
+            renderPagination(pagination);
+        }
     }, 'json').fail(function() {
         showToast('Failed to load mappings', 'error');
     });
 }
 
-function selectMapping(row) {
-    $("#mappingId").val(row.id);
-    $("#formTitle").text('Edit Mapping');
+function renderPagination(pagination) {
+    const container = $("#paginationContainer");
+    if (!pagination || pagination.total_pages <= 1) {
+        container.html('');
+        return;
+    }
     
-    ensureOptionExists("#b_head", row.b_head, row.b_head_name);
-    $("#b_head").val(row.b_head);
+    const current = pagination.current_page || 1;
+    const total = pagination.total_pages || 1;
+    const totalItems = pagination.total_items || 0;
     
-    ensureOptionExists("#buyer", row.buyer, row.buyer_name);
-    $("#buyer").val(row.buyer);
+    let paginationHTML = '<div class="join">';
     
-    $(".mapping-item").removeClass('bg-primary bg-opacity-10');
-    $(`.mapping-item[data-id="${row.id}"]`).addClass('bg-primary bg-opacity-10');
+    if (current > 1) {
+        paginationHTML += `<button class="join-item btn btn-sm" onclick="loadMappings(${current - 1})">«</button>`;
+    } else {
+        paginationHTML += `<button class="join-item btn btn-sm btn-disabled">«</button>`;
+    }
     
-    $('html, body').animate({
-        scrollTop: $("#buyerMappingForm").offset().top - 100
-    }, 500);
+    const maxPages = 5;
+    let startPage = Math.max(1, current - Math.floor(maxPages / 2));
+    let endPage = Math.min(total, startPage + maxPages - 1);
+    
+    if (endPage - startPage < maxPages - 1) {
+        startPage = Math.max(1, endPage - maxPages + 1);
+    }
+    
+    if (startPage > 1) {
+        paginationHTML += `<button class="join-item btn btn-sm" onclick="loadMappings(1)">1</button>`;
+        if (startPage > 2) {
+            paginationHTML += `<button class="join-item btn btn-sm btn-disabled">...</button>`;
+        }
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        if (i === current) {
+            paginationHTML += `<button class="join-item btn btn-sm btn-active">${i}</button>`;
+        } else {
+            paginationHTML += `<button class="join-item btn btn-sm" onclick="loadMappings(${i})">${i}</button>`;
+        }
+    }
+    
+    if (endPage < total) {
+        if (endPage < total - 1) {
+            paginationHTML += `<button class="join-item btn btn-sm btn-disabled">...</button>`;
+        }
+        paginationHTML += `<button class="join-item btn btn-sm" onclick="loadMappings(${total})">${total}</button>`;
+    }
+    
+    if (current < total) {
+        paginationHTML += `<button class="join-item btn btn-sm" onclick="loadMappings(${current + 1})">»</button>`;
+    } else {
+        paginationHTML += `<button class="join-item btn btn-sm btn-disabled">»</button>`;
+    }
+    
+    paginationHTML += '</div>';
+    paginationHTML += `<div class="ml-4 text-sm opacity-70">Showing ${((current - 1) * itemsPerPage) + 1}-${Math.min(current * itemsPerPage, totalItems)} of ${totalItems}</div>`;
+    
+    container.html(paginationHTML);
 }
+
+// Make functions global for event delegation
+window.editMapping = function(id) {
+    $.getJSON("../api/admin/buyer-mapping.php?limit=1000", function(data) {
+        if (data.status === 'success') {
+            const responseData = data.data || {};
+            const mappings = responseData.data || data.data || [];
+            const row = mappings.find(r => r.id == id);
+            if (!row) {
+                showToast('Mapping not found', 'error');
+                return;
+            }
+            
+            $("#mappingId").val(row.id);
+            $("#formTitle").text('Edit Mapping');
+            $("#submitBtnText").text('Update Mapping');
+            $("#cancelBtn").show();
+            $("#deleteBtn").show();
+            
+            ensureOptionExists("#b_head", row.b_head, row.b_head_name);
+            $("#b_head").val(row.b_head);
+            
+            ensureOptionExists("#buyer", row.buyer, row.buyer_name);
+            $("#buyer").val(row.buyer);
+            
+            $("#buyerMappingForm").scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    });
+};
+
+window.deleteMappingById = function(id) {
+    $("#mappingId").val(id);
+    deleteMapping();
+};
 
 function ensureOptionExists(selectId, value, text) {
     const select = $(selectId);
@@ -370,101 +423,126 @@ function ensureOptionExists(selectId, value, text) {
 }
 
 $("#searchInput").on("keyup", function() {
-    const value = $(this).val().toLowerCase();
-    $("#mappingList .mapping-item").each(function() {
-        const itemText = $(this).text().toLowerCase();
-        if (itemText.indexOf(value) > -1) {
-            $(this).removeClass('hidden');
-        } else {
-            $(this).addClass('hidden');
-        }
-    });
-    
-    const visibleItems = $("#mappingList .mapping-item").not('.hidden').length;
-    if (visibleItems === 0) {
-        $("#emptyState").removeClass('hidden');
-        $("#emptyState h5").text('No matching mappings found');
-    } else {
-        $("#emptyState").addClass('hidden');
+    clearTimeout(searchTimeout);
+    const value = $(this).val().trim();
+    searchTimeout = setTimeout(function() {
+        loadMappings(1, value);
+    }, 500);
+});
+
+// Event delegation for edit and delete buttons
+$(document).on('click', '.edit-btn', function(e) {
+    e.preventDefault();
+    const id = $(this).data('id');
+    if (id) {
+        window.editMapping(id);
+    }
+});
+
+$(document).on('click', '.delete-btn', function(e) {
+    e.preventDefault();
+    const id = $(this).data('id');
+    if (id) {
+        window.deleteMappingById(id);
     }
 });
 
 $("#refreshBtn").click(function() {
     $(this).find('i').addClass('fa-spin');
-    loadMappings();
+    loadMappings(currentPage);
     setTimeout(() => {
         $(this).find('i').removeClass('fa-spin');
     }, 700);
 });
 
 function exportToExcel() {
-    // Check if XLSX is available
     if (typeof XLSX === 'undefined') {
         showToast('Excel export library not loaded. Please refresh the page.', 'error');
         return;
     }
     
-    try {
-        const exportTable = document.getElementById('exportTable');
-        if (!exportTable || exportTable.querySelectorAll('tbody tr').length === 0) {
-            showToast('No mappings found to export', 'warning');
-            return;
+    const searchValue = $("#searchInput").val().trim();
+    const url = `../api/admin/buyer-mapping.php?limit=10000${searchValue ? '&search=' + encodeURIComponent(searchValue) : ''}`;
+    
+    $.getJSON(url, function(data) {
+        if (data.status === 'success') {
+            const responseData = data.data || {};
+            const mappings = responseData.data || data.data || [];
+            
+            if (mappings.length === 0) {
+                showToast('No mappings found to export', 'warning');
+                return;
+            }
+            
+            try {
+                const headers = [['ID', 'Buyer Head', 'Buyer']];
+                const rows = mappings.map(row => [row.id, row.b_head_name, row.buyer_name]);
+                const ws = XLSX.utils.aoa_to_sheet([...headers, ...rows]);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Mappings");
+                const date = new Date();
+                const dateStr = date.toISOString().split('T')[0];
+                XLSX.writeFile(wb, `Buyer_Mappings_${dateStr}.xlsx`);
+                
+                showToast('Mappings have been exported to Excel', 'success', 1500);
+            } catch (error) {
+                console.error('Export error:', error);
+                showToast('An error occurred while exporting: ' + error.message, 'error');
+            }
         }
-        
-        const date = new Date();
-        const dateStr = date.toISOString().split('T')[0];
-        const ws = XLSX.utils.table_to_sheet(exportTable);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Mappings");
-        XLSX.writeFile(wb, `Buyer_Mappings_${dateStr}.xlsx`);
-        
-        showToast('Mappings have been exported to Excel', 'success', 1500);
-    } catch (error) {
-        console.error('Export error:', error);
-        showToast('An error occurred while exporting: ' + error.message, 'error');
-    }
+    }).fail(function() {
+        showToast('Failed to load mappings for export', 'error');
+    });
 }
 
 function exportToCSV() {
-    // Check if FileSaver is available
     if (typeof saveAs === 'undefined') {
         showToast('FileSaver library not loaded. Please refresh the page.', 'error');
         return;
     }
     
-    try {
-        const table = document.getElementById('exportTable');
-        if (!table || table.querySelectorAll('tbody tr').length === 0) {
-            showToast('No mappings found to export', 'warning');
-            return;
+    const searchValue = $("#searchInput").val().trim();
+    const url = `../api/admin/buyer-mapping.php?limit=10000${searchValue ? '&search=' + encodeURIComponent(searchValue) : ''}`;
+    
+    $.getJSON(url, function(data) {
+        if (data.status === 'success') {
+            const responseData = data.data || {};
+            const mappings = responseData.data || data.data || [];
+            
+            if (mappings.length === 0) {
+                showToast('No mappings found to export', 'warning');
+                return;
+            }
+            
+            try {
+                const headers = ['ID', 'Buyer Head', 'Buyer'];
+                const csvRows = mappings.map(row => {
+                    const rowData = [row.id, row.b_head_name.replace(/"/g, '""'), row.buyer_name.replace(/"/g, '""')];
+                    return rowData.map(cell => {
+                        let text = String(cell);
+                        if (text.includes(',') || text.includes('"') || text.includes('\n')) {
+                            text = `"${text}"`;
+                        }
+                        return text;
+                    }).join(',');
+                });
+                
+                csvRows.unshift(headers.join(','));
+                const csvContent = csvRows.join('\n');
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const date = new Date();
+                const dateStr = date.toISOString().split('T')[0];
+                saveAs(blob, `Buyer_Mappings_${dateStr}.csv`);
+                
+                showToast('Mappings have been exported to CSV', 'success', 1500);
+            } catch (error) {
+                console.error('Export error:', error);
+                showToast('An error occurred while exporting: ' + error.message, 'error');
+            }
         }
-        
-        const rows = Array.from(table.querySelectorAll('tr'));
-        const headers = Array.from(rows.shift().querySelectorAll('th'))
-            .map(header => header.textContent.trim());
-        const csvData = rows.map(row => {
-            return Array.from(row.querySelectorAll('td'))
-                .map(cell => {
-                    let text = cell.textContent.trim();
-                    if (text.includes(',') || text.includes('"') || text.includes('\n')) {
-                        text = `"${text.replace(/"/g, '""')}"`;
-                    }
-                    return text;
-                })
-                .join(',');
-        });
-        csvData.unshift(headers.join(','));
-        const csvContent = csvData.join('\n');
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const date = new Date();
-        const dateStr = date.toISOString().split('T')[0];
-        saveAs(blob, `Buyer_Mappings_${dateStr}.csv`);
-        
-        showToast('Mappings have been exported to CSV', 'success', 1500);
-    } catch (error) {
-        console.error('Export error:', error);
-        showToast('An error occurred while exporting: ' + error.message, 'error');
-    }
+    }).fail(function() {
+        showToast('Failed to load mappings for export', 'error');
+    });
 }
 
 $('#exportExcel').click(function(e) {

@@ -22,102 +22,108 @@ $currentPage = 'category-assignment.php';
     <div class="flex justify-between items-center mb-4 sm:mb-6">
         <h1 class="text-2xl sm:text-3xl font-bold">Category Assignment</h1>
     </div>
-    
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
-        <!-- Form Card -->
-        <div class="lg:col-span-1">
-            <div class="card bg-base-100 shadow-xl">
-                <div class="card-body">
-                    <h2 class="card-title mb-4">
-                        <i class="fas fa-link"></i>
-                        <span id="formTitle">Assign Category</span>
-                    </h2>
-                    <form id="assignForm">
-                        <input type="hidden" name="id" id="assignmentId">
-                        
-                        <div class="form-control mb-4">
-                            <label class="label">
-                                <span class="label-text">Buyer Head</span>
-                            </label>
-                            <div class="join w-full">
-                                <span class="join-item btn btn-disabled bg-base-200"><i class="fas fa-user-tie"></i></span>
-                                <select name="b_head" id="b_head" class="select select-bordered join-item flex-1" required>
-                                    <option value="">Select Buyer Head</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="form-control mb-4">
-                            <label class="label">
-                                <span class="label-text">Category</span>
-                            </label>
-                            <div class="join w-full">
-                                <span class="join-item btn btn-disabled bg-base-200"><i class="fas fa-tag"></i></span>
-                                <select name="cat_id" id="cat_id" class="select select-bordered join-item flex-1" required>
-                                    <option value="">Select Category</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="flex justify-between gap-2 mt-4">
-                            <button type="button" id="resetBtn" class="btn btn-outline">
-                                <i class="fas fa-undo"></i> Reset
-                            </button>
-                            <div class="flex gap-2">
-                                <button type="button" id="deleteBtn" class="btn btn-error">
-                                    <i class="fas fa-trash"></i> Delete
-                                </button>
-                                <button type="submit" class="btn btn-primary">
-                                    <i class="fas fa-save"></i> Save
-                                </button>
-                            </div>
-                        </div>
-                    </form>
+
+    <!-- Form Card -->
+    <div class="card bg-base-100 shadow-xl mb-6">
+        <div class="card-body">
+            <h2 class="card-title mb-4">
+                <i class="fas fa-link"></i>
+                <span id="formTitle">Assign Category</span>
+            </h2>
+            <form id="assignForm" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <input type="hidden" name="id" id="assignmentId">
+                
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Buyer Head <span class="text-error">*</span></span>
+                    </label>
+                    <div class="join w-full">
+                        <span class="join-item btn btn-disabled bg-base-200"><i class="fas fa-user-tie"></i></span>
+                        <select name="b_head" id="b_head" class="select select-bordered join-item flex-1" required>
+                            <option value="">Select Buyer Head</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-control">
+                    <label class="label">
+                        <span class="label-text">Category <span class="text-error">*</span></span>
+                    </label>
+                    <div class="join w-full">
+                        <span class="join-item btn btn-disabled bg-base-200"><i class="fas fa-tag"></i></span>
+                        <select name="cat_id" id="cat_id" class="select select-bordered join-item flex-1" required>
+                            <option value="">Select Category</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-control sm:col-span-2 lg:col-span-3">
+                    <div class="flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i>
+                            <span id="submitBtnText">Add Assignment</span>
+                        </button>
+                        <button type="button" class="btn btn-ghost" id="cancelBtn" style="display: none;">
+                            <i class="fas fa-times"></i>
+                            Cancel
+                        </button>
+                        <button type="button" id="resetBtn" class="btn btn-outline">
+                            <i class="fas fa-undo"></i> Reset
+                        </button>
+                        <button type="button" id="deleteBtn" class="btn btn-error" style="display: none;">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Assignments Table -->
+    <div class="card bg-base-100 shadow-xl">
+        <div class="card-body">
+            <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
+                <h2 class="card-title">
+                    <i class="fas fa-list"></i>
+                    Assignments
+                </h2>
+                <div class="flex gap-2">
+                    <div class="dropdown dropdown-end">
+                        <label tabindex="0" class="btn btn-success btn-sm sm:btn-md">
+                            <i class="fas fa-file-export"></i> <span class="hidden sm:inline">Export</span>
+                        </label>
+                        <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+                            <li><a id="exportExcel"><i class="fas fa-file-excel text-success"></i> Export as Excel</a></li>
+                            <li><a id="exportCSV"><i class="fas fa-file-csv text-primary"></i> Export as CSV</a></li>
+                        </ul>
+                    </div>
+                    <button id="refreshBtn" class="btn btn-outline btn-sm sm:btn-md">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                    <input type="text" id="searchInput" placeholder="Search assignments..." class="input input-bordered w-64">
                 </div>
             </div>
-        </div>
-        
-        <!-- Assignments List -->
-        <div class="lg:col-span-2">
-            <div class="card bg-base-100 shadow-xl">
-                <div class="card-body">
-                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-                        <h2 class="card-title">
-                            <i class="fas fa-list-check"></i> Assignments
-                        </h2>
-                        <div class="flex gap-2">
-                            <div class="dropdown dropdown-end">
-                                <label tabindex="0" class="btn btn-success btn-sm sm:btn-md">
-                                    <i class="fas fa-file-export"></i> <span class="hidden sm:inline">Export</span>
-                                </label>
-                                <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-                                    <li><a id="exportExcel"><i class="fas fa-file-excel text-success"></i> Export as Excel</a></li>
-                                    <li><a id="exportCSV"><i class="fas fa-file-csv text-primary"></i> Export as CSV</a></li>
-                                </ul>
-                            </div>
-                            <button id="refreshBtn" class="btn btn-outline btn-sm sm:btn-md">
-                                <i class="fas fa-sync-alt"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div class="form-control mb-4">
-                        <div class="join w-full">
-                            <input type="text" id="searchInput" class="input input-bordered join-item flex-1" placeholder="Search assignments...">
-                            <button class="btn btn-square join-item">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <div id="assignList" class="space-y-2"></div>
-                    
-                    <div id="emptyState" class="text-center py-8 hidden">
-                        <i class="fas fa-link text-6xl text-base-content opacity-20 mb-4"></i>
-                        <h5 class="text-xl font-semibold">No assignments found</h5>
-                        <p>Create a new assignment to get started</p>
-                    </div>
-                </div>
+            
+            <div class="overflow-x-auto">
+                <table class="table table-zebra w-full">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Buyer Head</th>
+                            <th>Category</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="assignTableBody">
+                        <tr>
+                            <td colspan="4" class="text-center">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="flex justify-center items-center gap-2 mt-4" id="paginationContainer">
             </div>
         </div>
     </div>
@@ -135,8 +141,8 @@ $currentPage = 'category-assignment.php';
     </table>
 </div>
 
-<script src="../assets/js/xlsx.full.min.js"></script>
-<script src="../assets/js/FileSaver.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 <script>
 $("#assignForm").submit(function(e) {
     e.preventDefault();
@@ -162,12 +168,13 @@ $("#assignForm").submit(function(e) {
     }).appendTo(this);
 
     const formData = new FormData(this);
+    const action = $("#assignmentId").val() ? "update" : "create";
 
     (async () => {
         const confirmResult = await showConfirm(
-            'Confirm Assignment',
-            `Assign "${catIdText}" to "${bHeadText}"?`,
-            'Yes, assign it!',
+            action === "create" ? 'Confirm Assignment' : 'Update Assignment',
+            action === "create" ? `Assign "${catIdText}" to "${bHeadText}"?` : `Update this assignment?`,
+            'Yes, save it!',
             'Cancel'
         );
         
@@ -233,8 +240,14 @@ function resetForm() {
     $("#assignForm")[0].reset();
     $("#assignmentId").val('');
     $("#formTitle").text('Assign Category');
-    $(".assignment-item").removeClass('bg-primary bg-opacity-10');
+    $("#submitBtnText").text('Add Assignment');
+    $("#cancelBtn").hide();
+    $("#deleteBtn").hide();
 }
+
+$("#cancelBtn").click(function() {
+    resetForm();
+});
 
 $("#resetBtn").click(function() {
     resetForm();
@@ -274,99 +287,117 @@ function loadCategories() {
     });
 }
 
-function loadAssignments() {
-    $.get("../api/admin/category-assignment.php", function(response) {
-        let data;
-        try {
-            data = typeof response === 'string' ? JSON.parse(response) : response;
-        } catch (e) {
-            console.error("Invalid JSON:", e, response);
-            showToast('Server returned invalid data.', 'error');
-            return;
-        }
+let currentPage = 1;
+let searchTimeout = null;
+const itemsPerPage = 10;
 
-        const container = $("#assignList");
-        const exportTable = $("#exportTable tbody");
-        
-        container.empty();
-        exportTable.empty();
-        
-        if (data.status === 'success' && data.data && data.data.length === 0) {
-            $("#emptyState").removeClass('hidden');
-            return;
-        }
-        
-        if (data.status !== 'success' || !data.data) {
-            $("#emptyState").removeClass('hidden');
-            return;
-        }
-        
-        $("#emptyState").addClass('hidden');
+function loadAssignments(page = 1, search = '') {
+    const searchValue = search || $("#searchInput").val().trim();
+    const url = `../api/admin/category-assignment.php?page=${page}&limit=${itemsPerPage}${searchValue ? '&search=' + encodeURIComponent(searchValue) : ''}`;
+    
+    $.getJSON(url, function(data) {
+        if (data.status === 'success') {
+            const responseData = data.data || {};
+            const assignments = responseData.data || [];
+            const pagination = responseData.pagination || {};
+            const tbody = $("#assignTableBody");
+            const exportTable = $("#exportTable tbody");
+            
+            tbody.empty();
+            exportTable.empty();
+            
+            currentPage = pagination.current_page || page;
+            
+            if (assignments.length === 0) {
+                tbody.html('<tr><td colspan="4" class="text-center">No assignments found</td></tr>');
+                renderPagination(pagination);
+                return;
+            }
 
-        data.data.forEach(row => {
-            const item = $(`
-                <div class="card bg-base-200 assignment-item cursor-pointer hover:bg-base-300 transition" data-id="${row.id}">
-                    <div class="card-body py-3">
-                        <div class="flex items-center justify-between">
-                            <div class="flex items-center gap-3">
-                                <div class="avatar placeholder">
-                                    <div class="bg-primary text-primary-content rounded w-10">
-                                        <span><i class="fas fa-link"></i></span>
-                                    </div>
-                                </div>
-                                <div>
-                                    <div class="text-xs opacity-60">ID: ${row.id}</div>
-                                    <div class="font-semibold">${row.buyer_name}</div>
-                                    <div class="text-sm opacity-70"><i class="fas fa-tag"></i> ${row.cat_name}</div>
-                                </div>
-                            </div>
-                            <div class="flex gap-2">
-                                <button class="btn btn-sm btn-warning btn-edit" data-id="${row.id}">
-                                    <i class="fas fa-edit"></i>
-                                </button>
-                                <button class="btn btn-sm btn-error btn-delete" data-id="${row.id}">
-                                    <i class="fas fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            `);
-            
-            item.find('.btn-edit').click(function(e) {
-                e.stopPropagation();
-                selectAssignment(row);
-            });
-            
-            item.find('.btn-delete').click(function(e) {
-                e.stopPropagation();
-                $("#assignmentId").val(row.id);
-                ensureOptionExists("#b_head", row.user_id, row.buyer_name);
-                $("#b_head").val(row.user_id);
-                ensureOptionExists("#cat_id", row.cat_id, row.cat_name);
-                $("#cat_id").val(row.cat_id);
-                deleteEntry();
-            });
-            
-            item.click(function(e) {
-                if (!$(e.target).closest('button').length) {
-                    selectAssignment(row);
-                }
-            });
-            
-            container.append(item);
-            
-            exportTable.append(`
+            tbody.html(assignments.map(row => `
                 <tr>
                     <td>${row.id}</td>
-                    <td>${row.buyer_name}</td>
+                    <td><strong>${row.buyer_name}</strong></td>
                     <td>${row.cat_name}</td>
+                    <td>
+                        <div class="flex gap-2">
+                            <button class="btn btn-sm btn-primary edit-btn" data-id="${row.id}">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-error delete-btn" data-id="${row.id}">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </td>
                 </tr>
-            `);
-        });
+            `).join(''));
+            
+            renderPagination(pagination);
+        }
     }, 'json').fail(function() {
         showToast('Failed to load assignments', 'error');
     });
+}
+
+function renderPagination(pagination) {
+    const container = $("#paginationContainer");
+    if (!pagination || pagination.total_pages <= 1) {
+        container.html('');
+        return;
+    }
+    
+    const current = pagination.current_page || 1;
+    const total = pagination.total_pages || 1;
+    const totalItems = pagination.total_items || 0;
+    
+    let paginationHTML = '<div class="join">';
+    
+    if (current > 1) {
+        paginationHTML += `<button class="join-item btn btn-sm" onclick="loadAssignments(${current - 1})">«</button>`;
+    } else {
+        paginationHTML += `<button class="join-item btn btn-sm btn-disabled">«</button>`;
+    }
+    
+    const maxPages = 5;
+    let startPage = Math.max(1, current - Math.floor(maxPages / 2));
+    let endPage = Math.min(total, startPage + maxPages - 1);
+    
+    if (endPage - startPage < maxPages - 1) {
+        startPage = Math.max(1, endPage - maxPages + 1);
+    }
+    
+    if (startPage > 1) {
+        paginationHTML += `<button class="join-item btn btn-sm" onclick="loadAssignments(1)">1</button>`;
+        if (startPage > 2) {
+            paginationHTML += `<button class="join-item btn btn-sm btn-disabled">...</button>`;
+        }
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        if (i === current) {
+            paginationHTML += `<button class="join-item btn btn-sm btn-active">${i}</button>`;
+        } else {
+            paginationHTML += `<button class="join-item btn btn-sm" onclick="loadAssignments(${i})">${i}</button>`;
+        }
+    }
+    
+    if (endPage < total) {
+        if (endPage < total - 1) {
+            paginationHTML += `<button class="join-item btn btn-sm btn-disabled">...</button>`;
+        }
+        paginationHTML += `<button class="join-item btn btn-sm" onclick="loadAssignments(${total})">${total}</button>`;
+    }
+    
+    if (current < total) {
+        paginationHTML += `<button class="join-item btn btn-sm" onclick="loadAssignments(${current + 1})">»</button>`;
+    } else {
+        paginationHTML += `<button class="join-item btn btn-sm btn-disabled">»</button>`;
+    }
+    
+    paginationHTML += '</div>';
+    paginationHTML += `<div class="ml-4 text-sm opacity-70">Showing ${((current - 1) * itemsPerPage) + 1}-${Math.min(current * itemsPerPage, totalItems)} of ${totalItems}</div>`;
+    
+    container.html(paginationHTML);
 }
 
 function ensureOptionExists(selectId, value, text) {
@@ -379,120 +410,177 @@ function ensureOptionExists(selectId, value, text) {
     }
 }
 
-function selectAssignment(row) {
-    $("#assignmentId").val(row.id);
-    $("#formTitle").text('Edit Assignment');
-    
-    ensureOptionExists("#b_head", row.user_id, row.buyer_name);
-    $("#b_head").val(row.user_id);
-    
-    ensureOptionExists("#cat_id", row.cat_id, row.cat_name);
-    $("#cat_id").val(row.cat_id);
-    
-    $(".assignment-item").removeClass('bg-primary bg-opacity-10');
-    $(`.assignment-item[data-id="${row.id}"]`).addClass('bg-primary bg-opacity-10');
-    
-    $('html, body').animate({
-        scrollTop: $("#assignForm").offset().top - 100
-    }, 500);
-}
-
-$("#searchInput").on("keyup", function() {
-    const value = $(this).val().toLowerCase();
-    $("#assignList .assignment-item").each(function() {
-        const itemText = $(this).text().toLowerCase();
-        if (itemText.indexOf(value) > -1) {
-            $(this).removeClass('hidden');
-        } else {
-            $(this).addClass('hidden');
+// Make functions global for event delegation
+window.editAssignment = function(id) {
+    $.getJSON("../api/admin/category-assignment.php?limit=1000", function(data) {
+        if (data.status === 'success') {
+            const responseData = data.data || {};
+            const assignments = responseData.data || data.data || [];
+            const row = assignments.find(r => r.id == id);
+            if (!row) {
+                showToast('Assignment not found', 'error');
+                return;
+            }
+            
+            $("#assignmentId").val(row.id);
+            $("#formTitle").text('Edit Assignment');
+            $("#submitBtnText").text('Update Assignment');
+            $("#cancelBtn").show();
+            $("#deleteBtn").show();
+            
+            ensureOptionExists("#b_head", row.user_id, row.buyer_name);
+            $("#b_head").val(row.user_id);
+            
+            ensureOptionExists("#cat_id", row.cat_id, row.cat_name);
+            $("#cat_id").val(row.cat_id);
+            
+            $("#assignForm").scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     });
-    
-    const visibleItems = $("#assignList .assignment-item").not('.hidden').length;
-    if (visibleItems === 0) {
-        $("#emptyState").removeClass('hidden');
-        $("#emptyState h5").text('No matching assignments found');
-    } else {
-        $("#emptyState").addClass('hidden');
+};
+
+window.deleteAssignmentById = function(id) {
+    $.getJSON("../api/admin/category-assignment.php?limit=1000", function(data) {
+        if (data.status === 'success') {
+            const responseData = data.data || {};
+            const assignments = responseData.data || data.data || [];
+            const row = assignments.find(r => r.id == id);
+            if (!row) {
+                showToast('Assignment not found', 'error');
+                return;
+            }
+            
+            $("#assignmentId").val(row.id);
+            ensureOptionExists("#b_head", row.user_id, row.buyer_name);
+            $("#b_head").val(row.user_id);
+            ensureOptionExists("#cat_id", row.cat_id, row.cat_name);
+            $("#cat_id").val(row.cat_id);
+            deleteEntry();
+        }
+    });
+};
+
+$("#searchInput").on("keyup", function() {
+    clearTimeout(searchTimeout);
+    const value = $(this).val().trim();
+    searchTimeout = setTimeout(function() {
+        loadAssignments(1, value);
+    }, 500);
+});
+
+// Event delegation for edit and delete buttons
+$(document).on('click', '.edit-btn', function(e) {
+    e.preventDefault();
+    const id = $(this).data('id');
+    if (id) {
+        window.editAssignment(id);
+    }
+});
+
+$(document).on('click', '.delete-btn', function(e) {
+    e.preventDefault();
+    const id = $(this).data('id');
+    if (id) {
+        window.deleteAssignmentById(id);
     }
 });
 
 $("#refreshBtn").click(function() {
     $(this).find('i').addClass('fa-spin');
-    loadAssignments();
+    loadAssignments(currentPage);
     setTimeout(() => {
         $(this).find('i').removeClass('fa-spin');
     }, 700);
 });
 
 function exportToExcel() {
-    // Check if XLSX is available
     if (typeof XLSX === 'undefined') {
         showToast('Excel export library not loaded. Please refresh the page.', 'error');
         return;
     }
     
-    try {
-        const exportTable = document.getElementById('exportTable');
-        if (!exportTable || exportTable.querySelectorAll('tbody tr').length === 0) {
-            showToast('No assignments found to export', 'warning');
-            return;
+    const searchValue = $("#searchInput").val().trim();
+    const url = `../api/admin/category-assignment.php?limit=10000${searchValue ? '&search=' + encodeURIComponent(searchValue) : ''}`;
+    
+    $.getJSON(url, function(data) {
+        if (data.status === 'success') {
+            const responseData = data.data || {};
+            const assignments = responseData.data || data.data || [];
+            
+            if (assignments.length === 0) {
+                showToast('No assignments found to export', 'warning');
+                return;
+            }
+            
+            try {
+                const headers = [['ID', 'Buyer Head', 'Category']];
+                const rows = assignments.map(row => [row.id, row.buyer_name, row.cat_name]);
+                const ws = XLSX.utils.aoa_to_sheet([...headers, ...rows]);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, "Assignments");
+                const date = new Date();
+                const dateStr = date.toISOString().split('T')[0];
+                XLSX.writeFile(wb, `Category_Assignments_${dateStr}.xlsx`);
+                
+                showToast('Assignments have been exported to Excel', 'success', 1500);
+            } catch (error) {
+                console.error('Export error:', error);
+                showToast('An error occurred while exporting: ' + error.message, 'error');
+            }
         }
-        
-        const date = new Date();
-        const dateStr = date.toISOString().split('T')[0];
-        const ws = XLSX.utils.table_to_sheet(exportTable);
-        const wb = XLSX.utils.book_new();
-        XLSX.utils.book_append_sheet(wb, ws, "Assignments");
-        XLSX.writeFile(wb, `Category_Assignments_${dateStr}.xlsx`);
-        
-        showToast('Assignments have been exported to Excel', 'success', 1500);
-    } catch (error) {
-        console.error('Export error:', error);
-        showToast('An error occurred while exporting: ' + error.message, 'error');
-    }
+    }).fail(function() {
+        showToast('Failed to load assignments for export', 'error');
+    });
 }
 
 function exportToCSV() {
-    // Check if FileSaver is available
     if (typeof saveAs === 'undefined') {
         showToast('FileSaver library not loaded. Please refresh the page.', 'error');
         return;
     }
     
-    try {
-        const table = document.getElementById('exportTable');
-        if (!table || table.querySelectorAll('tbody tr').length === 0) {
-            showToast('No assignments found to export', 'warning');
-            return;
+    const searchValue = $("#searchInput").val().trim();
+    const url = `../api/admin/category-assignment.php?limit=10000${searchValue ? '&search=' + encodeURIComponent(searchValue) : ''}`;
+    
+    $.getJSON(url, function(data) {
+        if (data.status === 'success') {
+            const responseData = data.data || {};
+            const assignments = responseData.data || data.data || [];
+            
+            if (assignments.length === 0) {
+                showToast('No assignments found to export', 'warning');
+                return;
+            }
+            
+            try {
+                const headers = ['ID', 'Buyer Head', 'Category'];
+                const csvRows = assignments.map(row => {
+                    const rowData = [row.id, row.buyer_name.replace(/"/g, '""'), row.cat_name.replace(/"/g, '""')];
+                    return rowData.map(cell => {
+                        let text = String(cell);
+                        if (text.includes(',') || text.includes('"') || text.includes('\n')) {
+                            text = `"${text}"`;
+                        }
+                        return text;
+                    }).join(',');
+                });
+                
+                csvRows.unshift(headers.join(','));
+                const csvContent = csvRows.join('\n');
+                const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+                const date = new Date();
+                const dateStr = date.toISOString().split('T')[0];
+                saveAs(blob, `Category_Assignments_${dateStr}.csv`);
+                
+                showToast('Assignments have been exported to CSV', 'success', 1500);
+            } catch (error) {
+                console.error('Export error:', error);
+                showToast('An error occurred while exporting: ' + error.message, 'error');
+            }
         }
-        
-        const rows = Array.from(table.querySelectorAll('tr'));
-        const headers = Array.from(rows.shift().querySelectorAll('th'))
-            .map(header => header.textContent.trim());
-        const csvData = rows.map(row => {
-            return Array.from(row.querySelectorAll('td'))
-                .map(cell => {
-                    let text = cell.textContent.trim();
-                    if (text.includes(',') || text.includes('"') || text.includes('\n')) {
-                        text = `"${text.replace(/"/g, '""')}"`;
-                    }
-                    return text;
-                })
-                .join(',');
-        });
-        csvData.unshift(headers.join(','));
-        const csvContent = csvData.join('\n');
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const date = new Date();
-        const dateStr = date.toISOString().split('T')[0];
-        saveAs(blob, `Category_Assignments_${dateStr}.csv`);
-        
-        showToast('Assignments have been exported to CSV', 'success', 1500);
-    } catch (error) {
-        console.error('Export error:', error);
-        showToast('An error occurred while exporting: ' + error.message, 'error');
-    }
+    }).fail(function() {
+        showToast('Failed to load assignments for export', 'error');
+    });
 }
 
 $('#exportExcel').click(function(e) {

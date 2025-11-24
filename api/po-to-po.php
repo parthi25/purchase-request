@@ -71,11 +71,11 @@ try {
     } else {
         // Insert new record
         $insertStmt = $conn->prepare("INSERT INTO pr_assignments 
-                                      (created_by, po_team_member, buyer, created_at, updated_at, ord_id) 
-                                      VALUES (?, ?, ?, ?, ?, ?)");
+                                      (created_by, po_team_member, created_at, updated_at, ord_id) 
+                                      VALUES (?, ?, ?, ?, ?)");
         if (!$insertStmt)
             throw new Exception('Failed to prepare pr_assignments insert query');
-        $insertStmt->bind_param("iisssi", $created_by, $pr_assignments, $buyer, $created_at, $updated_at, $id);
+        $insertStmt->bind_param("iissi", $created_by, $pr_assignments, $created_at, $updated_at, $id);
         if (!$insertStmt->execute())
             throw new Exception('Failed to insert pr_assignments: ' . $insertStmt->error);
     }

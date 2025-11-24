@@ -10,8 +10,8 @@ if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role'], $allowedRoles))
 }
 
 try {
-    // Get distinct roles from users table
-    $query = "SELECT DISTINCT role FROM users WHERE role IS NOT NULL AND role != '' ORDER BY role";
+    // Get roles from roles table
+    $query = "SELECT role_code, role_name, description FROM roles WHERE is_active = 1 ORDER BY display_order ASC, role_name ASC";
     $result = $conn->query($query);
     
     if (!$result) {
@@ -20,7 +20,11 @@ try {
     
     $roles = [];
     while ($row = $result->fetch_assoc()) {
-        $roles[] = $row['role'];
+        $roles[] = [
+            'code' => $row['role_code'],
+            'name' => $row['role_name'],
+            'description' => $row['description']
+        ];
     }
     
     sendResponse(200, "success", "Roles retrieved successfully", $roles);

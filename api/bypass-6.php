@@ -25,7 +25,7 @@ $buyer_id = isset($_POST['buyerInput']) ? intval($_POST['buyerInput']) : null;
 $selectQuery = "SELECT b_head,created_by FROM purchase_requests WHERE id = ?";
 $selectStmt = $conn->prepare($selectQuery);
 
-$checkBuyerQuery = "SELECT role FROM users WHERE id = ?";
+$checkBuyerQuery = "SELECT r.role_code FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE u.id = ?";
 $checkBuyerStmt = $conn->prepare($checkBuyerQuery);
 
 // Prepare base SQL
@@ -54,6 +54,7 @@ foreach ($ids as $id) {
     $selectStmt->execute();
     $selectResult = $selectStmt->get_result();
     $row = $selectResult->fetch_assoc();
+    $selectResult->free();
 
     if (!$row) {
         sendResponse(404, "error", "ID $id not found.");
@@ -62,10 +63,12 @@ foreach ($ids as $id) {
     $created_by = $row['created_by'];
     $head = $row['b_head'];
 
-    // Check if created_by user exists and is a buyer
+    // Check if created_by user exists and get their role
     $checkBuyerStmt->bind_param("i", $created_by);
     $checkBuyerStmt->execute();
     $buyerResult = $checkBuyerStmt->get_result();
+    $buyerRow = $buyerResult->fetch_assoc();
+    $buyerResult->free();
 
 
     $stmt->bind_param(

@@ -185,8 +185,8 @@ $currentPage = 'user-management.php';
     </div>
 </div>
 
-<script src="../assets/js/xlsx.full.min.js"></script>
-<script src="../assets/js/FileSaver.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 <script>
 function loadRoles() {
     $.get('../api/admin/get-roles.php', function(response) {
@@ -194,11 +194,13 @@ function loadRoles() {
             let options = '<option value="">Select Role</option>';
             const currentRole = $('#currentRole').val();
             response.data.forEach(role => {
+                const roleCode = role.code || role;
+                const roleName = role.name || roleCode;
                 // Only super_admin can create super_admin
-                if (role === 'super_admin' && currentRole !== 'super_admin') {
+                if (roleCode === 'super_admin' && currentRole !== 'super_admin') {
                     return;
                 }
-                options += `<option value="${role}">${role.charAt(0).toUpperCase() + role.slice(1).replace('_', ' ')}</option>`;
+                options += `<option value="${roleCode}">${roleName}</option>`;
             });
             $('#roleSelect').html(options);
         }
@@ -258,7 +260,7 @@ function loadUsers(page = 1, search = '') {
                     <td>${user.email || 'N/A'}</td>
                     <td>${user.phone || 'N/A'}</td>
                     <td>${user.username}</td>
-                    <td>${user.role.replace('_', ' ')}</td>
+                    <td>${(user.role_name || user.role || 'N/A').replace('_', ' ')}</td>
                     <td>${statusBadge}</td>
                     <td>
                         <div class="flex gap-2">
@@ -300,7 +302,8 @@ function editUser(user) {
     $('#email').val(user.email);
     $('#phone').val(user.phone);
     $('#username').val(user.username);
-    $('#roleSelect').val(user.role);
+    // Use role_code if available, otherwise fall back to role
+    $('#roleSelect').val(user.role_code || user.role || '');
     $('#is_active').prop('checked', user.is_active == 1 || user.is_active === true);
     $('#submitBtn').html('<i class="fas fa-save"></i> Update User');
     $('#formTitle').text('Edit User');
@@ -487,7 +490,7 @@ function exportToExcel() {
                 user.email || 'N/A',
                 user.phone || 'N/A',
                 user.username,
-                user.role.replace('_', ' '),
+                (user.role_name || user.role || 'N/A').replace('_', ' '),
                 (user.is_active == 1 || user.is_active === true) ? 'Active' : 'Inactive'
             ]);
             
@@ -540,7 +543,7 @@ function exportToCSV() {
                     user.email || 'N/A',
                     user.phone || 'N/A',
                     user.username,
-                    user.role.replace('_', ' '),
+                    (user.role_name || user.role || 'N/A').replace('_', ' '),
                     (user.is_active == 1 || user.is_active === true) ? 'Active' : 'Inactive'
                 ];
                 return row.map(cell => {

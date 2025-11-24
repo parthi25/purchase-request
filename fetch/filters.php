@@ -84,7 +84,7 @@ try {
             }
 
             // PO Team Members - Using prepared statement
-            $stmt = $conn->prepare("SELECT id, username FROM users WHERE role = 'PO_Team_Member' ORDER BY username ASC");
+            $stmt = $conn->prepare("SELECT u.id, u.username FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE r.role_code = 'PO_Team_Member' ORDER BY u.username ASC");
             $stmt->execute();
             $result = $stmt->get_result();
             while ($row = $result->fetch_assoc()) {
@@ -137,7 +137,7 @@ try {
             $stmt->close();
 
             // PO Team Members - Using prepared statement
-            $stmt = $conn->prepare("SELECT id, username FROM users WHERE role = 'PO_Team_Member' ORDER BY username ASC");
+            $stmt = $conn->prepare("SELECT u.id, u.username FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE r.role_code = 'PO_Team_Member' ORDER BY u.username ASC");
             $stmt->execute();
             $result = $stmt->get_result();
             while ($row = $result->fetch_assoc()) {
@@ -157,7 +157,7 @@ try {
             $stmt->close();
 
             // All buyers - Using prepared statement
-            $stmt = $conn->prepare("SELECT id, username FROM users WHERE role = 'buyer' ORDER BY username ASC");
+            $stmt = $conn->prepare("SELECT u.id, u.username FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE r.role_code = 'buyer' ORDER BY u.username ASC");
             $stmt->execute();
             $result = $stmt->get_result();
             while ($row = $result->fetch_assoc()) {
@@ -166,7 +166,7 @@ try {
             $stmt->close();
 
             // All buyer heads - Using prepared statement
-            $stmt = $conn->prepare("SELECT id, username FROM users WHERE role = 'B_Head' ORDER BY username ASC");
+            $stmt = $conn->prepare("SELECT u.id, u.username FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE r.role_code = 'B_Head' ORDER BY u.username ASC");
             $stmt->execute();
             $result = $stmt->get_result();
             while ($row = $result->fetch_assoc()) {
@@ -187,7 +187,7 @@ try {
             $stmt->close();
 
             // All buyers - Using prepared statement
-            $stmt = $conn->prepare("SELECT id, username FROM users WHERE role = 'buyer' ORDER BY username ASC");
+            $stmt = $conn->prepare("SELECT u.id, u.username FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE r.role_code = 'buyer' ORDER BY u.username ASC");
             $stmt->execute();
             $result = $stmt->get_result();
             while ($row = $result->fetch_assoc()) {
@@ -196,7 +196,7 @@ try {
             $stmt->close();
 
             // All buyer heads - Using prepared statement
-            $stmt = $conn->prepare("SELECT id, username FROM users WHERE role = 'B_Head' ORDER BY username ASC");
+            $stmt = $conn->prepare("SELECT u.id, u.username FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE r.role_code = 'B_Head' ORDER BY u.username ASC");
             $stmt->execute();
             $result = $stmt->get_result();
             while ($row = $result->fetch_assoc()) {
@@ -205,7 +205,7 @@ try {
             $stmt->close();
 
             // PO Team Members - Using prepared statement
-            $stmt = $conn->prepare("SELECT id, username FROM users WHERE role = 'PO_Team_Member' ORDER BY username ASC");
+            $stmt = $conn->prepare("SELECT u.id, u.username FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE r.role_code = 'PO_Team_Member' ORDER BY u.username ASC");
             $stmt->execute();
             $result = $stmt->get_result();
             while ($row = $result->fetch_assoc()) {

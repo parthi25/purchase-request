@@ -16,7 +16,7 @@ if (empty($role)) {
 }
 
 try {
-    $stmt = $conn->prepare("SELECT id, fullname FROM users WHERE role = ? ORDER BY fullname ASC");
+    $stmt = $conn->prepare("SELECT u.id, u.fullname FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE r.role_code = ? ORDER BY u.fullname ASC");
     $stmt->bind_param("s", $role);
     $stmt->execute();
     $result = $stmt->get_result();

@@ -79,20 +79,81 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     exit;
 }
 
-// FETCH ALL
+// FETCH ALL with pagination and search
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     try {
-        $result = $conn->query("SELECT b.*, u.fullname AS b_head_name, u2.fullname AS buyer_name 
-                                FROM buyers_info b 
-                                LEFT JOIN users u ON u.id = b.b_head 
-                                LEFT JOIN users u2 ON u2.id = b.buyer 
-                                ORDER BY b.id DESC");
+        $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+        $limit = isset($_GET['limit']) ? max(1, intval($_GET['limit'])) : 10;
+        $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+        $offset = ($page - 1) * $limit;
+        
+        // Build WHERE clause for search
+        $whereClause = '';
+        $searchParam = '';
+        if (!empty($search)) {
+            $searchParam = '%' . $conn->real_escape_string($search) . '%';
+            $whereClause = "WHERE u.fullname LIKE ? OR u2.fullname LIKE ?";
+        }
+        
+        // Get total count
+        if (!empty($search)) {
+            $countSql = "SELECT COUNT(*) as total FROM buyers_info b 
+                         LEFT JOIN users u ON u.id = b.b_head 
+                         LEFT JOIN users u2 ON u2.id = b.buyer 
+                         WHERE u.fullname LIKE ? OR u2.fullname LIKE ?";
+            $countStmt = $conn->prepare($countSql);
+            $countStmt->bind_param("ss", $searchParam, $searchParam);
+            $countStmt->execute();
+        } else {
+            $countSql = "SELECT COUNT(*) as total FROM buyers_info";
+            $countStmt = $conn->prepare($countSql);
+            $countStmt->execute();
+        }
+        $countResult = $countStmt->get_result();
+        $totalCount = $countResult->fetch_assoc()['total'];
+        $countStmt->close();
+        
+        // Get paginated results
+        if (!empty($search)) {
+            $sql = "SELECT b.*, u.fullname AS b_head_name, u2.fullname AS buyer_name 
+                    FROM buyers_info b 
+                    LEFT JOIN users u ON u.id = b.b_head 
+                    LEFT JOIN users u2 ON u2.id = b.buyer 
+                    WHERE u.fullname LIKE ? OR u2.fullname LIKE ?
+                    ORDER BY b.id DESC LIMIT ? OFFSET ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ssii", $searchParam, $searchParam, $limit, $offset);
+        } else {
+            $sql = "SELECT b.*, u.fullname AS b_head_name, u2.fullname AS buyer_name 
+                    FROM buyers_info b 
+                    LEFT JOIN users u ON u.id = b.b_head 
+                    LEFT JOIN users u2 ON u2.id = b.buyer 
+                    ORDER BY b.id DESC LIMIT ? OFFSET ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ii", $limit, $offset);
+        }
+        
+        $stmt->execute();
+        $result = $stmt->get_result();
         $rows = [];
         while ($row = $result->fetch_assoc()) {
             $rows[] = $row;
         }
         
-        sendResponse(200, "success", "Mappings retrieved successfully", $rows);
+        $totalPages = ceil($totalCount / $limit);
+        
+        $responseData = [
+            'data' => $rows,
+            'pagination' => [
+                'current_page' => $page,
+                'total_pages' => $totalPages,
+                'total_items' => $totalCount,
+                'items_per_page' => $limit
+            ]
+        ];
+        
+        sendResponse(200, "success", "Mappings retrieved successfully", $responseData);
+        $stmt->close();
     } catch (Exception $e) {
         sendResponse(500, "error", $e->getMessage());
     }

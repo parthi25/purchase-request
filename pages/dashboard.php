@@ -1391,21 +1391,27 @@
                     // Use DocumentFragment for better performance
                     const fragment = document.createDocumentFragment();
                     
+                    // Helper function to convert to title case
+                    const toTitleCase = (str) => {
+                        if (!str || typeof str !== 'string') return str || '';
+                        return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+                    };
+                    
                     // Helper function to get cell value
                     const getCellValue = (row, key) => {
                         switch(key) {
                             case 'id': return row.id || '-';
                             case 'status': return row.status || '-';
-                            case 'supplier': return row.supplier_name || row.supplier || '-';
+                            case 'supplier': return toTitleCase(row.supplier_name || row.supplier) || '-';
                             case 'supplier_code': return row.supplier_code || '-';
-                            case 'b_head': return row.b_head || '-';
-                            case 'buyer': return row.buyer || row.buyername || '-';
-                            case 'buyername': return row.buyername || '-';
-                            case 'po_team_member': return row.po_team_member || '-';
-                            case 'pohead': return row.pohead || '-';
-                            case 'purch_type': return row.purch_type || '-';
-                            case 'categories': return row.categories ? row.categories.split(',')[0].trim() : '-';
-                            case 'category_name': return row.category_name || '-';
+                            case 'b_head': return toTitleCase(row.b_head) || '-';
+                            case 'buyer': return toTitleCase(row.buyer || row.buyername) || '-';
+                            case 'buyername': return toTitleCase(row.buyername) || '-';
+                            case 'po_team_member': return toTitleCase(row.po_team_member) || '-';
+                            case 'pohead': return toTitleCase(row.pohead) || '-';
+                            case 'purch_type': return toTitleCase(row.purch_type) || '-';
+                            case 'categories': return row.categories ? toTitleCase(row.categories.split(',')[0].trim()) : '-';
+                            case 'category_name': return toTitleCase(row.category_name) || '-';
                             case 'qty': return row.qty || '-';
                             case 'uom': return row.uom || '-';
                             case 'remark': return row.remark || '-';

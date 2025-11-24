@@ -58,9 +58,10 @@ try {
         sendResponse(200, "success", "Buyers retrieved successfully", $buyers);
     } else {
         // 🔹 For non–B_Head users, return all active buyers
-        $query = "SELECT id, username 
-                  FROM users 
-                  WHERE role = 'buyer' AND is_active = 1";
+        $query = "SELECT u.id, u.username 
+                  FROM users u
+                  INNER JOIN roles r ON u.role_id = r.id
+                  WHERE r.role_code = 'buyer' AND u.is_active = 1";
 
         $result = $conn->query($query);
         if (!$result) {

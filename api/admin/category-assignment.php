@@ -99,22 +99,81 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     exit;
 }
 
-// FETCH ALL
+// FETCH ALL with pagination and search
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     try {
-        $sql = "SELECT a.id, a.user_id, a.cat AS cat_id, u.fullname AS buyer_name, c.maincat AS cat_name
-                FROM catbasbh a
-                JOIN users u ON a.user_id = u.id
-                JOIN categories c ON a.cat = c.maincat
-                ORDER BY a.id DESC";
+        $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+        $limit = isset($_GET['limit']) ? max(1, intval($_GET['limit'])) : 10;
+        $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+        $offset = ($page - 1) * $limit;
         
-        $result = $conn->query($sql);
+        // Build WHERE clause for search
+        $whereClause = '';
+        $searchParam = '';
+        if (!empty($search)) {
+            $searchParam = '%' . $conn->real_escape_string($search) . '%';
+            $whereClause = "WHERE u.fullname LIKE ? OR c.maincat LIKE ?";
+        }
+        
+        // Get total count
+        if (!empty($search)) {
+            $countSql = "SELECT COUNT(*) as total FROM catbasbh a
+                         JOIN users u ON a.user_id = u.id
+                         JOIN categories c ON a.cat = c.maincat
+                         WHERE u.fullname LIKE ? OR c.maincat LIKE ?";
+            $countStmt = $conn->prepare($countSql);
+            $countStmt->bind_param("ss", $searchParam, $searchParam);
+            $countStmt->execute();
+        } else {
+            $countSql = "SELECT COUNT(*) as total FROM catbasbh";
+            $countStmt = $conn->prepare($countSql);
+            $countStmt->execute();
+        }
+        $countResult = $countStmt->get_result();
+        $totalCount = $countResult->fetch_assoc()['total'];
+        $countStmt->close();
+        
+        // Get paginated results
+        if (!empty($search)) {
+            $sql = "SELECT a.id, a.user_id, a.cat AS cat_id, u.fullname AS buyer_name, c.maincat AS cat_name
+                    FROM catbasbh a
+                    JOIN users u ON a.user_id = u.id
+                    JOIN categories c ON a.cat = c.maincat
+                    WHERE u.fullname LIKE ? OR c.maincat LIKE ?
+                    ORDER BY a.id DESC LIMIT ? OFFSET ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ssii", $searchParam, $searchParam, $limit, $offset);
+        } else {
+            $sql = "SELECT a.id, a.user_id, a.cat AS cat_id, u.fullname AS buyer_name, c.maincat AS cat_name
+                    FROM catbasbh a
+                    JOIN users u ON a.user_id = u.id
+                    JOIN categories c ON a.cat = c.maincat
+                    ORDER BY a.id DESC LIMIT ? OFFSET ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ii", $limit, $offset);
+        }
+        
+        $stmt->execute();
+        $result = $stmt->get_result();
         $data = [];
         while ($row = $result->fetch_assoc()) {
             $data[] = $row;
         }
         
-        sendResponse(200, "success", "Assignments retrieved successfully", $data);
+        $totalPages = ceil($totalCount / $limit);
+        
+        $responseData = [
+            'data' => $data,
+            'pagination' => [
+                'current_page' => $page,
+                'total_pages' => $totalPages,
+                'total_items' => $totalCount,
+                'items_per_page' => $limit
+            ]
+        ];
+        
+        sendResponse(200, "success", "Assignments retrieved successfully", $responseData);
+        $stmt->close();
     } catch (Exception $e) {
         sendResponse(500, "error", $e->getMessage());
     }

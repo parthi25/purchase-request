@@ -16,7 +16,7 @@ if ($user_role !== 'B_Head') {
 }
 
 try {
-    $stmt = $conn->prepare("SELECT id, name FROM users WHERE role = 'buyer' AND b_head = ? ORDER BY name");
+    $stmt = $conn->prepare("SELECT u.id, u.fullname as name FROM users u INNER JOIN roles r ON u.role_id = r.id INNER JOIN buyers_info bi ON u.id = bi.buyer WHERE r.role_code = 'buyer' AND bi.b_head = ? ORDER BY u.fullname");
     $stmt->bind_param("i", $user_id);
     $stmt->execute();
     $result = $stmt->get_result();

@@ -118,16 +118,16 @@ $currentPage = 'supplier-master.php';
                     <input type="text" name="search_term" id="search_term" class="input input-bordered w-full" placeholder="Search term">
                 </div>
                 
-                <div class="form-control md:col-span-2 lg:col-span-3 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2 mt-4">
-                    <button type="button" id="resetBtn" class="btn btn-outline btn-sm sm:btn-md">
+                <div class="form-control md:col-span-2 lg:col-span-3 flex justify-between gap-2 mt-4">
+                    <button type="button" id="resetBtn" class="btn btn-outline">
                         <i class="fas fa-undo"></i> Reset
                     </button>
                     <div class="flex gap-2">
-                        <button type="button" id="deleteBtn" class="btn btn-error btn-sm sm:btn-md">
-                            <i class="fas fa-trash"></i> <span class="hidden sm:inline">Delete</span>
+                        <button type="button" id="deleteBtn" class="btn btn-error">
+                            <i class="fas fa-trash"></i> Delete
                         </button>
-                        <button type="submit" class="btn btn-primary btn-sm sm:btn-md" id="submitBtn">
-                            <i class="fas fa-save"></i> <span class="hidden sm:inline">Save Supplier</span><span class="sm:hidden">Save</span>
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            <i class="fas fa-save"></i> Save
                         </button>
                     </div>
                 </div>
@@ -140,31 +140,30 @@ $currentPage = 'supplier-master.php';
         <div class="card-body">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                 <h2 class="card-title">
-                    <i class="fas fa-list"></i> <span class="hidden sm:inline">Supplier List</span><span class="sm:hidden">Suppliers</span>
+                    <i class="fas fa-list"></i> Suppliers
                 </h2>
-                <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                    <div class="form-control w-full sm:w-auto">
-                        <div class="join w-full sm:w-auto">
-                            <input type="text" id="searchInput" class="input input-bordered join-item flex-1" placeholder="Search suppliers...">
-                            <button class="btn btn-square join-item">
-                                <i class="fas fa-search"></i>
-                            </button>
-                        </div>
+                <div class="flex gap-2">
+                    <div class="dropdown dropdown-end">
+                        <label tabindex="0" class="btn btn-success btn-sm sm:btn-md">
+                            <i class="fas fa-file-export"></i> <span class="hidden sm:inline">Export</span>
+                        </label>
+                        <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+                            <li><a id="exportExcel"><i class="fas fa-file-excel text-success"></i> Export as Excel</a></li>
+                            <li><a id="exportCSV"><i class="fas fa-file-csv text-primary"></i> Export as CSV</a></li>
+                        </ul>
                     </div>
-                    <div class="flex gap-2">
-                        <div class="dropdown dropdown-end">
-                            <label tabindex="0" class="btn btn-success btn-sm sm:btn-md">
-                                <i class="fas fa-file-export"></i> <span class="hidden sm:inline">Export</span>
-                            </label>
-                            <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-                                <li><a id="exportExcel"><i class="fas fa-file-excel text-success"></i> Export as Excel</a></li>
-                                <li><a id="exportCSV"><i class="fas fa-file-csv text-primary"></i> Export as CSV</a></li>
-                            </ul>
-                        </div>
-                        <button id="refreshBtn" class="btn btn-outline btn-sm sm:btn-md">
-                            <i class="fas fa-sync-alt"></i>
-                        </button>
-                    </div>
+                    <button id="refreshBtn" class="btn btn-outline btn-sm sm:btn-md">
+                        <i class="fas fa-sync-alt"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div class="form-control mb-4">
+                <div class="join w-full">
+                    <input type="text" id="searchInput" class="input input-bordered join-item flex-1" placeholder="Search suppliers...">
+                    <button class="btn btn-square join-item">
+                        <i class="fas fa-search"></i>
+                    </button>
                 </div>
             </div>
             
@@ -186,25 +185,25 @@ $currentPage = 'supplier-master.php';
             <div id="emptyState" class="text-center py-8 hidden">
                 <i class="fas fa-building text-6xl text-base-content opacity-20 mb-4"></i>
                 <h5 class="text-xl font-semibold">No suppliers found</h5>
-                <p>Add a new supplier to get started</p>
+                <p>Create a new supplier to get started</p>
             </div>
-            <div id="paginationContainer" class="flex flex-col sm:flex-row justify-center items-center gap-2 mt-4 hidden">
-                <button id="prevPage" class="btn btn-sm btn-outline w-full sm:w-auto">
-                    <i class="fas fa-chevron-left"></i> <span class="hidden sm:inline">Previous</span><span class="sm:hidden">Prev</span>
+            <div id="paginationContainer" class="flex justify-center items-center gap-2 mt-4 hidden">
+                <button id="prevPage" class="btn btn-sm btn-outline">
+                    <i class="fas fa-chevron-left"></i> Previous
                 </button>
                 <div class="flex gap-1">
                     <span id="pageInfo" class="btn btn-sm btn-disabled"></span>
                 </div>
-                <button id="nextPage" class="btn btn-sm btn-outline w-full sm:w-auto">
-                    <span class="hidden sm:inline">Next</span><span class="sm:hidden">Next</span> <i class="fas fa-chevron-right"></i>
+                <button id="nextPage" class="btn btn-sm btn-outline">
+                    Next <i class="fas fa-chevron-right"></i>
                 </button>
             </div>
         </div>
     </div>
 </div>
 
-<script src="../assets/js/xlsx.full.min.js"></script>
-<script src="../assets/js/FileSaver.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 <script>
 let currentPage = 1;
 let totalPages = 1;
@@ -292,7 +291,7 @@ function editSupplier(supplier) {
     $('#tax_number_3').val(supplier.tax_number_3 || '');
     $('#permanent_account_number').val(supplier.permanent_account_number || '');
     $('#search_term').val(supplier.search_term || '');
-    $('#submitBtn').html('<i class="fas fa-save"></i> Update Supplier');
+    $('#submitBtn').html('<i class="fas fa-save"></i> Save');
     $('#formTitle').text('Edit Supplier');
     
     $('tr').removeClass('bg-primary bg-opacity-10');
@@ -303,7 +302,7 @@ function resetForm() {
     $('#supplierForm')[0].reset();
     $('#supplierId').val('');
     $('#supplier_id').val('');
-    $('#submitBtn').html('<i class="fas fa-save"></i> Save Supplier');
+    $('#submitBtn').html('<i class="fas fa-save"></i> Save');
     $('#formTitle').text('Add New Supplier');
     $('tr').removeClass('bg-primary bg-opacity-10');
 }

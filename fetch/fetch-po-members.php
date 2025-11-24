@@ -16,7 +16,7 @@ if ($user_role !== 'PO_Team') {
 }
 
 try {
-    $stmt = $conn->prepare("SELECT id, name FROM users WHERE role = 'poteam' ORDER BY name");
+    $stmt = $conn->prepare("SELECT u.id, u.fullname as name FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE r.role_code = 'PO_Team' ORDER BY u.fullname");
     $stmt->execute();
     $result = $stmt->get_result();
 

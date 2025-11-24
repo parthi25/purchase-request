@@ -187,14 +187,30 @@
                 const data = await res.json();
 
                 if (data.status === "success") {
-                    switch(data.data.role){
-                        case "admin": window.location.href = './pages/admin.php'; break;
-                        case "buyer": window.location.href = './pages/buyer.php'; break;
-                        case "B_Head": window.location.href = './pages/buyer-head.php'; break;
-                        case "PO_Head": window.location.href = './pages/po-head.php'; break;
-                        case "PO_Team_Member": window.location.href = './pages/po-member.php'; break;
-                        default: window.location.href = './pages/po-head.php';
+                    // Use initial page URL from login response, or fallback to default
+                    const role = data.data.role;
+                    let redirectUrl = './pages/po-head.php'; // Default fallback
+                    
+                    // Priority 1: Use initial_page_url from database settings
+                    if (data.data.initial_page_url) {
+                        redirectUrl = './pages/' + data.data.initial_page_url;
+                    } else if (role) {
+                        // Priority 2: Fallback to default based on role
+                        const defaultUrls = {
+                            'admin': './pages/admin.php',
+                            'buyer': './pages/buyer.php',
+                            'B_Head': './pages/buyer-head.php',
+                            'PO_Head': './pages/po-head.php',
+                            'PO_Team_Member': './pages/po-member.php',
+                            'PO_Team': './pages/po-member.php',
+                            'super_admin': './pages/admin.php',
+                            'master': './pages/admin.php'
+                        };
+                        redirectUrl = defaultUrls[role] || './pages/po-head.php';
                     }
+                    
+                    // Redirect to the determined page
+                    window.location.href = redirectUrl;
                 } else {
                     document.getElementById('error-text').textContent = data.message;
                     errorBox.style.display = "block";

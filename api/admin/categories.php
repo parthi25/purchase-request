@@ -87,17 +87,67 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     exit;
 }
 
-// Get all categories
+// Get all categories with pagination and search
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     try {
-        $result = $conn->query("SELECT * FROM categories ORDER BY maincat ASC");
+        $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+        $limit = isset($_GET['limit']) ? max(1, intval($_GET['limit'])) : 10;
+        $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+        $offset = ($page - 1) * $limit;
+        
+        // Build WHERE clause for search
+        $whereClause = '';
+        if (!empty($search)) {
+            $searchParam = '%' . $conn->real_escape_string($search) . '%';
+            $whereClause = "WHERE maincat LIKE ?";
+        }
+        
+        // Get total count
+        if (!empty($search)) {
+            $countStmt = $conn->prepare("SELECT COUNT(*) as total FROM categories WHERE maincat LIKE ?");
+            $countStmt->bind_param("s", $searchParam);
+            $countStmt->execute();
+        } else {
+            $countStmt = $conn->prepare("SELECT COUNT(*) as total FROM categories");
+            $countStmt->execute();
+        }
+        $countResult = $countStmt->get_result();
+        $totalCount = $countResult->fetch_assoc()['total'];
+        $countStmt->close();
+        
+        // Get paginated results
+        if (!empty($search)) {
+            $sql = "SELECT * FROM categories WHERE maincat LIKE ? ORDER BY maincat ASC LIMIT ? OFFSET ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("sii", $searchParam, $limit, $offset);
+        } else {
+            $sql = "SELECT * FROM categories ORDER BY maincat ASC LIMIT ? OFFSET ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ii", $limit, $offset);
+        }
+        
+        $stmt->execute();
+        $result = $stmt->get_result();
         $categories = [];
         
         while ($row = $result->fetch_assoc()) {
             $categories[] = $row;
         }
         
-        sendResponse(200, "success", "Categories retrieved successfully", $categories);
+        $totalPages = ceil($totalCount / $limit);
+        
+        $responseData = [
+            'data' => $categories,
+            'pagination' => [
+                'current_page' => $page,
+                'total_pages' => $totalPages,
+                'total_items' => $totalCount,
+                'items_per_page' => $limit
+            ]
+        ];
+        
+        sendResponse(200, "success", "Categories retrieved successfully", $responseData);
+        $stmt->close();
     } catch (Exception $e) {
         sendResponse(500, "error", $e->getMessage());
     }

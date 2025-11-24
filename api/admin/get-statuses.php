@@ -23,6 +23,7 @@ try {
         $statuses[] = $row;
     }
     
+    $result->free();
     sendResponse(200, "success", "Statuses retrieved successfully", $statuses);
 } catch (Exception $e) {
     error_log("Error in get-statuses.php: " . $e->getMessage());
@@ -30,4 +31,7 @@ try {
 } finally {
     $conn->close();
 }
+
+// Note: This API supports both GET and POST requests
+// GET requests are used by role-initial-settings.php page
 

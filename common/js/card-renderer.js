@@ -1,3 +1,9 @@
+// Helper function to convert text to title case (first letter capitalized)
+function toTitleCase(str) {
+    if (!str || typeof str !== 'string') return str || '';
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
 // === Full Card Configurations ===
 // if (typeof CardConfigs === 'undefined') {
 const CardConfigs = {
@@ -165,7 +171,7 @@ function renderCards(dataArray, role = 'buyer', containerId = 'cardContainer') {
                             ${icon}
                             ${label}:
                         </span>
-                        <span>${mappedItem[key]}</span>
+                        <span>${typeof mappedItem[key] === 'string' && key !== 'refId' && key !== 'poNumber' && key !== 'createdOn' ? toTitleCase(mappedItem[key]) : mappedItem[key]}</span>
                     </div>
                 `;
             }

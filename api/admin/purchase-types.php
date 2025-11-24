@@ -52,20 +52,68 @@ if ($action === 'create') {
     exit;
 }
 
-// Read operation
+// Read operation with pagination and search
 if ($action === 'read_all') {
     try {
-        $sql = "SELECT * FROM purchase_types ORDER BY name ASC";
-        $result = $conn->query($sql);
-        $purchaseTypes = [];
-        if ($result && is_object($result)) {
-            while ($row = $result->fetch_assoc()) {
-                $purchaseTypes[] = $row;
-            }
-            sendResponse(200, "success", "Purchase types retrieved successfully", $purchaseTypes);
-        } else {
-            sendResponse(500, "error", "Error fetching purchase types: " . $conn->error);
+        $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+        $limit = isset($_GET['limit']) ? max(1, intval($_GET['limit'])) : 10;
+        $search = isset($_GET['search']) ? trim($_GET['search']) : '';
+        $offset = ($page - 1) * $limit;
+        
+        // Build WHERE clause for search
+        $whereClause = '';
+        $searchParam = '';
+        if (!empty($search)) {
+            $searchParam = '%' . $conn->real_escape_string($search) . '%';
+            $whereClause = "WHERE name LIKE ?";
         }
+        
+        // Get total count
+        if (!empty($search)) {
+            $countStmt = $conn->prepare("SELECT COUNT(*) as total FROM purchase_types WHERE name LIKE ?");
+            $countStmt->bind_param("s", $searchParam);
+            $countStmt->execute();
+        } else {
+            $countStmt = $conn->prepare("SELECT COUNT(*) as total FROM purchase_types");
+            $countStmt->execute();
+        }
+        $countResult = $countStmt->get_result();
+        $totalCount = $countResult->fetch_assoc()['total'];
+        $countStmt->close();
+        
+        // Get paginated results
+        if (!empty($search)) {
+            $sql = "SELECT * FROM purchase_types WHERE name LIKE ? ORDER BY name ASC LIMIT ? OFFSET ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("sii", $searchParam, $limit, $offset);
+        } else {
+            $sql = "SELECT * FROM purchase_types ORDER BY name ASC LIMIT ? OFFSET ?";
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ii", $limit, $offset);
+        }
+        
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $purchaseTypes = [];
+        
+        while ($row = $result->fetch_assoc()) {
+            $purchaseTypes[] = $row;
+        }
+        
+        $totalPages = ceil($totalCount / $limit);
+        
+        $responseData = [
+            'data' => $purchaseTypes,
+            'pagination' => [
+                'current_page' => $page,
+                'total_pages' => $totalPages,
+                'total_items' => $totalCount,
+                'items_per_page' => $limit
+            ]
+        ];
+        
+        sendResponse(200, "success", "Purchase types retrieved successfully", $responseData);
+        $stmt->close();
     } catch (Exception $e) {
         sendResponse(500, "error", $e->getMessage());
     }

@@ -576,11 +576,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 tr.innerHTML = `
                     <td>${row.id || '-'}</td>
                     <td class="${this.getStatusColor(row.status)}">${row.status || '-'}</td>
-                    <td>${row.supplier ? row.supplier.toUpperCase() : '-'}</td>
-                    <td>${row.b_head || '-'}</td>
-                    <td>${row.buyername || row.buyer || '-'}</td>
-                    <td>${row.po_team_member || '-'}</td>
-                    <td>${row.purch_type || '-'}</td>
+                    <td>${row.supplier ? (row.supplier.charAt(0).toUpperCase() + row.supplier.slice(1).toLowerCase()) : '-'}</td>
+                    <td>${row.b_head ? (row.b_head.charAt(0).toUpperCase() + row.b_head.slice(1).toLowerCase()) : '-'}</td>
+                    <td>${row.buyername || row.buyer ? ((row.buyername || row.buyer).charAt(0).toUpperCase() + (row.buyername || row.buyer).slice(1).toLowerCase()) : '-'}</td>
+                    <td>${row.po_team_member ? (row.po_team_member.charAt(0).toUpperCase() + row.po_team_member.slice(1).toLowerCase()) : '-'}</td>
+                    <td>${row.purch_type ? (row.purch_type.charAt(0).toUpperCase() + row.purch_type.slice(1).toLowerCase()) : '-'}</td>
                     <td>${this.formatDateTime(row.created_at)}</td>
                     <td>${this.getStatusTag(this.calculateTimeDifference(row.created_at, row.status_7), true)}</td>
                     <td>${this.getStatusTag(this.calculateTimeDifference(row.created_at, row.status_2))}</td>

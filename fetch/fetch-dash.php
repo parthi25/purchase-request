@@ -311,6 +311,7 @@ try {
             LEFT JOIN purchase_types pm ON pm.id = pt.purch_id
             LEFT JOIN categories c ON c.id = pt.category_id
             LEFT JOIN users u ON u.id = pt.created_by
+            LEFT JOIN pr_assignments ptm ON ptm.ord_id = pt.id
             $where
             ORDER BY pt.created_at DESC
             LIMIT ?, ?";
@@ -421,7 +422,7 @@ try {
             }
 
             // PO Team Members (all)
-            $poTeamResult = $conn->query("SELECT id, username FROM users WHERE role = 'PO_Team_Member' ORDER BY username ASC");
+            $poTeamResult = $conn->query("SELECT u.id, u.username FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE r.role_code = 'PO_Team_Member' ORDER BY u.username ASC");
             $options['pr_assignments_options'] = [];
             while ($row = $poTeamResult->fetch_assoc()) {
                 $options['pr_assignments_options'][] = $row;
@@ -458,7 +459,7 @@ try {
             }
 
             // PO Team Members (all)
-            $poTeamResult = $conn->query("SELECT id, username FROM users WHERE role = 'PO_Team_Member' ORDER BY username ASC");
+            $poTeamResult = $conn->query("SELECT u.id, u.username FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE r.role_code = 'PO_Team_Member' ORDER BY u.username ASC");
             $options['pr_assignments_options'] = [];
             while ($row = $poTeamResult->fetch_assoc()) {
                 $options['pr_assignments_options'][] = $row;
@@ -472,14 +473,14 @@ try {
             }
 
             // All buyers
-            $buyerResult = $conn->query("SELECT id, username FROM users WHERE role = 'buyer' ORDER BY username ASC");
+            $buyerResult = $conn->query("SELECT u.id, u.username FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE r.role_code = 'buyer' ORDER BY u.username ASC");
             $options['buyer_options'] = [];
             while ($row = $buyerResult->fetch_assoc()) {
                 $options['buyer_options'][] = $row;
             }
 
             // All buyer heads
-            $bheadResult = $conn->query("SELECT id, username FROM users WHERE role = 'B_Head' ORDER BY username ASC");
+            $bheadResult = $conn->query("SELECT u.id, u.username FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE r.role_code = 'B_Head' ORDER BY u.username ASC");
             $options['buyer_head_options'] = [];
             while ($row = $bheadResult->fetch_assoc()) {
                 $options['buyer_head_options'][] = $row;
@@ -500,19 +501,19 @@ try {
                 $options['category_options'][] = $row;
             }
 
-            $buyerResult = $conn->query("SELECT id, username FROM users WHERE role = 'buyer' ORDER BY username ASC");
+            $buyerResult = $conn->query("SELECT u.id, u.username FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE r.role_code = 'buyer' ORDER BY u.username ASC");
             $options['buyer_options'] = [];
             while ($row = $buyerResult->fetch_assoc()) {
                 $options['buyer_options'][] = $row;
             }
 
-            $bheadResult = $conn->query("SELECT id, username FROM users WHERE role = 'B_Head' ORDER BY username ASC");
+            $bheadResult = $conn->query("SELECT u.id, u.username FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE r.role_code = 'B_Head' ORDER BY u.username ASC");
             $options['buyer_head_options'] = [];
             while ($row = $bheadResult->fetch_assoc()) {
                 $options['buyer_head_options'][] = $row;
             }
 
-            $poTeamResult = $conn->query("SELECT id, username FROM users WHERE role = 'PO_Team_Member' ORDER BY username ASC");
+            $poTeamResult = $conn->query("SELECT u.id, u.username FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE r.role_code = 'PO_Team_Member' ORDER BY u.username ASC");
             $options['pr_assignments_options'] = [];
             while ($row = $poTeamResult->fetch_assoc()) {
                 $options['pr_assignments_options'][] = $row;

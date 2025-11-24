@@ -19,7 +19,7 @@ try {
     $results = ['results' => [], 'pagination' => ['more' => false]];
 
     // Build query based on role
-    $where = "role = 'B_Head'";
+    $where = "r.role_code = 'B_Head'";
     $params = [];
     $types = "";
 
@@ -34,7 +34,7 @@ try {
         $bheadStmt->close();
 
         if ($bheadId > 0) {
-            $where .= " AND id = ?";
+            $where .= " AND u.id = ?";
             $params[] = $bheadId;
             $types .= 'i';
         } else {
@@ -43,20 +43,20 @@ try {
             exit;
         }
     } elseif ($role == 'B_Head') {
-        $where .= " AND id = ?";
+        $where .= " AND u.id = ?";
         $params[] = $userid;
         $types .= 'i';
     }
 
     if (!empty($search)) {
-        $where .= " AND username LIKE ?";
+        $where .= " AND u.username LIKE ?";
         $searchTerm = '%' . $search . '%';
         $params[] = $searchTerm;
         $types .= 's';
     }
 
     // Count total
-    $countSql = "SELECT COUNT(*) as total FROM users WHERE $where";
+    $countSql = "SELECT COUNT(*) as total FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE $where";
     $countStmt = $conn->prepare($countSql);
     if (!empty($params)) {
         $countStmt->bind_param($types, ...$params);
@@ -66,7 +66,7 @@ try {
     $countStmt->close();
 
     // Get results
-    $sql = "SELECT id, username FROM users WHERE $where ORDER BY username ASC LIMIT ? OFFSET ?";
+    $sql = "SELECT u.id, u.username FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE $where ORDER BY u.username ASC LIMIT ? OFFSET ?";
     $stmt = $conn->prepare($sql);
     $params[] = $perPage;
     $params[] = $offset;

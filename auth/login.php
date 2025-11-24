@@ -32,8 +32,11 @@ if (!$validator->validateLogin(['username' => $usernameOrEmail, 'password' => $p
 $usernameOrEmail = Security::sanitizeInput($usernameOrEmail);
 
 try {
-    // Query to check both username and email in a single query
-    $sql = "SELECT id, username, fullname, password, role, is_active FROM users WHERE LOWER(TRIM(username)) = ? OR LOWER(TRIM(email)) = ?";
+    // Query to check both username and email in a single query, JOIN with roles to get role_code
+    $sql = "SELECT u.id, u.username, u.fullname, u.password, u.role_id, u.is_active, r.role_code, r.role_name 
+            FROM users u 
+            LEFT JOIN roles r ON u.role_id = r.id 
+            WHERE LOWER(TRIM(u.username)) = ? OR LOWER(TRIM(u.email)) = ?";
     
     $stmt = $conn->prepare($sql);
     if (!$stmt) {
@@ -44,6 +47,7 @@ try {
     $stmt->execute();
     $result = $stmt->get_result();
     $user = $result->fetch_assoc();
+    $result->free();
     $stmt->close();
 
     if (!$user) {
@@ -58,25 +62,55 @@ try {
         sendResponse(401, "error", "Invalid password");
     }
 
+    // Validate that user has a valid role
+    if (empty($user['role_id']) || empty($user['role_code'])) {
+        error_log("Login error: User ID {$user['id']} has no valid role assigned");
+        sendResponse(500, "error", "Your account is missing a valid role. Please contact administrator.");
+    }
+
     // Start secure session
     session_start();
     
     // Regenerate session ID for security
     session_regenerate_id(true);
     
+    $roleCode = $user['role_code'];
+    
     $_SESSION['user_id'] = $user['id'];
     $_SESSION['username'] = $user['username'];
-    $_SESSION['role'] = $user['role'];
+    $_SESSION['role'] = $roleCode; // Store role_code in session
     $_SESSION['fullname'] = $user['fullname'];
     $_SESSION['last_activity'] = time();
     
     // Generate CSRF token for the session
     Security::generateCSRFToken();
 
+    // Get initial page URL from role_initial_settings using role_code
+    $initialPageUrl = null;
+    $initialStatusFilter = null;
+    
+    $settingsQuery = "SELECT initial_page_url, initial_status_filter FROM role_initial_settings WHERE role = ? AND is_active = 1 LIMIT 1";
+    $settingsStmt = $conn->prepare($settingsQuery);
+    if ($settingsStmt) {
+        $settingsStmt->bind_param("s", $roleCode);
+        $settingsStmt->execute();
+        $settingsResult = $settingsStmt->get_result();
+        if ($settingsResult && $settingsRow = $settingsResult->fetch_assoc()) {
+            $initialPageUrl = $settingsRow['initial_page_url'];
+            $initialStatusFilter = $settingsRow['initial_status_filter'];
+        }
+        if ($settingsResult) {
+            $settingsResult->free();
+        }
+        $settingsStmt->close();
+    }
+
     sendResponse(200, "success", "Login successful", [
-        "role" => $user['role'],
+        "role" => $roleCode,
         "fullname" => $user['fullname'],
-        "csrf_token" => $_SESSION['csrf_token']
+        "csrf_token" => $_SESSION['csrf_token'],
+        "initial_page_url" => $initialPageUrl,
+        "initial_status_filter" => $initialStatusFilter
     ]);
 
 } catch (Exception $e) {

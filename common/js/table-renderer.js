@@ -292,6 +292,12 @@ function getTableConfig(role) {
   return TableConfigs[role] || TableConfigs.buyer;
 }
 
+// Helper function to convert text to title case (first letter capitalized)
+function toTitleCase(str) {
+    if (!str || typeof str !== 'string') return str || '';
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
 // TableRenderer class
 class TableRenderer {
   constructor(containerId, role = "buyer") {
@@ -420,17 +426,17 @@ formatCell(row, column) {
                 '<span class="text-base-content/50">Unknown</span>'
             );
         case "supplier":
-            return row.supplier || "Unknown";
+            return toTitleCase(row.supplier) || "Unknown";
         case "b_head":
-            return row.b_head || "Unknown";
+            return toTitleCase(row.b_head) || "Unknown";
         case "buyer":
-            return row.buyer || "Unknown";
+            return toTitleCase(row.buyer) || "Unknown";
         case "po_head":
-            return row.po_team || "-";
+            return toTitleCase(row.po_team) || "-";
         case "po_team":
-            return row.po_team_member || "-";
+            return toTitleCase(row.po_team_member) || "-";
         case "category":
-            return row.category_name || "Unknown";
+            return toTitleCase(row.category_name) || "Unknown";
         case "qty":
             return row.qty || "Unknown";
         // case "images":

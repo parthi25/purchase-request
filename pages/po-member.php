@@ -1,8 +1,10 @@
 <?php include '../common/layout.php'; ?>
+    <?php if (!in_array($_SESSION['role'] ?? '', ['PO_Head', 'PO_Team_Member'])): ?>
     <!-- Create PR Button - Above Filter -->
     <div class="mb-3 flex justify-end">
         <button id="openCreatePRBtn" class="btn btn-accent shadow-lg">Create PR</button>
     </div>
+    <?php endif; ?>
     <div class="bg-base-200 border-base-300 collapse border">
   <input type="checkbox" class="peer" />
   <div
@@ -55,12 +57,14 @@
   </div>
 </div>
 
+    <?php if (!in_array($_SESSION['role'] ?? '', ['PO_Head', 'PO_Team_Member'])): ?>
     <!-- Mobile-only sticky Create PR button -->
     <div class="lg:hidden fixed bottom-6 right-6 z-50">
         <button id="openCreatePRBtnMobile" class="btn btn-accent btn-circle btn-lg shadow-lg">
             <i class="fas fa-plus text-xl"></i>
         </button>
     </div>
+    <?php endif; ?>
 
         <div id="view-container" class="p-2 sm:p-4"></div>
         <?php include '../common/read-more-modal.php'; ?>
@@ -137,6 +141,13 @@
             });
             const openBtn = document.getElementById('openCreatePRBtn');
             const openBtnMobile = document.getElementById('openCreatePRBtnMobile');
+            
+            // Hide buttons if role is PO_Head or PO_Team_Member
+            const userRole = '<?php echo $_SESSION['role'] ?? ''; ?>';
+            if (['PO_Head', 'PO_Team_Member'].includes(userRole)) {
+                if (openBtn) openBtn.style.display = 'none';
+                if (openBtnMobile) openBtnMobile.style.display = 'none';
+            }
             const modal = document.getElementById('create_modal');
             const editPRBtns = document.querySelectorAll('.openEditPRBtn');
 

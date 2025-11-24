@@ -163,8 +163,8 @@ $currentPage = 'analytics.php';
     </form>
 </dialog>
 
-<script src="../assets/js/xlsx.full.min.js"></script>
-<script src="../assets/js/FileSaver.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 <script src="../assets/js/chart.umd.min.js"></script>
 <script src="../assets/js/select2.min.js"></script>
 <script>

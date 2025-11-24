@@ -9,7 +9,7 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 try {
-    $query = "SELECT id, username FROM users WHERE role = 'PO_Team' AND is_active = 1 ORDER BY username";
+    $query = "SELECT u.id, u.username FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE r.role_code = 'PO_Team' AND u.is_active = 1 ORDER BY u.username";
     $result = $conn->query($query);
 
     if (!$result) {
