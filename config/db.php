@@ -17,8 +17,25 @@ $pass = $_ENV['DB_PASS'] ?? '';
 $dbname = $_ENV['DB_NAME'] ?? 'jcrc_ch';
 $port = $_ENV['DB_PORT'] ?? 3307;
 
+// Helper function to check if logging is enabled
+if (!function_exists('isLoggingEnabled')) {
+    function isLoggingEnabled() {
+        $logSetting = getenv('LOG');
+        if ($logSetting === false) {
+            $logSetting = $_ENV['LOG'] ?? 'true';
+        }
+        // Check if LOG is explicitly set to 'false' (case-insensitive)
+        return strtolower(trim($logSetting)) !== 'false';
+    }
+}
+
 // Function to log database connection
 function logDbConnection($host, $user, $dbname, $port, $status, $error = null, $envSource = 'unknown', $errorCode = null) {
+    // Check if logging is enabled before proceeding
+    if (!isLoggingEnabled()) {
+        return;
+    }
+    
     $logDir = dirname(__DIR__) . '/logs';
     if (!is_dir($logDir)) {
         mkdir($logDir, 0755, true);
