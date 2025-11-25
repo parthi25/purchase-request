@@ -393,22 +393,38 @@ try {
         }
 
         if ($role == 'buyer') {
-            if (!isset($bheadId)) {
-                $bheadQuery = "SELECT b_head FROM buyers_info WHERE buyer = $userid LIMIT 1";
-                $bheadResult = $conn->query($bheadQuery);
-                $bheadRow = $bheadResult->fetch_assoc();
-                $bheadId = $bheadRow['b_head'] ?? 0;
-            }
-
-            // Categories mapped to this buyer through catbasbh
-            $catQuery = "SELECT c.id, c.maincat FROM catbasbh cb
-                         JOIN categories c ON c.maincat = cb.cat 
-                         WHERE cb.user_id = $bheadId
-                         ORDER BY c.maincat ASC";
+            // First, try to get categories from buyer_category_mapping (direct mapping)
+            $catQuery = "SELECT DISTINCT c.id, c.maincat 
+                        FROM buyer_category_mapping bcm
+                        JOIN categories c ON bcm.category_id = c.id
+                        WHERE bcm.buyer_id = $userid AND bcm.is_active = 1
+                        ORDER BY c.maincat ASC";
             $catResult = $conn->query($catQuery);
             $options['category_options'] = [];
             while ($row = $catResult->fetch_assoc()) {
                 $options['category_options'][] = $row;
+            }
+            
+            // If no direct mapping found, fallback to buyer head mapping (legacy)
+            if (empty($options['category_options'])) {
+                if (!isset($bheadId)) {
+                    $bheadQuery = "SELECT b_head FROM buyers_info WHERE buyer = $userid LIMIT 1";
+                    $bheadResult = $conn->query($bheadQuery);
+                    $bheadRow = $bheadResult->fetch_assoc();
+                    $bheadId = $bheadRow['b_head'] ?? 0;
+                }
+
+                // Categories mapped to this buyer through catbasbh
+                if ($bheadId > 0) {
+                    $catQuery = "SELECT c.id, c.maincat FROM catbasbh cb
+                                 JOIN categories c ON c.maincat = cb.cat 
+                                 WHERE cb.user_id = $bheadId
+                                 ORDER BY c.maincat ASC";
+                    $catResult = $conn->query($catQuery);
+                    while ($row = $catResult->fetch_assoc()) {
+                        $options['category_options'][] = $row;
+                    }
+                }
             }
 
             // Get buyer head details using the ID we found
