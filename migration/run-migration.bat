@@ -66,11 +66,19 @@ if %ERRORLEVEL% NEQ 0 (
     exit /b 1
 )
 
-REM Check if SQL file exists
+REM Check if SQL files exist
 if not exist "migration\complete_migration.sql" (
     echo [ERROR] migration\complete_migration.sql not found!
     pause
     exit /b 1
+)
+
+if not exist "database\migrations\alter_buyer_head_categories_structure.sql" (
+    echo [WARNING] database\migrations\alter_buyer_head_categories_structure.sql not found!
+    echo This migration will be skipped.
+    set SKIP_ALTER_MIGRATION=1
+) else (
+    set SKIP_ALTER_MIGRATION=0
 )
 
 echo [INFO] Database Configuration:
@@ -102,9 +110,27 @@ REM Add database name and SQL file
 set "MYSQL_CMD=%MYSQL_CMD% %DB_NAME%"
 
 REM Execute MySQL command with SQL file
+echo [INFO] Running complete migration...
 %MYSQL_CMD% < "migration\complete_migration.sql"
+set MIGRATION_SUCCESS=%ERRORLEVEL%
 
-if %ERRORLEVEL% EQU 0 (
+if %MIGRATION_SUCCESS% EQU 0 (
+    REM Run additional migration for buyer_head_categories structure
+    if %SKIP_ALTER_MIGRATION% EQU 0 (
+        echo.
+        echo [INFO] Running buyer_head_categories structure migration...
+        %MYSQL_CMD% < "database\migrations\alter_buyer_head_categories_structure.sql"
+        
+        if %ERRORLEVEL% EQU 0 (
+            echo [INFO] buyer_head_categories structure migration completed successfully.
+        ) else (
+            echo [WARNING] buyer_head_categories structure migration had errors, but continuing...
+            set MIGRATION_SUCCESS=1
+        )
+    )
+)
+
+if %MIGRATION_SUCCESS% EQU 0 (
     echo.
     echo ============================================
     echo   Migration Successful!
@@ -118,10 +144,13 @@ if %ERRORLEVEL% EQU 0 (
     echo   3. Added foreign key relationships
     echo   4. Added performance indexes
     echo   5. Inserted master data (statuses, permissions, workflows)
+    if %SKIP_ALTER_MIGRATION% EQU 0 (
+        echo   6. Altered buyer_head_categories table structure (removed Name and cat columns, added cat_id)
+    )
     echo.
     echo Next steps:
     echo   1. Create users with roles (admin, buyer, B_Head, PO_Team, PO_Team_Member)
-    echo   2. Map categories to buyer heads using catbasbh table
+    echo   2. Map categories to buyer heads using buyer_head_categories table
     echo   3. Map buyers to buyer heads using buyers_info table
     echo   4. Start using the system!
     echo.

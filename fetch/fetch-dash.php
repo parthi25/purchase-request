@@ -110,8 +110,8 @@ try {
     if (!empty($filters['category'])) {
         $placeholders = implode(',', array_fill(0, count($filters['category']), '?'));
         $where .= " AND EXISTS (
-            SELECT 1 FROM catbasbh cb
-            JOIN categories c ON c.maincat = cb.cat
+            SELECT 1 FROM buyer_head_categories cb
+            JOIN categories c ON c.id = cb.cat_id
             WHERE cb.user_id = pt.b_head AND c.maincat IN ($placeholders)
         )";
         $types .= str_repeat('s', count($filters['category']));
@@ -215,8 +215,8 @@ try {
     if (!empty($catIds)) {
         $placeholders = implode(',', array_fill(0, count($catIds), '?'));
         $searchConditions[] = "EXISTS (
-            SELECT 1 FROM catbasbh cb
-            JOIN categories c ON c.maincat = cb.cat
+            SELECT 1 FROM buyer_head_categories cb
+            JOIN categories c ON c.id = cb.cat_id
             WHERE cb.user_id = pt.b_head AND c.id IN ($placeholders)
         )";
         $types .= str_repeat("i", count($catIds));
@@ -296,8 +296,8 @@ try {
                 pm.name as purch_type,
                 (SELECT ptm4.po_number FROM pr_assignments ptm4 WHERE ptm4.ord_id = pt.id LIMIT 1) AS po_number,
                 (SELECT c.maincat 
-                 FROM catbasbh cb
-                 JOIN categories c ON c.maincat = cb.cat
+                 FROM buyer_head_categories cb
+                 JOIN categories c ON c.id = cb.cat_id
                  WHERE cb.user_id = pt.b_head
                  LIMIT 1) AS categories,
                 c.maincat AS category_name,
@@ -414,10 +414,10 @@ try {
                     $bheadId = $bheadRow['b_head'] ?? 0;
                 }
 
-                // Categories mapped to this buyer through catbasbh
+                // Categories mapped to this buyer through buyer_head_categories
                 if ($bheadId > 0) {
-                    $catQuery = "SELECT c.id, c.maincat FROM catbasbh cb
-                                 JOIN categories c ON c.maincat = cb.cat 
+                    $catQuery = "SELECT c.id, c.maincat FROM buyer_head_categories cb
+                                 JOIN categories c ON c.id = cb.cat_id 
                                  WHERE cb.user_id = $bheadId
                                  ORDER BY c.maincat ASC";
                     $catResult = $conn->query($catQuery);
@@ -445,8 +445,8 @@ try {
             }
         } elseif ($role == 'B_Head') {
             // All categories assigned to this buyer head
-            $catQuery = "SELECT c.id, c.maincat FROM catbasbh cb
-                         JOIN categories c ON c.maincat = cb.cat 
+            $catQuery = "SELECT c.id, c.maincat FROM buyer_head_categories cb
+                         JOIN categories c ON c.id = cb.cat_id 
                          WHERE cb.user_id = $userid
                          ORDER BY c.maincat ASC";
             $catResult = $conn->query($catQuery);

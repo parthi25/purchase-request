@@ -127,7 +127,7 @@ if %ERRORLEVEL% EQU 0 (
     echo.
     echo Next steps:
     echo   1. Create users with roles (admin, buyer, B_Head, PO_Team, PO_Team_Member)
-    echo   2. Map categories to buyer heads using catbasbh table
+    echo   2. Map categories to buyer heads using buyer_head_categories table
     echo   3. Map buyers to buyer heads using buyers_info table
     echo   4. Start using the system!
     echo.

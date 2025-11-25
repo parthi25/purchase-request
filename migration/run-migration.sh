@@ -10,8 +10,6 @@
 # - Master data
 # ============================================
 
-set -e  # Exit on error
-
 echo ""
 echo "============================================"
 echo "  Database Migration Script"
@@ -78,10 +76,18 @@ if ! command -v mysql &> /dev/null; then
     exit 1
 fi
 
-# Check if SQL file exists
+# Check if SQL files exist
 if [ ! -f "migration/complete_migration.sql" ]; then
     echo "[ERROR] migration/complete_migration.sql not found!"
     exit 1
+fi
+
+if [ ! -f "database/migrations/alter_buyer_head_categories_structure.sql" ]; then
+    echo "[WARNING] database/migrations/alter_buyer_head_categories_structure.sql not found!"
+    echo "This migration will be skipped."
+    SKIP_ALTER_MIGRATION=1
+else
+    SKIP_ALTER_MIGRATION=0
 fi
 
 echo "[INFO] Database Configuration:"
@@ -102,19 +108,39 @@ echo "[WARNING] This will modify your database structure and data."
 echo "[INFO] Starting migration..."
 echo ""
 
-# Build MySQL command
-MYSQL_CMD="mysql -h $DB_HOST -P $DB_PORT -u $DB_USER"
+# Execute MySQL command with SQL file
+# Build command arguments properly
+MYSQL_ARGS=(-h "$DB_HOST" -P "$DB_PORT" -u "$DB_USER")
 
 # Add password if provided
 if [ -n "$DB_PASS" ]; then
-    MYSQL_CMD="$MYSQL_CMD -p$DB_PASS"
+    MYSQL_ARGS+=(-p"$DB_PASS")
 fi
 
-# Add database name and SQL file
-MYSQL_CMD="$MYSQL_CMD $DB_NAME"
+# Add database name
+MYSQL_ARGS+=("$DB_NAME")
 
 # Execute MySQL command with SQL file
-if $MYSQL_CMD < "migration/complete_migration.sql"; then
+echo "[INFO] Running complete migration..."
+MIGRATION_SUCCESS=0
+
+if mysql "${MYSQL_ARGS[@]}" < "migration/complete_migration.sql"; then
+    # Run additional migration for buyer_head_categories structure
+    if [ "$SKIP_ALTER_MIGRATION" -eq 0 ]; then
+        echo ""
+        echo "[INFO] Running buyer_head_categories structure migration..."
+        if mysql "${MYSQL_ARGS[@]}" < "database/migrations/alter_buyer_head_categories_structure.sql"; then
+            echo "[INFO] buyer_head_categories structure migration completed successfully."
+        else
+            echo "[WARNING] buyer_head_categories structure migration had errors, but continuing..."
+            MIGRATION_SUCCESS=1
+        fi
+    fi
+else
+    MIGRATION_SUCCESS=1
+fi
+
+if [ $MIGRATION_SUCCESS -eq 0 ]; then
     echo ""
     echo "============================================"
     echo "  Migration Successful!"
@@ -128,10 +154,13 @@ if $MYSQL_CMD < "migration/complete_migration.sql"; then
     echo "  3. Added foreign key relationships"
     echo "  4. Added performance indexes"
     echo "  5. Inserted master data (statuses, permissions, workflows)"
+    if [ "$SKIP_ALTER_MIGRATION" -eq 0 ]; then
+        echo "  6. Altered buyer_head_categories table structure (removed Name and cat columns, added cat_id)"
+    fi
     echo ""
     echo "Next steps:"
     echo "  1. Create users with roles (admin, buyer, B_Head, PO_Team, PO_Team_Member)"
-    echo "  2. Map categories to buyer heads using catbasbh table"
+    echo "  2. Map categories to buyer heads using buyer_head_categories table"
     echo "  3. Map buyers to buyer heads using buyers_info table"
     echo "  4. Start using the system!"
     echo ""

@@ -57,8 +57,8 @@ try {
             if ($bheadId > 0) {
                 $stmt = $conn->prepare("
                     SELECT c.id, c.maincat 
-                    FROM catbasbh cb
-                    JOIN categories c ON c.maincat = cb.cat
+                    FROM buyer_head_categories cb
+                    JOIN categories c ON c.id = cb.cat_id
                     WHERE cb.user_id = ?
                     ORDER BY c.maincat ASC
                 ");
@@ -97,8 +97,8 @@ try {
             // Categories assigned to buyer head - Using prepared statement
             $stmt = $conn->prepare("
                 SELECT c.id, c.maincat 
-                FROM catbasbh cb
-                JOIN categories c ON c.maincat = cb.cat
+                FROM buyer_head_categories cb
+                JOIN categories c ON c.id = cb.cat_id
                 WHERE cb.user_id = ?
                 ORDER BY c.maincat ASC
             ");

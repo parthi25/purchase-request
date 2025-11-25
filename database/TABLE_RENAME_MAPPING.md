@@ -17,6 +17,7 @@ This document lists all table renames and their mappings for code updates.
 | `status_permissions` | `role_status_permissions` | Role-based status permissions |
 | `status_flow` | `status_transitions` | Status transition rules |
 | `pr_permissions` | `role_pr_permissions` | Role-based PR permissions |
+| `catbasbh` | `buyer_head_categories` | Category to buyer head mapping |
 
 ## Column Name Changes
 
@@ -51,4 +52,5 @@ Use these patterns to update code:
 11. `status_permissions` → `role_status_permissions`
 12. `status_flow` → `status_transitions`
 13. `pr_permissions` → `role_pr_permissions`
+14. `catbasbh` → `buyer_head_categories`
 

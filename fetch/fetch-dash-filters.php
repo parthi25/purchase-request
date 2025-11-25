@@ -57,9 +57,9 @@ try {
         $bheadId = $bheadRow['b_head'] ?? 0;
         $bheadStmt->close();
 
-        // Categories mapped to this buyer through catbasbh
-        $catQuery = "SELECT c.id, c.maincat FROM catbasbh cb
-                     JOIN categories c ON c.maincat = cb.cat 
+        // Categories mapped to this buyer through buyer_head_categories
+        $catQuery = "SELECT c.id, c.maincat FROM buyer_head_categories cb
+                     JOIN categories c ON c.id = cb.cat_id 
                      WHERE cb.user_id = ?
                      ORDER BY c.maincat ASC";
         $catStmt = $conn->prepare($catQuery);
@@ -94,8 +94,8 @@ try {
         }
     } elseif ($role == 'B_Head') {
         // All categories assigned to this buyer head
-        $catQuery = "SELECT c.id, c.maincat FROM catbasbh cb
-                     JOIN categories c ON c.maincat = cb.cat 
+        $catQuery = "SELECT c.id, c.maincat FROM buyer_head_categories cb
+                     JOIN categories c ON c.id = cb.cat_id 
                      WHERE cb.user_id = ?
                      ORDER BY c.maincat ASC";
         $catStmt = $conn->prepare($catQuery);

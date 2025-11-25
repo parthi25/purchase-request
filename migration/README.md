@@ -139,7 +139,7 @@ After successful migration:
    - PO_Team
    - PO_Team_Member
 
-2. Map categories to buyer heads using `catbasbh` table
+2. Map categories to buyer heads using `buyer_head_categories` table
 
 3. Map buyers to buyer heads using `buyers_info` table
 

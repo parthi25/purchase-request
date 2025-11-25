@@ -136,6 +136,16 @@ PREPARE stmt FROM @rename_sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
+SET @rename_sql = IF(
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES 
+     WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'catbasbh') > 0,
+    'RENAME TABLE `catbasbh` TO `buyer_head_categories`',
+    'SELECT 1'
+);
+PREPARE stmt FROM @rename_sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 -- ============================================
 -- PART 2: CREATE NEW TABLES
 -- ============================================
@@ -1006,7 +1016,7 @@ COMMIT;
 -- 1. Update application code to use role_id instead of role
 -- 2. Update queries to JOIN with roles table when role_code is needed
 -- 3. Test all user-related functionality
--- 4. Map categories to buyer heads using catbasbh table
+-- 4. Map categories to buyer heads using buyer_head_categories table
 -- 5. Map buyers to buyer heads using buyers_info table
 -- 6. Start using the system!
 -- ============================================

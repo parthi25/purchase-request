@@ -13,9 +13,11 @@ $searchTerm = "$search%"; // Match beginning of string
 try {
     if (isset($_SESSION['role']) && $_SESSION['role'] === 'B_Head') {
         // B_Head role: filter by user_id
-        $stmt = $conn->prepare("SELECT cat, Name AS buyer_name, user_id 
-                                FROM catbasbh 
-                                WHERE cat LIKE ? AND user_id = ? 
+        $stmt = $conn->prepare("SELECT c.maincat AS cat, u.fullname AS buyer_name, bhc.user_id 
+                                FROM buyer_head_categories bhc
+                                JOIN categories c ON c.id = bhc.cat_id
+                                JOIN users u ON u.id = bhc.user_id
+                                WHERE c.maincat LIKE ? AND bhc.user_id = ? 
                                 LIMIT 10");
         $user_id = intval($_SESSION['user_id']);
         $stmt->bind_param("si", $searchTerm, $user_id);
@@ -68,9 +70,11 @@ try {
         
         // If no direct mapping found, fallback to buyer head mapping (legacy)
         if (empty($categories) && $bheadId > 0) {
-            $stmt = $conn->prepare("SELECT cat, Name AS buyer_name, user_id 
-                                    FROM catbasbh 
-                                    WHERE cat LIKE ? AND user_id = ? 
+            $stmt = $conn->prepare("SELECT c.maincat AS cat, u.fullname AS buyer_name, bhc.user_id 
+                                    FROM buyer_head_categories bhc
+                                    JOIN categories c ON c.id = bhc.cat_id
+                                    JOIN users u ON u.id = bhc.user_id
+                                    WHERE c.maincat LIKE ? AND bhc.user_id = ? 
                                     LIMIT 10");
             $stmt->bind_param("si", $searchTerm, $bheadId);
             $stmt->execute();
@@ -95,9 +99,11 @@ try {
 
     } else {
         // Other roles: no user_id filter
-        $stmt = $conn->prepare("SELECT cat, Name AS buyer_name, user_id 
-                                FROM catbasbh 
-                                WHERE cat LIKE ? 
+        $stmt = $conn->prepare("SELECT c.maincat AS cat, u.fullname AS buyer_name, bhc.user_id 
+                                FROM buyer_head_categories bhc
+                                JOIN categories c ON c.id = bhc.cat_id
+                                JOIN users u ON u.id = bhc.user_id
+                                WHERE c.maincat LIKE ? 
                                 LIMIT 10");
         $stmt->bind_param("s", $searchTerm);
     }

@@ -16,23 +16,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['b_head'], $_POST['cat
         $id = $_POST['id'] ?? '';
         $b_head = intval($_POST['b_head']);
         $cat_id = intval($_POST['cat_id']);
-        $cat_name = $_POST['cat_name'] ?? '';
-
-        // Get category name if not provided
-        if (empty($cat_name)) {
-            $catStmt = $conn->prepare("SELECT maincat FROM categories WHERE id = ?");
-            $catStmt->bind_param("i", $cat_id);
-            $catStmt->execute();
-            $catResult = $catStmt->get_result();
-            if ($catRow = $catResult->fetch_assoc()) {
-                $cat_name = $catRow['maincat'];
-            }
-        }
 
         if ($id) {
             // Check if assignment already exists (excluding current)
-            $checkStmt = $conn->prepare("SELECT id FROM catbasbh WHERE user_id = ? AND cat = ? AND id != ?");
-            $checkStmt->bind_param("isi", $b_head, $cat_name, $id);
+            $checkStmt = $conn->prepare("SELECT id FROM buyer_head_categories WHERE user_id = ? AND cat_id = ? AND id != ?");
+            $checkStmt->bind_param("iii", $b_head, $cat_id, $id);
             $checkStmt->execute();
             $checkResult = $checkStmt->get_result();
             
@@ -40,8 +28,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['b_head'], $_POST['cat
                 sendResponse(400, "error", "This assignment already exists");
             }
             
-            $stmt = $conn->prepare("UPDATE catbasbh SET user_id = ?, cat = ? WHERE id = ?");
-            $stmt->bind_param("isi", $b_head, $cat_name, $id);
+            $stmt = $conn->prepare("UPDATE buyer_head_categories SET user_id = ?, cat_id = ? WHERE id = ?");
+            $stmt->bind_param("iii", $b_head, $cat_id, $id);
             $stmt->execute();
             
             if ($stmt->affected_rows === 0) {
@@ -51,8 +39,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['b_head'], $_POST['cat
             sendResponse(200, "success", "Updated successfully");
         } else {
             // Check if assignment already exists
-            $checkStmt = $conn->prepare("SELECT id FROM catbasbh WHERE user_id = ? AND cat = ?");
-            $checkStmt->bind_param("is", $b_head, $cat_name);
+            $checkStmt = $conn->prepare("SELECT id FROM buyer_head_categories WHERE user_id = ? AND cat_id = ?");
+            $checkStmt->bind_param("ii", $b_head, $cat_id);
             $checkStmt->execute();
             $checkResult = $checkStmt->get_result();
             
@@ -60,16 +48,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['b_head'], $_POST['cat
                 sendResponse(400, "error", "This assignment already exists");
             }
             
-            // Get buyer head name
-            $userStmt = $conn->prepare("SELECT fullname FROM users WHERE id = ?");
-            $userStmt->bind_param("i", $b_head);
-            $userStmt->execute();
-            $userResult = $userStmt->get_result();
-            $userRow = $userResult->fetch_assoc();
-            $buyerName = $userRow['fullname'] ?? '';
-            
-            $stmt = $conn->prepare("INSERT INTO catbasbh (user_id, Name, cat) VALUES (?, ?, ?)");
-            $stmt->bind_param("iss", $b_head, $buyerName, $cat_name);
+            $stmt = $conn->prepare("INSERT INTO buyer_head_categories (user_id, cat_id) VALUES (?, ?)");
+            $stmt->bind_param("ii", $b_head, $cat_id);
             $stmt->execute();
             
             sendResponse(200, "success", "Inserted successfully");
@@ -84,7 +64,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['b_head'], $_POST['cat
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
     try {
         $id = intval($_POST['delete_id']);
-        $stmt = $conn->prepare("DELETE FROM catbasbh WHERE id = ?");
+        $stmt = $conn->prepare("DELETE FROM buyer_head_categories WHERE id = ?");
         $stmt->bind_param("i", $id);
         $stmt->execute();
         
@@ -117,15 +97,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         
         // Get total count
         if (!empty($search)) {
-            $countSql = "SELECT COUNT(*) as total FROM catbasbh a
+            $countSql = "SELECT COUNT(*) as total FROM buyer_head_categories a
                          JOIN users u ON a.user_id = u.id
-                         JOIN categories c ON a.cat = c.maincat
+                         JOIN categories c ON a.cat_id = c.id
                          WHERE u.fullname LIKE ? OR c.maincat LIKE ?";
             $countStmt = $conn->prepare($countSql);
             $countStmt->bind_param("ss", $searchParam, $searchParam);
             $countStmt->execute();
         } else {
-            $countSql = "SELECT COUNT(*) as total FROM catbasbh";
+            $countSql = "SELECT COUNT(*) as total FROM buyer_head_categories";
             $countStmt = $conn->prepare($countSql);
             $countStmt->execute();
         }
@@ -135,19 +115,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
         
         // Get paginated results
         if (!empty($search)) {
-            $sql = "SELECT a.id, a.user_id, a.cat AS cat_id, u.fullname AS buyer_name, c.maincat AS cat_name
-                    FROM catbasbh a
+            $sql = "SELECT a.id, a.user_id, a.cat_id, u.fullname AS buyer_name, c.maincat AS cat_name
+                    FROM buyer_head_categories a
                     JOIN users u ON a.user_id = u.id
-                    JOIN categories c ON a.cat = c.maincat
+                    JOIN categories c ON a.cat_id = c.id
                     WHERE u.fullname LIKE ? OR c.maincat LIKE ?
                     ORDER BY a.id DESC LIMIT ? OFFSET ?";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("ssii", $searchParam, $searchParam, $limit, $offset);
         } else {
-            $sql = "SELECT a.id, a.user_id, a.cat AS cat_id, u.fullname AS buyer_name, c.maincat AS cat_name
-                    FROM catbasbh a
+            $sql = "SELECT a.id, a.user_id, a.cat_id, u.fullname AS buyer_name, c.maincat AS cat_name
+                    FROM buyer_head_categories a
                     JOIN users u ON a.user_id = u.id
-                    JOIN categories c ON a.cat = c.maincat
+                    JOIN categories c ON a.cat_id = c.id
                     ORDER BY a.id DESC LIMIT ? OFFSET ?";
             $stmt = $conn->prepare($sql);
             $stmt->bind_param("ii", $limit, $offset);

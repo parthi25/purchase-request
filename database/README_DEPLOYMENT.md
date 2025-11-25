@@ -56,9 +56,9 @@ Once master data is deployed, you can:
    - `PO_Team` - PO Team Head, can update status 9
    - `PO_Team_Member` - PO Team Member, can update status 7
 
-2. **Map Categories**: Use the `catbasbh` table to map categories to buyer heads
+2. **Map Categories**: Use the `buyer_head_categories` table to map categories to buyer heads
    ```sql
-   INSERT INTO catbasbh (user_id, cat) VALUES (buyer_head_id, 'category_name');
+   INSERT INTO buyer_head_categories (user_id, cat_id) VALUES (buyer_head_id, category_id);
    ```
 
 3. **Map Buyers**: Use the `buyers_info` table to map buyers to buyer heads

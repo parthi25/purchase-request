@@ -47,11 +47,11 @@ try {
         if ($bheadRow && isset($bheadRow['b_head'])) {
             $bheadId = intval($bheadRow['b_head']);
             
-            // Get categories from catbasbh (buyer head mapping)
+            // Get categories from buyer_head_categories (buyer head mapping)
             $catStmt = $conn->prepare("
                 SELECT DISTINCT c.id, c.maincat 
-                FROM catbasbh cb
-                JOIN categories c ON c.maincat = cb.cat 
+                FROM buyer_head_categories cb
+                JOIN categories c ON c.id = cb.cat_id 
                 WHERE cb.user_id = ?
                 ORDER BY c.maincat ASC
             ");

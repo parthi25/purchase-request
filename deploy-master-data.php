@@ -114,7 +114,7 @@ if ($errorCount === 0) {
     echo "\n";
     echo "Next steps:\n";
     echo "  1. Create users with roles (admin, buyer, B_Head, PO_Team, PO_Team_Member)\n";
-    echo "  2. Map categories to buyer heads using catbasbh table\n";
+    echo "  2. Map categories to buyer heads using buyer_head_categories table\n";
     echo "  3. Map buyers to buyer heads using buyers_info table\n";
     echo "  4. Start using the system!\n";
     echo "\n";

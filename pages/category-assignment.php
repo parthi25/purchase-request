@@ -260,7 +260,9 @@ function loadBuyerHeads() {
             select.empty();
             select.append($("<option>", {value: "", text: "Select Buyer Head"}));
             
-            data.data.forEach(user => {
+            // Ensure data.data is an array before forEach
+            const users = (data.data && Array.isArray(data.data)) ? data.data : [];
+            users.forEach(user => {
                 select.append($("<option>", {
                     value: user.id,
                     text: user.fullname
@@ -271,13 +273,20 @@ function loadBuyerHeads() {
 }
 
 function loadCategories() {
-    $.getJSON("../api/admin/categories.php", function(data) {
+    $.getJSON("../api/admin/categories.php?limit=1000", function(data) {
         if (data.status === 'success') {
             const select = $("#cat_id");
             select.empty();
             select.append($("<option>", {value: "", text: "Select Category"}));
             
-            data.data.forEach(cat => {
+            // Handle both response structures: direct array or nested with pagination
+            const categories = (data.data && Array.isArray(data.data)) 
+                ? data.data 
+                : (data.data && data.data.data) 
+                    ? data.data.data 
+                    : [];
+            
+            categories.forEach(cat => {
                 select.append($("<option>", {
                     value: cat.id,
                     text: cat.maincat
@@ -414,8 +423,14 @@ function ensureOptionExists(selectId, value, text) {
 window.editAssignment = function(id) {
     $.getJSON("../api/admin/category-assignment.php?limit=1000", function(data) {
         if (data.status === 'success') {
+            // Handle nested response structure: data.data.data
             const responseData = data.data || {};
-            const assignments = responseData.data || data.data || [];
+            const assignments = (responseData.data && Array.isArray(responseData.data)) 
+                ? responseData.data 
+                : (Array.isArray(data.data)) 
+                    ? data.data 
+                    : [];
+            
             const row = assignments.find(r => r.id == id);
             if (!row) {
                 showToast('Assignment not found', 'error');
@@ -442,8 +457,14 @@ window.editAssignment = function(id) {
 window.deleteAssignmentById = function(id) {
     $.getJSON("../api/admin/category-assignment.php?limit=1000", function(data) {
         if (data.status === 'success') {
+            // Handle nested response structure: data.data.data
             const responseData = data.data || {};
-            const assignments = responseData.data || data.data || [];
+            const assignments = (responseData.data && Array.isArray(responseData.data)) 
+                ? responseData.data 
+                : (Array.isArray(data.data)) 
+                    ? data.data 
+                    : [];
+            
             const row = assignments.find(r => r.id == id);
             if (!row) {
                 showToast('Assignment not found', 'error');
@@ -504,8 +525,13 @@ function exportToExcel() {
     
     $.getJSON(url, function(data) {
         if (data.status === 'success') {
+            // Handle nested response structure: data.data.data
             const responseData = data.data || {};
-            const assignments = responseData.data || data.data || [];
+            const assignments = (responseData.data && Array.isArray(responseData.data)) 
+                ? responseData.data 
+                : (Array.isArray(data.data)) 
+                    ? data.data 
+                    : [];
             
             if (assignments.length === 0) {
                 showToast('No assignments found to export', 'warning');
@@ -544,8 +570,13 @@ function exportToCSV() {
     
     $.getJSON(url, function(data) {
         if (data.status === 'success') {
+            // Handle nested response structure: data.data.data
             const responseData = data.data || {};
-            const assignments = responseData.data || data.data || [];
+            const assignments = (responseData.data && Array.isArray(responseData.data)) 
+                ? responseData.data 
+                : (Array.isArray(data.data)) 
+                    ? data.data 
+                    : [];
             
             if (assignments.length === 0) {
                 showToast('No assignments found to export', 'warning');

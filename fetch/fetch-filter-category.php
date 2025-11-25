@@ -35,7 +35,7 @@ try {
         $bheadStmt->close();
 
         if ($bheadId > 0) {
-            $join = "JOIN catbasbh cb ON c.maincat = cb.cat";
+            $join = "JOIN buyer_head_categories cb ON c.id = cb.cat_id";
             $where .= " AND cb.user_id = ?";
             $params[] = $bheadId;
             $types .= 'i';
@@ -44,7 +44,7 @@ try {
             exit;
         }
     } elseif ($role == 'B_Head') {
-        $join = "JOIN catbasbh cb ON c.maincat = cb.cat";
+        $join = "JOIN buyer_head_categories cb ON c.id = cb.cat_id";
         $where .= " AND cb.user_id = ?";
         $params[] = $userid;
         $types .= 'i';
