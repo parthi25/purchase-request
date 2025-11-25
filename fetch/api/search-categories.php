@@ -45,11 +45,11 @@ try {
         return;
 
     } elseif (isset($_SESSION['role']) && $_SESSION['role'] === 'buyer') {
-        // Buyer role: First try direct buyer-category mapping
+        // Buyer role: ALWAYS prioritize buyer categories first, then buyer head categories as fallback
         $user_id = intval($_SESSION['user_id']);
         $categories = [];
         
-        // Get buyer head ID for buyer_name
+        // Get buyer head ID for buyer_name (needed for both buyer and buyer head categories)
         $bheadStmt = $conn->prepare("SELECT b_head FROM buyers_info WHERE buyer = ? LIMIT 1");
         if (!$bheadStmt) {
             throw new Exception("Failed to prepare buyer head query: " . $conn->error);
@@ -77,7 +77,9 @@ try {
             $bheadNameStmt = null;
         }
         
-        // PRIORITY 1: Always try buyer_category_mapping first (direct buyer to category mapping)
+        // ============================================
+        // PRIORITY 1: ALWAYS try buyer categories first (direct buyer to category mapping)
+        // ============================================
         // Check if buyer_category_mapping table exists
         $tableCheck = $conn->query("SHOW TABLES LIKE 'buyer_category_mapping'");
         $tableExists = $tableCheck && $tableCheck->num_rows > 0;
@@ -107,7 +109,10 @@ try {
             }
         }
         
-        // PRIORITY 2: Only if buyer categories are empty, then show buyer head categories
+        // ============================================
+        // PRIORITY 2: ONLY if buyer categories are EMPTY, then show buyer head categories
+        // ============================================
+        // This ensures buyer categories always take precedence
         if (empty($categories) && $bheadId > 0) {
             $stmt = $conn->prepare("SELECT c.maincat AS cat, u.fullname AS buyer_name, bhc.user_id 
                                     FROM buyer_head_categories bhc
@@ -135,6 +140,7 @@ try {
             }
         }
         
+        // Return results (either buyer categories or buyer head categories, never both)
         if (!empty($categories)) {
             sendResponse(200, "success", "Categories found successfully", $categories);
         } else {
