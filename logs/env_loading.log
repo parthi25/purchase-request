@@ -37258,3 +37258,1683 @@
   $_ENV['DB_NAME']: jcrc_ch
   getenv('DB_NAME'): jcrc_ch
 --------------------------------------------------------------------------------
+[2025-11-25 08:55:48] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:55:48] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:55:48] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:55:48] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:55:49] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:55:49] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:55:49] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:55:49] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:55:49] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:55:49] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:55:49] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:55:49] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:55:49] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:55:49] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:55:49] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:55:49] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:55:52] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:55:52] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:55:52] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:55:52] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:55:52] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:55:52] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:55:52] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:55:52] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:55:57] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:55:57] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:55:57] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:55:57] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:09] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:09] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:09] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:09] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:09] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:09] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:09] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:09] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:09] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:09] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:09] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:09] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:16] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:16] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:16] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:16] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:16] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:16] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:16] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:16] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:17] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:17] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:17] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:17] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:18] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:18] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:18] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:18] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:18] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:18] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:18] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:18] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:18] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:18] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:18] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:18] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:19] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:19] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:19] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:19] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:24] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:24] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:24] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:24] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:24] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:24] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:24] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:24] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:24] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:24] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:24] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:24] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:24] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:24] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:24] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:24] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:26] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:26] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:26] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:26] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:28] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:28] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:28] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:28] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:28] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:28] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:28] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:28] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:33] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:33] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:33] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:33] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:34] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:34] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:34] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:34] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:36] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:36] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:56:36] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:56:36] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:57:00] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:57:00] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:57:00] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:57:00] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:57:00] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:57:00] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:57:00] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:57:00] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:57:00] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:57:00] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:57:00] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:57:00] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:57:05] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:57:05] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:57:05] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:57:05] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:57:06] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:57:06] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:57:06] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:57:06] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:57:10] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:57:10] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:57:10] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:57:10] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:57:11] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:57:11] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:57:11] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:57:11] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:57:11] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:57:11] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:57:11] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:57:11] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:57:11] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:57:11] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:57:11] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:57:11] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:58:11] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:58:11] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:58:11] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:58:11] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:58:12] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:58:12] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:58:12] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:58:12] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:58:12] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:58:12] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:58:12] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:58:12] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:58:12] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:58:12] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:58:12] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:58:12] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:58:13] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:58:13] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:58:13] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:58:13] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:58:13] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:58:13] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:58:13] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:58:13] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:58:13] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:58:13] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:58:13] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:58:13] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:58:13] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:58:13] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:58:13] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:58:13] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:58:15] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:58:15] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:58:15] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:58:15] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:58:51] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:58:51] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:58:51] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:58:51] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:58:52] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:58:52] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:58:52] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:58:52] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:58:52] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:58:52] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:58:52] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:58:52] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:58:52] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:58:52] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:58:52] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:58:52] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:58:54] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:58:54] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:58:54] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:58:54] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:58:58] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:58:58] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:58:58] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:58:58] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:59:00] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:59:00] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:59:00] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:59:00] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:59:04] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:59:04] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:59:04] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:59:04] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:59:10] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:59:10] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:59:10] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:59:10] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:59:11] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:59:11] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:59:11] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:59:11] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:59:13] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:59:13] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------
+[2025-11-25 08:59:13] Loading .env file from: D:\personal\pr/.env
+  Total lines read: 24
+  Line 2: DB_HOST = '127.0.0.1' (set in $_ENV)
+  Line 3: DB_USER = 'root' (set in $_ENV)
+  Line 4: DB_PASS = '' (set in $_ENV)
+  Line 5: DB_NAME = 'jcrc_ch' (set in $_ENV)
+  *** DB_NAME FOUND: 'jcrc_ch' (from line 5) ***
+  Line 6: DB_PORT = '3307' (set in $_ENV)
+[2025-11-25 08:59:13] Final DB values:
+  $env['DB_HOST']: 127.0.0.1
+  $env['DB_NAME']: jcrc_ch
+  $_ENV['DB_HOST']: 127.0.0.1
+  $_ENV['DB_NAME']: jcrc_ch
+  getenv('DB_NAME'): jcrc_ch
+--------------------------------------------------------------------------------

@@ -281,7 +281,7 @@ window.editCategory = function(id) {
             $("#cancelBtn").show();
             $("#deleteBtn").show();
             
-            $("#categoryForm").scrollIntoView({ behavior: 'smooth', block: 'start' });
+            $("#categoryForm")[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     });
 };
@@ -566,7 +566,7 @@ window.editCategory = function(id) {
             $("#cancelBtn").show();
             $("#deleteBtn").show();
             
-            $("#categoryForm").scrollIntoView({ behavior: 'smooth', block: 'start' });
+            $("#categoryForm")[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     });
 };

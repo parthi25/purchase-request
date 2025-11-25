@@ -449,7 +449,7 @@ window.editAssignment = function(id) {
             ensureOptionExists("#cat_id", row.cat_id, row.cat_name);
             $("#cat_id").val(row.cat_id);
             
-            $("#assignForm").scrollIntoView({ behavior: 'smooth', block: 'start' });
+            $("#assignForm")[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     });
 };

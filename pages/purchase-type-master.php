@@ -346,7 +346,9 @@ function renderPagination(pagination) {
 window.editPurchaseType = function(id) {
     $.getJSON("../api/admin/purchase-types.php?action=read_all", function(data) {
         if (data.status === 'success') {
-            const type = data.data.find(t => t.id == id);
+            const responseData = data.data || {};
+            const purchaseTypes = responseData.data || data.data || [];
+            const type = purchaseTypes.find(t => t.id == id);
             if (!type) {
                 showToast('Purchase type not found', 'error');
                 return;
@@ -359,7 +361,7 @@ window.editPurchaseType = function(id) {
             $("#cancelBtn").show();
             $("#deleteBtn").show();
             
-            $("#purchaseTypeForm").scrollIntoView({ behavior: 'smooth', block: 'start' });
+            $("#purchaseTypeForm")[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     });
 };
@@ -367,7 +369,9 @@ window.editPurchaseType = function(id) {
 window.deletePurchaseTypeById = function(id) {
     $.getJSON("../api/admin/purchase-types.php?action=read_all", function(data) {
         if (data.status === 'success') {
-            const type = data.data.find(t => t.id == id);
+            const responseData = data.data || {};
+            const purchaseTypes = responseData.data || data.data || [];
+            const type = purchaseTypes.find(t => t.id == id);
             if (!type) {
                 showToast('Purchase type not found', 'error');
                 return;
