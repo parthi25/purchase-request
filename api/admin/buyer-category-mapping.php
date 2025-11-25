@@ -2,6 +2,7 @@
 session_start();
 require '../../config/db.php';
 include '../../config/response.php';
+include '../../config/security.php';
 
 // Check if user is admin/super_admin/master
 $allowedRoles = ['admin', 'super_admin', 'master'];
@@ -11,6 +12,10 @@ if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role'], $allowedRoles))
 
 // INSERT or UPDATE
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['buyer_id'], $_POST['category_id'])) {
+    // Validate CSRF token
+    if (!isset($_POST['csrf_token']) || !Security::validateCSRFToken($_POST['csrf_token'])) {
+        sendResponse(403, "error", "Invalid CSRF token");
+    }
     try {
         $id = $_POST['id'] ?? '';
         $buyer_id = intval($_POST['buyer_id']);
@@ -61,6 +66,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['buyer_id'], $_POST['c
 
 // DELETE
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
+    // Validate CSRF token
+    if (!isset($_POST['csrf_token']) || !Security::validateCSRFToken($_POST['csrf_token'])) {
+        sendResponse(403, "error", "Invalid CSRF token");
+    }
     try {
         $delete_id = intval($_POST['delete_id']);
         $stmt = $conn->prepare("DELETE FROM buyer_category_mapping WHERE id = ?");

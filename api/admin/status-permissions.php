@@ -58,6 +58,10 @@ try {
             break;
             
         case 'POST':
+            // Validate CSRF token
+            if (!isset($_POST['csrf_token']) || !Security::validateCSRFToken($_POST['csrf_token'])) {
+                sendResponse(403, "error", "Invalid CSRF token");
+            }
             // Create new permission or flow
             $type = $_POST['type'] ?? 'permission';
             
@@ -136,6 +140,11 @@ try {
             // Also check POST data in case it's sent as POST with _method=PUT
             if (empty($putData) && !empty($_POST)) {
                 $putData = $_POST;
+            }
+            // Validate CSRF token
+            $csrfToken = $putData['csrf_token'] ?? $_POST['csrf_token'] ?? '';
+            if (empty($csrfToken) || !Security::validateCSRFToken($csrfToken)) {
+                sendResponse(403, "error", "Invalid CSRF token");
             }
             $type = $putData['type'] ?? 'permission';
             $id = intval($putData['id']);
@@ -221,6 +230,11 @@ try {
             // Also check POST data in case it's sent as POST with _method=DELETE
             if (empty($deleteData) && !empty($_POST)) {
                 $deleteData = $_POST;
+            }
+            // Validate CSRF token
+            $csrfToken = $deleteData['csrf_token'] ?? $_POST['csrf_token'] ?? '';
+            if (empty($csrfToken) || !Security::validateCSRFToken($csrfToken)) {
+                sendResponse(403, "error", "Invalid CSRF token");
             }
             $type = $deleteData['type'] ?? 'permission';
             $id = intval($deleteData['id']);

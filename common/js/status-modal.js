@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Field mapping: database field_name -> DOM element
   const fieldMapping = {
     'buyer': { field: buyerField, input: buyerInput, loader: loadBuyers },
-    'po_head': { field: poHeadField, input: poHeadInput, loader: null },
+    'po_head': { field: poHeadField, input: poHeadInput, loader: loadPoHeads },
     'po_team': { field: poTeamField, input: poTeamInput, loader: loadPoTeamMembers },
     'qty': { field: qtyField, input: qtyInput, loader: null },
     'file_upload': { field: fileUploadField, input: fileInput, loader: null },
@@ -47,13 +47,41 @@ document.addEventListener("DOMContentLoaded", function () {
       const result = await response.json();
 
       if (result.status === "success" && result.data && result.data.length > 0) {
-        // Sort by field_order
-        const fields = result.data.sort((a, b) => a.field_order - b.field_order);
+        // Sort by field_order, but ensure po_head always comes first
+        const fields = result.data.sort((a, b) => {
+          // PO head always first
+          if (a.field_name === 'po_head') return -1;
+          if (b.field_name === 'po_head') return 1;
+          return a.field_order - b.field_order;
+        });
         
         // Show fields based on database configuration
         const fieldsToShow = [];
+        const poHeadFieldConfig = fields.find(f => f.field_name === 'po_head');
+        
+        // If po_head exists, process it first
+        if (poHeadFieldConfig && fieldMapping['po_head']) {
+          const mappedField = fieldMapping['po_head'];
+          fieldsToShow.push(mappedField.field);
+          
+          if (poHeadFieldConfig.is_required) {
+            mappedField.input.setAttribute('required', 'required');
+          } else {
+            mappedField.input.removeAttribute('required');
+          }
+          
+          // Load PO heads first
+          if (mappedField.loader && typeof mappedField.loader === 'function') {
+            mappedField.loader();
+          }
+        }
+        
+        // Process other fields
         fields.forEach(fieldConfig => {
           const fieldName = fieldConfig.field_name;
+          // Skip po_head as it's already processed
+          if (fieldName === 'po_head') return;
+          
           if (fieldMapping[fieldName]) {
             const mappedField = fieldMapping[fieldName];
             fieldsToShow.push(mappedField.field);
@@ -107,6 +135,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
       case "6": // Forwarded to PO Head
         showFields([poHeadField, remarkField, buyerField]);
+        loadPoHeads(); // Load PO heads first
         loadBuyers();
         break;
 
@@ -364,6 +393,11 @@ function showFields(fieldsToShow) {
 
   async function loadPoTeamMembers() {
     const poTeamSelect = document.getElementById("statusPoTeamInput");
+    
+    if (!poTeamSelect) {
+      console.error("PO team select element not found");
+      return;
+    }
 
     try {
       // Show loading message while fetching
@@ -374,7 +408,7 @@ function showFields(fieldsToShow) {
       const response = await fetch("../fetch/fetch-po-team.php");
       const result = await response.json();
 
-      if (result.status === "success") {
+      if (result.status === "success" && result.data && Array.isArray(result.data)) {
         // Format the response for populateSelect()
         const options = result.data.map((user) => ({
           value: user.id,
@@ -390,20 +424,27 @@ function showFields(fieldsToShow) {
       }
     } catch (error) {
       console.error("Error fetching PO team members:", error);
-      poTeamSelect.innerHTML =
-        '<option value="">Error loading team members</option>';
+      if (poTeamSelect) {
+        poTeamSelect.innerHTML =
+          '<option value="">Error loading team members</option>';
+      }
     }
   }
 
   async function loadBuyers() {
     const buyerSelect = document.getElementById("statusBuyerInput");
+    
+    if (!buyerSelect) {
+      console.error("Buyer select element not found");
+      return;
+    }
 
     try {
       buyerSelect.innerHTML = '<option value="">Loading buyers...</option>';
       const response = await fetch("../fetch/fetch-buyer.php");
       const result = await response.json();
 
-      if (result.status === "success") {
+      if (result.status === "success" && result.data && Array.isArray(result.data)) {
         const options = result.data.map((user) => ({
           value: user.id,
           label: user.username,
@@ -414,7 +455,46 @@ function showFields(fieldsToShow) {
       }
     } catch (error) {
       console.error("Error fetching buyers:", error);
-      buyerSelect.innerHTML = '<option value="">Error loading buyers</option>';
+      if (buyerSelect) {
+        buyerSelect.innerHTML = '<option value="">Error loading buyers</option>';
+      }
+    }
+  }
+
+  async function loadPoHeads() {
+    const poHeadSelect = document.getElementById("statusPoHeadInput");
+    
+    if (!poHeadSelect) {
+      console.error("PO head select element not found");
+      return;
+    }
+
+    try {
+      // Show loading message while fetching
+      poHeadSelect.innerHTML = '<option value="">Loading PO heads...</option>';
+
+      // Fetch data from the PHP API
+      const response = await fetch("../fetch/fetch-po-team-heads.php");
+      const result = await response.json();
+
+      if (result.status === "success" && result.data && Array.isArray(result.data)) {
+        // Format the response for populateSelect()
+        const options = result.data.map((user) => ({
+          value: user.id,
+          label: user.username,
+        }));
+
+        // Populate the select dropdown
+        populateSelect(poHeadSelect, options);
+      } else {
+        // API returned success=false or empty data
+        poHeadSelect.innerHTML = '<option value="">No PO heads found</option>';
+      }
+    } catch (error) {
+      console.error("Error fetching PO heads:", error);
+      if (poHeadSelect) {
+        poHeadSelect.innerHTML = '<option value="">Error loading PO heads</option>';
+      }
     }
   }
 });

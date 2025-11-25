@@ -2,6 +2,7 @@
 session_start();
 require '../../config/db.php';
 include '../../config/response.php';
+include '../../config/security.php';
 
 // Check if user is admin/super_admin/master
 $allowedRoles = ['admin', 'super_admin', 'master'];
@@ -9,9 +10,12 @@ if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role'], $allowedRoles))
     sendResponse(403, "error", "Unauthorized access");
 }
 
-
 // INSERT or UPDATE
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['b_head'], $_POST['cat_id'])) {
+    // Validate CSRF token
+    if (!isset($_POST['csrf_token']) || !Security::validateCSRFToken($_POST['csrf_token'])) {
+        sendResponse(403, "error", "Invalid CSRF token");
+    }
     try {
         $id = $_POST['id'] ?? '';
         $b_head = intval($_POST['b_head']);
@@ -62,6 +66,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['b_head'], $_POST['cat
 
 // DELETE
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['delete_id'])) {
+    // Validate CSRF token
+    if (!isset($_POST['csrf_token']) || !Security::validateCSRFToken($_POST['csrf_token'])) {
+        sendResponse(403, "error", "Invalid CSRF token");
+    }
     try {
         $id = intval($_POST['delete_id']);
         $stmt = $conn->prepare("DELETE FROM buyer_head_categories WHERE id = ?");

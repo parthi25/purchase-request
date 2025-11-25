@@ -2,6 +2,7 @@
 session_start();
 require '../../config/db.php';
 include '../../config/response.php';
+include '../../config/security.php';
 
 // Check if user is super_admin/master
 $allowedRoles = ['super_admin', 'master'];
@@ -63,6 +64,10 @@ switch ($action) {
         break;
 
     case 'create':
+        // Validate CSRF token
+        if (!isset($_POST['csrf_token']) || !Security::validateCSRFToken($_POST['csrf_token'])) {
+            sendResponse(403, "error", "Invalid CSRF token");
+        }
         try {
             $role = trim($_POST['role'] ?? '');
             $menu_item_label = trim($_POST['menu_item_label'] ?? '');
@@ -77,7 +82,7 @@ switch ($action) {
             }
             
             $stmt = $conn->prepare("INSERT INTO role_menu_settings (role, menu_item_label, menu_item_url, menu_item_icon, menu_order, is_visible, menu_group, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, 1)");
-            $stmt->bind_param("ssssiiss", $role, $menu_item_label, $menu_item_url, $menu_item_icon, $menu_order, $is_visible, $menu_group);
+            $stmt->bind_param("ssssiis", $role, $menu_item_label, $menu_item_url, $menu_item_icon, $menu_order, $is_visible, $menu_group);
             
             if ($stmt->execute()) {
                 sendResponse(200, "success", "Menu item created successfully", ["id" => $stmt->insert_id]);
@@ -95,6 +100,10 @@ switch ($action) {
         break;
 
     case 'update':
+        // Validate CSRF token
+        if (!isset($_POST['csrf_token']) || !Security::validateCSRFToken($_POST['csrf_token'])) {
+            sendResponse(403, "error", "Invalid CSRF token");
+        }
         try {
             $id = intval($_POST['id'] ?? 0);
             $menu_item_label = trim($_POST['menu_item_label'] ?? '');
@@ -147,6 +156,10 @@ switch ($action) {
         break;
 
     case 'delete':
+        // Validate CSRF token
+        if (!isset($_POST['csrf_token']) || !Security::validateCSRFToken($_POST['csrf_token'])) {
+            sendResponse(403, "error", "Invalid CSRF token");
+        }
         try {
             $id = intval($_POST['id'] ?? 0);
             

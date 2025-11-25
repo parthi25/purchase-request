@@ -81,6 +81,14 @@ if not exist "database\migrations\alter_buyer_head_categories_structure.sql" (
     set SKIP_ALTER_MIGRATION=0
 )
 
+if not exist "migration\create_buyer_category_mapping.sql" (
+    echo [WARNING] migration\create_buyer_category_mapping.sql not found!
+    echo This migration will be skipped.
+    set SKIP_BUYER_CATEGORY_MAPPING=1
+) else (
+    set SKIP_BUYER_CATEGORY_MAPPING=0
+)
+
 echo [INFO] Database Configuration:
 echo   Host: %DB_HOST%
 echo   Port: %DB_PORT%
@@ -128,6 +136,20 @@ if %MIGRATION_SUCCESS% EQU 0 (
             set MIGRATION_SUCCESS=1
         )
     )
+    
+    REM Run migration for buyer_category_mapping table
+    if %SKIP_BUYER_CATEGORY_MAPPING% EQU 0 (
+        echo.
+        echo [INFO] Running buyer_category_mapping table creation...
+        %MYSQL_CMD% < "migration\create_buyer_category_mapping.sql"
+        
+        if %ERRORLEVEL% EQU 0 (
+            echo [INFO] buyer_category_mapping table creation completed successfully.
+        ) else (
+            echo [WARNING] buyer_category_mapping table creation had errors, but continuing...
+            set MIGRATION_SUCCESS=1
+        )
+    )
 )
 
 if %MIGRATION_SUCCESS% EQU 0 (
@@ -146,6 +168,9 @@ if %MIGRATION_SUCCESS% EQU 0 (
     echo   5. Inserted master data (statuses, permissions, workflows)
     if %SKIP_ALTER_MIGRATION% EQU 0 (
         echo   6. Altered buyer_head_categories table structure (removed Name and cat columns, added cat_id)
+    )
+    if %SKIP_BUYER_CATEGORY_MAPPING% EQU 0 (
+        echo   7. Created buyer_category_mapping table (direct buyer to category mapping)
     )
     echo.
     echo Next steps:

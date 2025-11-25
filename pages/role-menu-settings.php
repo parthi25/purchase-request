@@ -317,9 +317,15 @@ include '../common/layout.php'; ?>
                 return;
             }
 
+            // Get CSRF token
+            const csrfResponse = await fetch('../auth/get-csrf-token.php');
+            const csrfData = await csrfResponse.json();
+            const csrfToken = csrfData.status === 'success' ? csrfData.data.csrf_token : '';
+
             const formData = new FormData();
             formData.append('action', 'delete');
             formData.append('id', id);
+            formData.append('csrf_token', csrfToken);
 
             fetch('../api/admin/role-menu-settings.php', {
                 method: 'POST',
@@ -350,11 +356,17 @@ include '../common/layout.php'; ?>
         });
 
         // Form submit
-        document.getElementById('menuForm').addEventListener('submit', (e) => {
+        document.getElementById('menuForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            
+            // Get CSRF token
+            const csrfResponse = await fetch('../auth/get-csrf-token.php');
+            const csrfData = await csrfResponse.json();
+            const csrfToken = csrfData.status === 'success' ? csrfData.data.csrf_token : '';
             
             const formData = new FormData(e.target);
             formData.append('action', editingId ? 'update' : 'create');
+            formData.append('csrf_token', csrfToken);
             if (editingId) {
                 formData.append('id', editingId);
                 formData.append('is_active', '1'); // Keep active when updating

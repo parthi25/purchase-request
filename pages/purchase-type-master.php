@@ -145,7 +145,13 @@ $("#purchaseTypeForm").submit(function(e) {
         );
         
         if (confirmResult.isConfirmed) {
+            // Get CSRF token
+            const csrfResponse = await fetch('../auth/get-csrf-token.php');
+            const csrfData = await csrfResponse.json();
+            const csrfToken = csrfData.status === 'success' ? csrfData.data.csrf_token : '';
+            
             formData.append('action', action);
+            formData.append('csrf_token', csrfToken);
             $.ajax({
                 url: "../api/admin/purchase-types.php",
                 type: "POST",
@@ -190,9 +196,15 @@ async function deletePurchaseType() {
     );
     
     if (confirmResult.isConfirmed) {
+        // Get CSRF token
+        const csrfResponse = await fetch('../auth/get-csrf-token.php');
+        const csrfData = await csrfResponse.json();
+        const csrfToken = csrfData.status === 'success' ? csrfData.data.csrf_token : '';
+        
         const formData = new FormData();
         formData.append('action', 'delete');
         formData.append('id', id);
+        formData.append('csrf_token', csrfToken);
         
         $.ajax({
             url: "../api/admin/purchase-types.php",

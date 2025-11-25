@@ -324,10 +324,16 @@ async function toggleUserStatus(userId, newStatus) {
     );
     
     if (confirmResult.isConfirmed) {
+        // Get CSRF token
+        const csrfResponse = await fetch('../auth/get-csrf-token.php');
+        const csrfData = await csrfResponse.json();
+        const csrfToken = csrfData.status === 'success' ? csrfData.data.csrf_token : '';
+        
         $.post('../api/admin/users.php', { 
             action: 'toggle_status', 
             id: userId,
-            is_active: newStatus
+            is_active: newStatus,
+            csrf_token: csrfToken
         }, function(response) {
             if (typeof response === 'object' && response.status === 'success') {
                 showToast(response.message || `User ${actionText}d successfully.`, 'success', 1500);
@@ -365,7 +371,16 @@ async function deleteUser(id) {
     );
     
     if (confirmResult.isConfirmed) {
-        $.post('../api/admin/users.php', { action: 'delete', id: id }, function(response) {
+        // Get CSRF token
+        const csrfResponse = await fetch('../auth/get-csrf-token.php');
+        const csrfData = await csrfResponse.json();
+        const csrfToken = csrfData.status === 'success' ? csrfData.data.csrf_token : '';
+        
+        $.post('../api/admin/users.php', { 
+            action: 'delete', 
+            id: id,
+            csrf_token: csrfToken
+        }, function(response) {
             if (typeof response === 'object' && response.status === 'success') {
                 showToast(response.message || 'User has been deleted successfully.', 'success', 1500);
                 setTimeout(() => {
@@ -405,6 +420,14 @@ $('#userForm').submit(function(e) {
         );
         
         if (confirmResult.isConfirmed) {
+            // Get CSRF token
+            const csrfResponse = await fetch('../auth/get-csrf-token.php');
+            const csrfData = await csrfResponse.json();
+            const csrfToken = csrfData.status === 'success' ? csrfData.data.csrf_token : '';
+            
+            // Add CSRF token to form data
+            form.push({ name: 'csrf_token', value: csrfToken });
+            
             $.post('../api/admin/users.php', form, function(response) {
                 if (typeof response === 'object' && response.status === 'success') {
                     showToast(response.message || `User ${action === 'add' ? 'added' : 'updated'} successfully.`, 'success', 1500);

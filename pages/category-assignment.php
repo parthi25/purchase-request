@@ -179,6 +179,12 @@ $("#assignForm").submit(function(e) {
         );
         
         if (confirmResult.isConfirmed) {
+            // Get CSRF token
+            const csrfResponse = await fetch('../auth/get-csrf-token.php');
+            const csrfData = await csrfResponse.json();
+            const csrfToken = csrfData.status === 'success' ? csrfData.data.csrf_token : '';
+            formData.append('csrf_token', csrfToken);
+            
             $.ajax({
                 url: "../api/admin/category-assignment.php",
                 type: "POST",
@@ -224,7 +230,15 @@ async function deleteEntry() {
     );
     
     if (confirmResult.isConfirmed) {
-        $.post("../api/admin/category-assignment.php", { delete_id: id }, function(response) {
+        // Get CSRF token
+        const csrfResponse = await fetch('../auth/get-csrf-token.php');
+        const csrfData = await csrfResponse.json();
+        const csrfToken = csrfData.status === 'success' ? csrfData.data.csrf_token : '';
+        
+        $.post("../api/admin/category-assignment.php", { 
+            delete_id: id,
+            csrf_token: csrfToken
+        }, function(response) {
             if (response.status === 'success') {
                 showToast(response.message, 'success', 2000);
                 resetForm();

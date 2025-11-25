@@ -80,10 +80,38 @@ try {
     $createdBy = $_SESSION['user_id'];
     $poStatus = 1;
     
-    // If PR is created by buyer, set buyer field to current user
+    // Initialize buyer and b_head fields
     $buyerField = null;
+    $bHeadField = null;
+    
+    // If PR is created by buyer role, always set buyer field to current user and fetch b_head
     if ($userRole === 'buyer') {
-        $buyerField = $createdBy;
+        // Always set buyer field to the buyer creating the PR
+        $buyerField = (int)$createdBy;
+        
+        // Fetch and validate buyer head from buyers_info table
+        $bheadStmt = $conn->prepare("SELECT b_head FROM buyers_info WHERE buyer = ? LIMIT 1");
+        if (!$bheadStmt) {
+            sendResponse(500, 'error', 'Database error: Failed to prepare buyer head query.');
+        }
+        $bheadStmt->bind_param("i", $createdBy);
+        $bheadStmt->execute();
+        $bheadResult = $bheadStmt->get_result();
+        $bheadRow = $bheadResult->fetch_assoc();
+        $bheadStmt->close();
+        
+        if ($bheadRow && isset($bheadRow['b_head'])) {
+            $bHeadField = (int)$bheadRow['b_head'];
+        } else {
+            // Buyer not found in buyers_info table - this shouldn't happen but handle gracefully
+            sendResponse(400, 'error', 'Buyer information not found. Please contact administrator.');
+        }
+    } else {
+        // For other roles (B_Head, admin), use the buyer from POST data if provided
+        // $buyer from POST will be used as b_head
+        if ($buyer !== null) {
+            $bHeadField = $buyer;
+        }
     }
 
     // Validate input data
@@ -133,6 +161,13 @@ try {
     }
 
     // Insert into purchase_requests
+    // Determine final b_head value: use bHeadField if set (buyer creating PR), otherwise use $buyer (buyer head/admin creating PR)
+    $finalBHead = $bHeadField !== null ? $bHeadField : ($buyer !== null ? $buyer : null);
+    
+    // Ensure buyer field is set when buyer role creates PR
+    // For other roles, buyer field can be null or set from POST
+    $finalBuyer = $buyerField !== null ? $buyerField : null;
+    
     $stmt = $conn->prepare("
         INSERT INTO purchase_requests (
             supplier_id, new_supplier, b_head, buyer, qty, uom, remark, po_status,
@@ -143,8 +178,8 @@ try {
         "siiissssiii",
         $supplier,
         $newSupplierId,
-        $buyer,
-        $buyerField,
+        $finalBHead,
+        $finalBuyer,
         $qty,
         $uom,
         $remark,

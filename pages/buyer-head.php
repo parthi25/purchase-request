@@ -1,5 +1,8 @@
 <?php include '../common/layout.php'; ?>
-
+    <!-- Create PR Button - Above Filter -->
+    <div class="mb-3 flex justify-end">
+        <button id="openCreatePRBtn" class="btn btn-accent shadow-lg">Create PR</button>
+    </div>
     <div class="bg-base-200 border-base-300 collapse border">
   <input type="checkbox" class="peer" />
   <div
@@ -62,10 +65,6 @@
             <i class="fas fa-plus text-xl"></i>
         </button>
     </div>
-    <!-- Create PR Button - Above Filter -->
-    <div class="mb-3 flex justify-end">
-        <button id="openCreatePRBtn" class="btn btn-accent shadow-lg">Create PR</button>
-    </div>
         <div id="view-container" class="p-2 sm:p-4"></div>
         <?php include '../common/read-more-modal.php'; ?>
         <?php include '../common/file-upload.php'; ?>
@@ -103,23 +102,24 @@
                 };
 
                 // Load buyers dropdown
-                fetch('../fetch/fetch-buyer.php')
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 'success') {
-                            const buyerSelect = document.getElementById('buyerSelect');
-                            data.data.forEach(buyer => {
-                                const option = document.createElement('option');
-                                option.value = buyer.id;
-                                option.textContent = buyer.username;
-                                buyerSelect.appendChild(option);
-                            });
-                        }
-                    })
-                    .catch(error => console.error('Error loading buyers:', error));
+                const buyerSelect = document.getElementById('buyerSelect');
+                if (buyerSelect) {
+                    fetch('../fetch/fetch-buyer.php')
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.status === 'success') {
+                                data.data.forEach(buyer => {
+                                    const option = document.createElement('option');
+                                    option.value = buyer.id;
+                                    option.textContent = buyer.username;
+                                    buyerSelect.appendChild(option);
+                                });
+                            }
+                        })
+                        .catch(error => console.error('Error loading buyers:', error));
 
-                // Handle buyer selection
-                document.getElementById('buyerSelect').addEventListener('change', function () {
+                    // Handle buyer selection
+                    buyerSelect.addEventListener('change', function () {
                     window.state.selectedBuyerId = this.value;
                     window.state.offset = 0;
                     window.state.noMoreData = false;
@@ -137,7 +137,8 @@
                         }
                     });
                     window.ViewMode.refreshView();
-                });
+                    });
+                }
 
                 initCountBoxComponent({
                     role: 'bhead',

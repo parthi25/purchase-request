@@ -906,26 +906,59 @@ SET @col_exists = (
     AND COLUMN_NAME = 'role_id'
 );
 
+-- Check if role column exists to determine where to add role_id
+SET @role_col_exists_for_position = (
+    SELECT COUNT(*) 
+    FROM INFORMATION_SCHEMA.COLUMNS 
+    WHERE TABLE_SCHEMA = DATABASE() 
+    AND TABLE_NAME = 'users' 
+    AND COLUMN_NAME = 'role'
+);
+
 SET @add_col_sql = IF(
-    @col_exists = 0,
+    @col_exists = 0 AND @role_col_exists_for_position > 0,
     'ALTER TABLE `users` ADD COLUMN `role_id` INT(11) NULL AFTER `role`',
-    'SELECT 1'
+    IF(
+        @col_exists = 0,
+        'ALTER TABLE `users` ADD COLUMN `role_id` INT(11) NULL',
+        'SELECT 1'
+    )
 );
 PREPARE stmt FROM @add_col_sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 
 -- Step 2: Migrate existing role enum values to role_id
--- Use BINARY comparison to avoid collation mismatch
-UPDATE `users` u
-INNER JOIN `roles` r ON BINARY u.role = BINARY r.role_code
-SET u.role_id = r.id
-WHERE u.role_id IS NULL;
+-- Check if role column exists before trying to migrate
+SET @role_col_exists = (
+    SELECT COUNT(*) 
+    FROM INFORMATION_SCHEMA.COLUMNS 
+    WHERE TABLE_SCHEMA = DATABASE() 
+    AND TABLE_NAME = 'users' 
+    AND COLUMN_NAME = 'role'
+);
+
+-- Only migrate if role column exists and role_id is NULL
+SET @migrate_role_sql = IF(
+    @role_col_exists > 0,
+    'UPDATE `users` u
+     INNER JOIN `roles` r ON BINARY u.role = BINARY r.role_code
+     SET u.role_id = r.id
+     WHERE u.role_id IS NULL',
+    'SELECT 1'
+);
+PREPARE stmt FROM @migrate_role_sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
 -- Handle any roles that don't match (set to default admin role)
-UPDATE `users` u
-SET u.role_id = (SELECT id FROM roles WHERE BINARY role_code = BINARY 'admin' LIMIT 1)
-WHERE u.role_id IS NULL;
+-- This should run regardless of whether role column exists (handles NULL role_id from any source)
+SET @set_default_role_sql = 'UPDATE `users` u
+     SET u.role_id = (SELECT id FROM roles WHERE BINARY role_code = BINARY ''admin'' LIMIT 1)
+     WHERE u.role_id IS NULL';
+PREPARE stmt FROM @set_default_role_sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
 -- Step 3: Make role_id NOT NULL after migration
 SET @make_not_null_sql = IF(

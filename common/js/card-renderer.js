@@ -133,7 +133,7 @@ function renderCards(dataArray, role = 'buyer', containerId = 'cardContainer') {
             supplier: item.supplier,
             category: item.category_name,
             purchType: item.purch_type,
-            qty: item.qty,
+            qty: item.qty ? `${item.qty}${item.uom ? ' ' + item.uom : ''}` : '-',
             createdBy: item.created_by,
             createdOn: item.created_at ? new Date(item.created_at).toLocaleDateString() : '-',
             remarks: item.remark || '-',
@@ -171,7 +171,7 @@ function renderCards(dataArray, role = 'buyer', containerId = 'cardContainer') {
                             ${icon}
                             ${label}:
                         </span>
-                        <span>${typeof mappedItem[key] === 'string' && key !== 'refId' && key !== 'poNumber' && key !== 'createdOn' ? toTitleCase(mappedItem[key]) : mappedItem[key]}</span>
+                        <span>${typeof mappedItem[key] === 'string' && key !== 'refId' && key !== 'poNumber' && key !== 'createdOn' && key !== 'qty' ? toTitleCase(mappedItem[key]) : mappedItem[key]}</span>
                     </div>
                 `;
             }

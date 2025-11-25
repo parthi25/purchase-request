@@ -438,7 +438,9 @@ formatCell(row, column) {
         case "category":
             return toTitleCase(row.category_name) || "Unknown";
         case "qty":
-            return row.qty || "Unknown";
+            const qtyValue = row.qty || 0;
+            const uomValue = row.uom || '';
+            return uomValue ? `${qtyValue} ${uomValue}` : qtyValue || "Unknown";
         // case "images":
         //     return row.images && row.images.length > 0 
         //         ? `<span class="text-green-500">✓ (${row.images.length})</span>`

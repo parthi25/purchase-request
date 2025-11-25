@@ -2,6 +2,7 @@
 session_start();
 require '../../config/db.php';
 include '../../config/response.php';
+include '../../config/security.php';
 
 // Check if user is super_admin/master
 $allowedRoles = ['super_admin', 'master'];
@@ -66,6 +67,10 @@ switch ($action) {
         break;
 
     case 'create':
+        // Validate CSRF token
+        if (!isset($_POST['csrf_token']) || !Security::validateCSRFToken($_POST['csrf_token'])) {
+            sendResponse(403, "error", "Invalid CSRF token");
+        }
         try {
             $role = trim($_POST['role'] ?? '');
             $initial_page_url = trim($_POST['initial_page_url'] ?? '');
@@ -101,6 +106,10 @@ switch ($action) {
         break;
 
     case 'update':
+        // Validate CSRF token
+        if (!isset($_POST['csrf_token']) || !Security::validateCSRFToken($_POST['csrf_token'])) {
+            sendResponse(403, "error", "Invalid CSRF token");
+        }
         try {
             $id = intval($_POST['id'] ?? 0);
             $initial_page_url = trim($_POST['initial_page_url'] ?? '');
@@ -148,6 +157,10 @@ switch ($action) {
         break;
 
     case 'delete':
+        // Validate CSRF token
+        if (!isset($_POST['csrf_token']) || !Security::validateCSRFToken($_POST['csrf_token'])) {
+            sendResponse(403, "error", "Invalid CSRF token");
+        }
         try {
             $id = intval($_POST['id'] ?? 0);
             

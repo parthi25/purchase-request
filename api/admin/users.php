@@ -2,6 +2,7 @@
 session_start();
 require '../../config/db.php';
 include '../../config/response.php';
+include '../../config/security.php';
 
 // Check if user is admin/super_admin/master
 $allowedRoles = ['admin', 'super_admin', 'master'];
@@ -94,6 +95,10 @@ switch ($action) {
         break;
 
     case 'add':
+        // Validate CSRF token
+        if (!isset($_POST['csrf_token']) || !Security::validateCSRFToken($_POST['csrf_token'])) {
+            sendResponse(403, "error", "Invalid CSRF token");
+        }
         // Get role_id from role_code
         $roleCode = $_POST['role'] ?? '';
         if (empty($roleCode)) {
@@ -140,6 +145,10 @@ switch ($action) {
         break;
 
     case 'update':
+        // Validate CSRF token
+        if (!isset($_POST['csrf_token']) || !Security::validateCSRFToken($_POST['csrf_token'])) {
+            sendResponse(403, "error", "Invalid CSRF token");
+        }
         $id = intval($_POST['id'] ?? 0);
         if ($id <= 0) {
             sendResponse(400, "error", "Invalid user ID");
@@ -203,6 +212,10 @@ switch ($action) {
         break;
 
     case 'delete':
+        // Validate CSRF token
+        if (!isset($_POST['csrf_token']) || !Security::validateCSRFToken($_POST['csrf_token'])) {
+            sendResponse(403, "error", "Invalid CSRF token");
+        }
         $delete_id = intval($_POST['id'] ?? 0);
         if ($delete_id <= 0) {
             sendResponse(400, "error", "Invalid user ID");
