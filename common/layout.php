@@ -65,7 +65,7 @@ try {
     <link rel="stylesheet" href="../assets/css/font-awesome-6.0.0.min.css">
     <link rel="stylesheet" href="../assets/css/flatpickr.min.css">
     <link rel="stylesheet" href="../assets/css/select2.min.css">
-    
+    <script src="../assets/js/jquery.min.js"></script>
     <!-- Favicon -->
     <link rel="shortcut icon" href="../assets/brand/favicon.ico" type="image/x-icon">
 </head>

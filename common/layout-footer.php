@@ -4,7 +4,6 @@
     
     <!-- Non-Critical Scripts - Load at End of Body -->
     <script src="../assets/js/browser@4.js"></script>
-    <script src="../assets/js/jquery.min.js"></script>
     <script src="../common/js/notifications.js"></script>
     <script src="../assets/js/flatpickr.min.js"></script>
     <script src="../assets/js/select2.min.js"></script>
