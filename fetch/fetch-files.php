@@ -30,8 +30,22 @@ if (!isset($allowedTables[$type])) {
 
 $table = $allowedTables[$type];
 
-// fetch files from the matching table
-$stmt = $conn->prepare("SELECT id, url, filename FROM {$table} WHERE ord_id = ?");
+// Check if proforma table has the new columns
+$hasItemColumns = false;
+if ($type === 'proforma') {
+    $checkStmt = $conn->query("SHOW COLUMNS FROM {$table} LIKE 'item_details_url'");
+    $hasItemColumns = ($checkStmt && $checkStmt->num_rows > 0);
+    if ($checkStmt) $checkStmt->close();
+}
+
+// Build SELECT query based on table type
+if ($type === 'proforma' && $hasItemColumns) {
+    $sql = "SELECT id, url, filename, item_details_url, item_info FROM {$table} WHERE ord_id = ?";
+} else {
+    $sql = "SELECT id, url, filename FROM {$table} WHERE ord_id = ?";
+}
+
+$stmt = $conn->prepare($sql);
 if (!$stmt) {
     sendResponse(500, "error", "Database prepare failed: " . $conn->error);
 }
@@ -42,11 +56,19 @@ $result = $stmt->get_result();
 
 $files = [];
 while ($row = $result->fetch_assoc()) {
-    $files[] = [
+    $fileData = [
         'id' => (int) $row['id'],
         'url' => $row['url'],
         'filename' => $row['filename']
     ];
+    
+    // Add new columns for proforma if they exist
+    if ($type === 'proforma' && $hasItemColumns) {
+        $fileData['item_details_url'] = $row['item_details_url'] ?? null;
+        $fileData['item_info'] = $row['item_info'] ?? null;
+    }
+    
+    $files[] = $fileData;
 }
 $stmt->close();
 $conn->close();

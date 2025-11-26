@@ -4,6 +4,9 @@ document.addEventListener('DOMContentLoaded', () => {
   const fileModalTitle = document.getElementById('fileModalTitle');
   const uploadFileBtn = document.getElementById('uploadFileBtn');
   const fileInput = document.getElementById('fileInput');
+  const newItemFields = document.getElementById('newItemFields');
+  const itemDetailsFileInput = document.getElementById('itemDetailsFileInput');
+  const itemInfoInput = document.getElementById('itemInfoInput');
 
   let currentPrId = null;
   let currentType = null;
@@ -86,6 +89,10 @@ document.addEventListener('DOMContentLoaded', () => {
         delete: '../api/delete-files.php'
       };
       fileModalTitle.textContent = 'Proforma Files';
+      // Show new item fields for proforma
+      if (newItemFields) {
+        newItemFields.classList.remove('hidden');
+      }
     } else if (btn.classList.contains('po')) {
       currentType = 'po';
       currentUrls = {
@@ -94,6 +101,10 @@ document.addEventListener('DOMContentLoaded', () => {
         delete: '../api/delete-files.php'
       };
       fileModalTitle.textContent = 'PO Files';
+      // Hide new item fields for non-proforma
+      if (newItemFields) {
+        newItemFields.classList.add('hidden');
+      }
     } else if (btn.classList.contains('product')) {
       currentType = 'product';
       currentUrls = {
@@ -102,12 +113,35 @@ document.addEventListener('DOMContentLoaded', () => {
         delete: '../api/delete-files.php'
       };
       fileModalTitle.textContent = 'Product Files';
+      // Set file input to accept images for product files
+      if (fileInput) {
+        fileInput.setAttribute('accept', 'image/*');
+      }
+      // Hide new item fields for non-proforma
+      if (newItemFields) {
+        newItemFields.classList.add('hidden');
+      }
+    } else {
+      // Remove accept restriction for other file types
+      if (fileInput) {
+        fileInput.removeAttribute('accept');
+      }
+      // Hide new item fields
+      if (newItemFields) {
+        newItemFields.classList.add('hidden');
+      }
     }
 
     console.log('Opening file modal for:', currentType, 'PR ID:', currentPrId);
 
-    // Reset file input
+    // Reset file inputs and textarea
     fileInput.value = '';
+    if (itemDetailsFileInput) {
+      itemDetailsFileInput.value = '';
+    }
+    if (itemInfoInput) {
+      itemInfoInput.value = '';
+    }
 
     // Load files
     await loadFiles();
@@ -163,28 +197,160 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
-    fileList.innerHTML = files.map(file => `
-      <div class="flex items-center justify-between bg-base-200 p-3 rounded-lg">
-        <div class="flex items-center gap-3 flex-1">
-          <div class="flex-shrink-0">
-            ${getFileIcon(file.url)}
-          </div>
-          <div class="flex-1 min-w-0">
-            <a href="../${file.url}" target="_blank" class="link link-hover text-sm truncate block" title="${getFileName(file.url)}">
-              ${getFileName(file.url)}
-            </a>
-            <div class="text-xs text-gray-500">
-              ${file.uploaded_at ? new Date(file.uploaded_at).toLocaleDateString() : ''}
+    // For product files, check if we have images to show in carousel
+    if (currentType === 'product') {
+      const imageFiles = files.filter(file => isImageFile(file.url));
+      const nonImageFiles = files.filter(file => !isImageFile(file.url));
+
+      if (imageFiles.length > 0) {
+        // Render image carousel for product images
+        let carouselHtml = `
+          <div class="w-full flex justify-center mb-4">
+            <div class="carousel carousel-vertical rounded-box h-96">
+        `;
+        
+        imageFiles.forEach(file => {
+          carouselHtml += `
+            <div class="carousel-item h-full flex items-center justify-center">
+              <img src="../${file.url}" alt="${getFileName(file.url)}" class="max-w-full max-h-full object-contain" loading="lazy" decoding="async" />
+            </div>
+          `;
+        });
+        
+        carouselHtml += `
             </div>
           </div>
-        </div>
-        <button class="btn btn-xs btn-error delete-file ml-2 flex-shrink-0" 
-                data-id="${file.id}" 
-                data-url="${currentUrls.delete}">
-          Delete
-        </button>
-      </div>
-    `).join('');
+        `;
+
+        // Add delete buttons for images
+        if (deleteAllowed) {
+          carouselHtml += `
+            <div class="flex flex-wrap gap-2 mb-4 justify-center">
+              ${imageFiles.map(file => `
+                <button class="btn btn-xs btn-error delete-file" 
+                        data-id="${file.id}" 
+                        data-url="${currentUrls.delete}">
+                  Delete ${getFileName(file.url)}
+                </button>
+              `).join('')}
+            </div>
+          `;
+        }
+
+        // Add non-image files list if any
+        if (nonImageFiles.length > 0) {
+          carouselHtml += `
+            <div class="divider my-4">Other Files</div>
+            <div class="space-y-2 max-h-60 overflow-y-auto">
+              ${nonImageFiles.map(file => `
+                <div class="flex items-center justify-between bg-base-200 p-3 rounded-lg">
+                  <div class="flex items-center gap-3 flex-1">
+                    <div class="flex-shrink-0">
+                      ${getFileIcon(file.url)}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                      <a href="../${file.url}" target="_blank" class="link link-hover text-sm truncate block" title="${getFileName(file.url)}">
+                        ${getFileName(file.url)}
+                      </a>
+                    </div>
+                  </div>
+                  ${deleteAllowed ? `
+                    <button class="btn btn-xs btn-error delete-file ml-2 flex-shrink-0" 
+                            data-id="${file.id}" 
+                            data-url="${currentUrls.delete}">
+                      Delete
+                    </button>
+                  ` : ''}
+                </div>
+              `).join('')}
+            </div>
+          `;
+        }
+
+        fileList.innerHTML = carouselHtml;
+      } else {
+        // No images, show regular list
+        fileList.innerHTML = files.map(file => `
+          <div class="flex items-center justify-between bg-base-200 p-3 rounded-lg">
+            <div class="flex items-center gap-3 flex-1">
+              <div class="flex-shrink-0">
+                ${getFileIcon(file.url)}
+              </div>
+              <div class="flex-1 min-w-0">
+                <a href="../${file.url}" target="_blank" class="link link-hover text-sm truncate block" title="${getFileName(file.url)}">
+                  ${getFileName(file.url)}
+                </a>
+                <div class="text-xs text-gray-500">
+                  ${file.uploaded_at ? new Date(file.uploaded_at).toLocaleDateString() : ''}
+                </div>
+              </div>
+            </div>
+            ${deleteAllowed ? `
+              <button class="btn btn-xs btn-error delete-file ml-2 flex-shrink-0" 
+                      data-id="${file.id}" 
+                      data-url="${currentUrls.delete}">
+                Delete
+              </button>
+            ` : ''}
+          </div>
+        `).join('');
+      }
+    } else {
+      // For non-product files, use regular list view
+      fileList.innerHTML = files.map(file => {
+        let itemDetailsHtml = '';
+        let itemInfoHtml = '';
+        
+        // Show item details and info for proforma files
+        if (currentType === 'proforma') {
+          if (file.item_details_url) {
+            itemDetailsHtml = `
+              <div class="mt-2 text-xs">
+                <span class="font-semibold">Item Details:</span>
+                <a href="../${file.item_details_url}" target="_blank" class="link link-primary ml-1">
+                  ${getFileName(file.item_details_url)}
+                </a>
+              </div>
+            `;
+          }
+          if (file.item_info) {
+            itemInfoHtml = `
+              <div class="mt-1 text-xs text-gray-600">
+                <span class="font-semibold">Item Info:</span>
+                <span class="ml-1">${file.item_info}</span>
+              </div>
+            `;
+          }
+        }
+        
+        return `
+          <div class="flex items-center justify-between bg-base-200 p-3 rounded-lg">
+            <div class="flex items-center gap-3 flex-1">
+              <div class="flex-shrink-0">
+                ${getFileIcon(file.url)}
+              </div>
+              <div class="flex-1 min-w-0">
+                <a href="../${file.url}" target="_blank" class="link link-hover text-sm truncate block" title="${getFileName(file.url)}">
+                  ${getFileName(file.url)}
+                </a>
+                <div class="text-xs text-gray-500">
+                  ${file.uploaded_at ? new Date(file.uploaded_at).toLocaleDateString() : ''}
+                </div>
+                ${itemDetailsHtml}
+                ${itemInfoHtml}
+              </div>
+            </div>
+            ${deleteAllowed ? `
+              <button class="btn btn-xs btn-error delete-file ml-2 flex-shrink-0" 
+                      data-id="${file.id}" 
+                      data-url="${currentUrls.delete}">
+                Delete
+              </button>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+    }
 
     // Add delete event listeners
     fileList.querySelectorAll('.delete-file').forEach(delBtn => {
@@ -193,6 +359,12 @@ document.addEventListener('DOMContentLoaded', () => {
         await deleteFile(delBtn);
       });
     });
+  }
+
+  function isImageFile(url) {
+    if (!url) return false;
+    const extension = url.split('.').pop()?.toLowerCase();
+    return ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'webp'].includes(extension);
   }
 
   function getFileName(url) {
@@ -240,10 +412,32 @@ document.addEventListener('DOMContentLoaded', () => {
       return;
     }
 
+    // Now upload the main file
     const formData = new FormData();
     formData.append('file', file);
     formData.append('id', currentPrId);
     formData.append('type', currentType);
+    
+    // Add item details file and info for proforma
+    if (currentType === 'proforma') {
+      // Add item details file if provided
+      if (itemDetailsFileInput && itemDetailsFileInput.files[0]) {
+        const itemDetailsFile = itemDetailsFileInput.files[0];
+        
+        // Validate item details file size
+        if (itemDetailsFile.size > 5 * 1024 * 1024) {
+          showToast('Item details file size must be less than 5MB.', 'error');
+          return;
+        }
+        
+        formData.append('item_details_file', itemDetailsFile);
+      }
+      
+      // Add item info text if provided
+      if (itemInfoInput && itemInfoInput.value.trim()) {
+        formData.append('item_info', itemInfoInput.value.trim());
+      }
+    }
     
     // Add CSRF token
     try {
@@ -272,6 +466,12 @@ document.addEventListener('DOMContentLoaded', () => {
       if (uploadData.status === 'success') {
         showToast('File uploaded successfully!', 'success');
         fileInput.value = ''; // Clear input
+        if (itemDetailsFileInput) {
+          itemDetailsFileInput.value = ''; // Clear item details input
+        }
+        if (itemInfoInput) {
+          itemInfoInput.value = ''; // Clear item info input
+        }
         // Reload page after successful upload
         setTimeout(() => {
           window.location.reload();

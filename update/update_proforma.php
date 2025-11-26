@@ -95,12 +95,60 @@ if ($type === 'change') {
     $stmt->close();
 }
 
+// Check if table has new item columns
+$checkColumns = $conn->query("SHOW COLUMNS FROM proforma");
+$hasItemDetailsUrl = false;
+$hasItemInfo = false;
+
+while ($column = $checkColumns->fetch_assoc()) {
+    if ($column['Field'] === 'item_details_url') {
+        $hasItemDetailsUrl = true;
+    }
+    if ($column['Field'] === 'item_info') {
+        $hasItemInfo = true;
+    }
+}
+
+// Get optional item details from POST
+$itemDetailsUrl = ($hasItemDetailsUrl && isset($_POST['item_details_url'])) 
+    ? trim($_POST['item_details_url']) : null;
+$itemInfo = ($hasItemInfo && isset($_POST['item_info'])) 
+    ? trim($_POST['item_info']) : null;
+
 // Insert new records
 $successCount = 0;
-$stmt = $conn->prepare("INSERT INTO proforma (ord_id, url, filename) VALUES (?, ?, ?)");
+
+// Build INSERT query based on available columns
+$columns = ['ord_id', 'url', 'filename'];
+$placeholders = ['?', '?', '?'];
+$types = 'iss';
+$baseValues = [$order_id];
+
+if ($hasItemDetailsUrl && $itemDetailsUrl !== null) {
+    $columns[] = 'item_details_url';
+    $placeholders[] = '?';
+    $types .= 's';
+}
+
+if ($hasItemInfo && $itemInfo !== null) {
+    $columns[] = 'item_info';
+    $placeholders[] = '?';
+    $types .= 's';
+}
+
+$sql = "INSERT INTO proforma (" . implode(', ', $columns) . ") VALUES (" . implode(', ', $placeholders) . ")";
+$stmt = $conn->prepare($sql);
 
 foreach ($uploadedFiles as $file) {
-    $stmt->bind_param("iss", $order_id, $file['url'], $file['filename']);
+    $values = array_merge($baseValues, [$file['url'], $file['filename']]);
+    if ($hasItemDetailsUrl && $itemDetailsUrl !== null) {
+        $values[] = $itemDetailsUrl;
+    }
+    if ($hasItemInfo && $itemInfo !== null) {
+        $values[] = $itemInfo;
+    }
+    
+    $stmt->bind_param($types, ...$values);
     if ($stmt->execute())
         $successCount++;
 }

@@ -13,7 +13,7 @@ if (!isset($_SESSION["user_id"])) {
         <div class="card bg-base-100 shadow-xl mb-4">
             <div class="card-body">
                 <div class="flex justify-between items-center">
-                    <h2 class="card-title">PR Dashboard</h2>
+                    <h2 class="card-title capitalize">PR Dashboard</h2>
                     <button id="exportExcelBtn" class="btn btn-success">
                         Export to Excel
                     </button>
@@ -109,7 +109,7 @@ if (!isset($_SESSION["user_id"])) {
         <div class="card bg-base-100 shadow-xl">
             <div class="card-body">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="card-title">PR Entries</h3>
+                    <h3 class="card-title capitalize">PR Entries</h3>
                     <div class="flex items-center gap-4">
                         <input type="text" placeholder="Search..." class="input input-bordered input-sm" id="searchInput">
                         <div class="badge badge-primary">Total: <span id="totalRecords">0</span></div>

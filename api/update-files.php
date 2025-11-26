@@ -125,6 +125,42 @@ if (!$hasPermission) {
     sendResponse(403, "error", "You do not have permission to upload files for this status.");
 }
 
+// Process item details file first (if provided for proforma)
+$itemDetailsUrl = null;
+if ($type === 'proforma' && isset($_FILES["item_details_file"]) && $_FILES["item_details_file"]["error"] === UPLOAD_ERR_OK) {
+    $itemDetailsFile = $_FILES["item_details_file"];
+    
+    // Validate item details file
+    $itemDetailsFileErrors = Security::validateFile($itemDetailsFile, $allowedMimeTypes, $maxFileSize);
+    if (!empty($itemDetailsFileErrors)) {
+        sendResponse(400, "error", "Item details file validation failed: " . implode(', ', $itemDetailsFileErrors));
+    }
+    
+    // Generate secure filename for item details
+    $itemDetailsOriginalFileName = basename($itemDetailsFile["name"]);
+    $itemDetailsSecureFileName = Security::generateSecureFilename($itemDetailsOriginalFileName);
+    $itemDetailsFilePath = $uploadDir . '/' . $itemDetailsSecureFileName;
+    $itemDetailsFileUrl = $uploadConfig['dir'] . '/' . $itemDetailsSecureFileName;
+    
+    // Additional security: Check file content
+    $finfo = finfo_open(FILEINFO_MIME_TYPE);
+    $itemDetailsDetectedMimeType = finfo_file($finfo, $itemDetailsFile["tmp_name"]);
+    finfo_close($finfo);
+    
+    if (!in_array($itemDetailsDetectedMimeType, $allowedMimeTypes)) {
+        sendResponse(400, "error", "Item details file type mismatch detected.");
+    }
+    
+    // Move item details file
+    if (!move_uploaded_file($itemDetailsFile["tmp_name"], $itemDetailsFilePath)) {
+        sendResponse(500, "error", "Item details file upload failed - unable to move file to destination.");
+    }
+    
+    // Set proper file permissions
+    chmod($itemDetailsFilePath, 0644);
+    $itemDetailsUrl = $itemDetailsFileUrl;
+}
+
 // Process uploaded file with enhanced security
 $file = $_FILES["file"];
 
@@ -162,10 +198,12 @@ chmod($filePath, 0644);
 
 // Insert record with prepared statement
 try {
-    // Check if table has uploaded_by and uploaded_at columns
+    // Check if table has uploaded_by, uploaded_at, and new item columns
     $checkColumns = $conn->query("SHOW COLUMNS FROM {$table}");
     $hasUploadedBy = false;
     $hasUploadedAt = false;
+    $hasItemDetailsUrl = false;
+    $hasItemInfo = false;
     
     while ($column = $checkColumns->fetch_assoc()) {
         if ($column['Field'] === 'uploaded_by') {
@@ -174,17 +212,69 @@ try {
         if ($column['Field'] === 'uploaded_at') {
             $hasUploadedAt = true;
         }
+        if ($column['Field'] === 'item_details_url') {
+            $hasItemDetailsUrl = true;
+        }
+        if ($column['Field'] === 'item_info') {
+            $hasItemInfo = true;
+        }
     }
     
-    // Build query based on available columns
-    if ($hasUploadedBy && $hasUploadedAt) {
-        $stmt = $conn->prepare("INSERT INTO {$table} (ord_id, url, filename, uploaded_by, uploaded_at) VALUES (?, ?, ?, ?, NOW())");
-        $uploadedBy = $_SESSION['user_id'];
-        $stmt->bind_param("issi", $order_id, $fileUrl, $secureFileName, $uploadedBy);
+    // Get optional item details from POST (only for proforma)
+    // Use uploaded item_details_file URL if available, otherwise use POST value
+    if ($type === 'proforma' && $hasItemDetailsUrl) {
+        if ($itemDetailsUrl === null && isset($_POST['item_details_url'])) {
+            $itemDetailsUrl = trim($_POST['item_details_url']);
+        }
+        // If still null, set to null explicitly
+        if ($itemDetailsUrl === '') {
+            $itemDetailsUrl = null;
+        }
     } else {
-        $stmt = $conn->prepare("INSERT INTO {$table} (ord_id, url, filename) VALUES (?, ?, ?)");
-        $stmt->bind_param("iss", $order_id, $fileUrl, $secureFileName);
+        $itemDetailsUrl = null;
     }
+    $itemInfo = ($type === 'proforma' && $hasItemInfo && isset($_POST['item_info'])) 
+        ? trim($_POST['item_info']) : null;
+    
+    // Build query based on available columns
+    $columns = ['ord_id', 'url', 'filename'];
+    $placeholders = ['?', '?', '?'];
+    $bindValues = [$order_id, $fileUrl, $secureFileName];
+    $bindTypes = 'iss';
+    
+    if ($hasUploadedBy && $hasUploadedAt) {
+        $columns[] = 'uploaded_by';
+        $columns[] = 'uploaded_at';
+        $placeholders[] = '?';
+        $placeholders[] = 'NOW()'; // NOW() is a SQL function, not a placeholder
+        $bindValues[] = $_SESSION['user_id'];
+        $bindTypes .= 'i';
+    }
+    
+    // Add item columns for proforma if they exist and are provided
+    if ($type === 'proforma' && $hasItemDetailsUrl && $itemDetailsUrl !== null) {
+        $columns[] = 'item_details_url';
+        $placeholders[] = '?';
+        $bindValues[] = $itemDetailsUrl;
+        $bindTypes .= 's';
+    }
+    
+    if ($type === 'proforma' && $hasItemInfo && $itemInfo !== null) {
+        $columns[] = 'item_info';
+        $placeholders[] = '?';
+        $bindValues[] = $itemInfo;
+        $bindTypes .= 's';
+    }
+    
+    $sql = "INSERT INTO {$table} (" . implode(', ', $columns) . ") VALUES (" . implode(', ', $placeholders) . ")";
+    $stmt = $conn->prepare($sql);
+    
+    if (!$stmt) {
+        throw new Exception("Database query preparation failed: " . $conn->error);
+    }
+    
+    // Bind parameters - bindValues already excludes NOW() since it's in placeholders but not in bindValues
+    $stmt->bind_param($bindTypes, ...$bindValues);
     
     if (!$stmt) {
         throw new Exception("Database query preparation failed");

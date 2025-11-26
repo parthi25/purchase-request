@@ -89,6 +89,24 @@ if not exist "migration\create_buyer_category_mapping.sql" (
     set SKIP_BUYER_CATEGORY_MAPPING=0
 )
 
+REM Initialize proforma SQL file variable
+set PROFORMA_SQL_FILE=
+set SKIP_PROFORMA_COLUMNS=1
+
+REM Check for proforma item columns migration (prefer simple version)
+if exist "database\migrations\add_proforma_item_columns_simple.sql" (
+    set SKIP_PROFORMA_COLUMNS=0
+    set PROFORMA_SQL_FILE=database\migrations\add_proforma_item_columns_simple.sql
+) else (
+    if exist "database\migrations\add_proforma_item_columns.sql" (
+        set SKIP_PROFORMA_COLUMNS=0
+        set PROFORMA_SQL_FILE=database\migrations\add_proforma_item_columns.sql
+    ) else (
+        echo [WARNING] database\migrations\add_proforma_item_columns.sql not found!
+        echo This migration will be skipped.
+    )
+)
+
 echo [INFO] Database Configuration:
 echo   Host: %DB_HOST%
 echo   Port: %DB_PORT%
@@ -150,6 +168,22 @@ if %MIGRATION_SUCCESS% EQU 0 (
             set MIGRATION_SUCCESS=1
         )
     )
+    
+    REM Run migration for proforma item columns
+    if %SKIP_PROFORMA_COLUMNS% EQU 0 (
+        echo.
+        echo [INFO] Running proforma item columns migration...
+        echo [INFO] Using SQL file: %PROFORMA_SQL_FILE%
+        %MYSQL_CMD% < "%PROFORMA_SQL_FILE%" 2>nul
+        set PROFORMA_RESULT=%ERRORLEVEL%
+        
+        if %PROFORMA_RESULT% EQU 0 (
+            echo [INFO] Proforma item columns migration completed successfully.
+        ) else (
+            echo [WARNING] Proforma item columns migration had errors (columns may already exist - safe to ignore).
+            REM Don't set MIGRATION_SUCCESS=1 here as "Duplicate column name" errors are expected if columns exist
+        )
+    )
 )
 
 if %MIGRATION_SUCCESS% EQU 0 (
@@ -171,6 +205,9 @@ if %MIGRATION_SUCCESS% EQU 0 (
     )
     if %SKIP_BUYER_CATEGORY_MAPPING% EQU 0 (
         echo   7. Created buyer_category_mapping table (direct buyer to category mapping)
+    )
+    if %SKIP_PROFORMA_COLUMNS% EQU 0 (
+        echo   8. Added item_details_url and item_info columns to proforma table
     )
     echo.
     echo Next steps:

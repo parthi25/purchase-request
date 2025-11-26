@@ -10,7 +10,7 @@
     <!-- Profile Form Card -->
     <div class="card bg-base-100 shadow-xl mb-8">
       <div class="card-body space-y-4">
-        <h2 class="card-title text-2xl">Profile Information</h2>
+        <h2 class="card-title text-2xl capitalize">Profile Information</h2>
 
         <div id="alert-container"></div>
 

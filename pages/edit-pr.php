@@ -20,7 +20,7 @@ $currentPage = 'edit-pr.php';
     <!-- Search Card -->
     <div class="card bg-base-100 shadow-xl mb-6">
         <div class="card-body">
-            <h2 class="card-title mb-4">
+            <h2 class="card-title mb-4 capitalize">
                 <i class="fas fa-search"></i>
                 Search PR by Reference ID
             </h2>
@@ -39,7 +39,7 @@ $currentPage = 'edit-pr.php';
     <!-- Edit Form Card (Hidden initially) -->
     <div class="card bg-base-100 shadow-xl mb-6 hidden" id="editFormCard">
         <div class="card-body">
-            <h2 class="card-title mb-4">
+            <h2 class="card-title mb-4 capitalize">
                 <i class="fas fa-edit"></i>
                 <span id="formTitle">Edit PR #<span id="prRefId"></span></span>
             </h2>

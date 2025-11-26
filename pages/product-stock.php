@@ -10,7 +10,7 @@
     <!-- Selection Form -->
     <div class="card bg-base-100 shadow-xl mb-8">
       <div class="card-body space-y-4">
-        <h2 class="card-title text-2xl">Select an Option</h2>
+        <h2 class="card-title text-2xl capitalize">Select an Option</h2>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <!-- Product -->

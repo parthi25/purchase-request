@@ -12,15 +12,15 @@ const CardConfigs = {
         showFields: { refId:true, poNumber:true, poHead:true, poTeam:true, supplier:true, category:true, purchType:false, qty:true, createdBy:true, createdOn:true, remarks:false },
         showButtons: { edit:true, proforma:true, po:true },
         statusBadges: {
-            "1": '<span class="text-sm font-semibold text-green-600">Open</span>',
-            "2": '<span class="text-sm font-semibold text-blue-600">Forwarded to Buyer</span>',
-            "3": '<span class="text-sm font-semibold text-yellow-600">Agent/Supplier contacted and Awaiting PO details</span>',
-            "4": '<span class="text-sm font-semibold text-indigo-600">Received Proforma PO</span>',
-            "5": '<span class="text-sm font-semibold text-red-600">Forwarded to Buyer Head</span>',
-            "6": '<span class="text-sm font-semibold text-gray-600">Forwarded to PO Team</span>',
-            "7": '<span class="text-sm font-semibold text-green-600">PO generated</span>',
-            "8": '<span class="text-sm font-semibold text-red-600">Rejected</span>',
-            "9": '<span class="text-sm font-semibold text-green-600">Forwarded to PO Members</span>'
+            "1": '<span class="text-sm font-semibold text-green-600 capitalize">Open</span>',
+            "2": '<span class="text-sm font-semibold text-blue-600 capitalize">Forwarded to Buyer</span>',
+            "3": '<span class="text-sm font-semibold text-yellow-600 capitalize">Agent/Supplier contacted and Awaiting PO details</span>',
+            "4": '<span class="text-sm font-semibold text-indigo-600 capitalize">Received Proforma PO</span>',
+            "5": '<span class="text-sm font-semibold text-red-600 capitalize">Forwarded to Buyer Head</span>',
+            "6": '<span class="text-sm font-semibold text-gray-600 capitalize">Forwarded to PO Team</span>',
+            "7": '<span class="text-sm font-semibold text-green-600 capitalize">PO generated</span>',
+            "8": '<span class="text-sm font-semibold text-red-600 capitalize">Rejected</span>',
+            "9": '<span class="text-sm font-semibold text-green-600 capitalize">Forwarded to PO Members</span>'
         }
     },
     admin: {
@@ -28,15 +28,15 @@ const CardConfigs = {
         showFields: { refId:true, poNumber:true, poHead:true, poTeam:true, supplier:true, category:true, purchType:true, qty:true, createdBy:true, createdOn:true, remarks:false },
         showButtons: { edit:true, proforma:true, po:true },
         statusBadges: {
-            "1": '<span class="text-sm font-semibold text-green-600">Open</span>',
-            "2": '<span class="text-sm font-semibold text-blue-600">Forwarded to Buyer</span>',
-            "3": '<span class="text-sm font-semibold text-yellow-600">Awaiting PO</span>',
-            "4": '<span class="text-sm font-semibold text-indigo-600">Received Proforma PO</span>',
-            "5": '<span class="text-sm font-semibold text-red-600">Forwarded to Buyer Head</span>',
-            "6": '<span class="text-sm font-semibold text-gray-600">Forwarded to PO Team</span>',
-            "7": '<span class="text-sm font-semibold text-green-600">PO generated</span>',
-            "8": '<span class="text-sm font-semibold text-red-600">Rejected</span>',
-            "9": '<span class="text-sm font-semibold text-green-600">Forwarded to PO Members</span>'
+            "1": '<span class="text-sm font-semibold text-green-600 capitalize">Open</span>',
+            "2": '<span class="text-sm font-semibold text-blue-600 capitalize">Forwarded to Buyer</span>',
+            "3": '<span class="text-sm font-semibold text-yellow-600 capitalize">Awaiting PO</span>',
+            "4": '<span class="text-sm font-semibold text-indigo-600 capitalize">Received Proforma PO</span>',
+            "5": '<span class="text-sm font-semibold text-red-600 capitalize">Forwarded to Buyer Head</span>',
+            "6": '<span class="text-sm font-semibold text-gray-600 capitalize">Forwarded to PO Team</span>',
+            "7": '<span class="text-sm font-semibold text-green-600 capitalize">PO generated</span>',
+            "8": '<span class="text-sm font-semibold text-red-600 capitalize">Rejected</span>',
+            "9": '<span class="text-sm font-semibold text-green-600 capitalize">Forwarded to PO Members</span>'
         }
     },
     bhead: {
@@ -44,15 +44,15 @@ const CardConfigs = {
         showFields: { refId:true, poNumber:true, poHead:true, poTeam:true, supplier:true, category:true, purchType:false, qty:true, createdBy:true, createdOn:true, remarks:false },
         showButtons: { edit:true, proforma:true, po:true },
         statusBadges: {
-            "1": '<span class="text-sm font-semibold text-green-600">Open</span>',
-            "2": '<span class="text-sm font-semibold text-blue-600">Forwarded to Buyer</span>',
-            "3": '<span class="text-sm font-semibold text-yellow-600">Agent/Supplier contacted and Awaiting PO details</span>',
-            "4": '<span class="text-sm font-semibold text-indigo-600">Received Proforma PO</span>',
-            "5": '<span class="text-sm font-semibold text-red-600">Forwarded to Buyer Head</span>',
-            "6": '<span class="text-sm font-semibold text-gray-600">Forwarded to PO Team</span>',
-            "7": '<span class="text-sm font-semibold text-green-600">PO generated</span>',
-            "8": '<span class="text-sm font-semibold text-red-600">Rejected</span>',
-            "9": '<span class="text-sm font-semibold text-green-600">Forwarded to PO Members</span>'
+            "1": '<span class="text-sm font-semibold text-green-600 capitalize">Open</span>',
+            "2": '<span class="text-sm font-semibold text-blue-600 capitalize">Forwarded to Buyer</span>',
+            "3": '<span class="text-sm font-semibold text-yellow-600 capitalize">Agent/Supplier contacted and Awaiting PO details</span>',
+            "4": '<span class="text-sm font-semibold text-indigo-600 capitalize">Received Proforma PO</span>',
+            "5": '<span class="text-sm font-semibold text-red-600 capitalize">Forwarded to Buyer Head</span>',
+            "6": '<span class="text-sm font-semibold text-gray-600 capitalize">Forwarded to PO Team</span>',
+            "7": '<span class="text-sm font-semibold text-green-600 capitalize">PO generated</span>',
+            "8": '<span class="text-sm font-semibold text-red-600 capitalize">Rejected</span>',
+            "9": '<span class="text-sm font-semibold text-green-600 capitalize">Forwarded to PO Members</span>'
         }
     },
     pohead: {
@@ -60,15 +60,15 @@ const CardConfigs = {
         showFields: { refId:true, poNumber:true, poHead:true, poTeam:true, supplier:true, category:true, purchType:true, qty:true, createdBy:true, createdOn:true, remarks:false },
         showButtons: { edit:false, proforma:true, po:true },
         statusBadges: {
-            "1": '<span class="text-sm font-semibold text-green-600">Open</span>',
-            "2": '<span class="text-sm font-semibold text-blue-600">Forwarded to Buyer</span>',
-            "3": '<span class="text-sm font-semibold text-yellow-600">Awaiting PO</span>',
-            "4": '<span class="text-sm font-semibold text-indigo-600">Received Proforma PO</span>',
-            "5": '<span class="text-sm font-semibold text-red-600">Forwarded to Buyer Head</span>',
-            "6": '<span class="text-sm font-semibold text-gray-600">Forwarded to PO Team</span>',
-            "7": '<span class="text-sm font-semibold text-green-600">PO generated</span>',
-            "8": '<span class="text-sm font-semibold text-red-600">Rejected</span>',
-            "9": '<span class="text-sm font-semibold text-green-600">Forwarded to PO Members</span>'
+            "1": '<span class="text-sm font-semibold text-green-600 capitalize">Open</span>',
+            "2": '<span class="text-sm font-semibold text-blue-600 capitalize">Forwarded to Buyer</span>',
+            "3": '<span class="text-sm font-semibold text-yellow-600 capitalize">Awaiting PO</span>',
+            "4": '<span class="text-sm font-semibold text-indigo-600 capitalize">Received Proforma PO</span>',
+            "5": '<span class="text-sm font-semibold text-red-600 capitalize">Forwarded to Buyer Head</span>',
+            "6": '<span class="text-sm font-semibold text-gray-600 capitalize">Forwarded to PO Team</span>',
+            "7": '<span class="text-sm font-semibold text-green-600 capitalize">PO generated</span>',
+            "8": '<span class="text-sm font-semibold text-red-600 capitalize">Rejected</span>',
+            "9": '<span class="text-sm font-semibold text-green-600 capitalize">Forwarded to PO Members</span>'
         }
     },
     poteammember: {
@@ -76,15 +76,15 @@ const CardConfigs = {
         showFields: { refId:true, poNumber:true, poHead:true, poTeam:true, supplier:true, category:true, purchType:true, qty:true, createdBy:true, createdOn:true, remarks:false },
         showButtons: { edit:false, proforma:true, po:true },
         statusBadges: {
-            "1": '<span class="text-sm font-semibold text-green-600">Open</span>',
-            "2": '<span class="text-sm font-semibold text-blue-600">Forwarded to Buyer</span>',
-            "3": '<span class="text-sm font-semibold text-yellow-600">Awaiting PO</span>',
-            "4": '<span class="text-sm font-semibold text-indigo-600">Received Proforma PO</span>',
-            "5": '<span class="text-sm font-semibold text-red-600">Forwarded to Buyer Head</span>',
-            "6": '<span class="text-sm font-semibold text-gray-600">Forwarded to PO Team</span>',
-            "7": '<span class="text-sm font-semibold text-green-600">PO generated</span>',
-            "8": '<span class="text-sm font-semibold text-red-600">Rejected</span>',
-            "9": '<span class="text-sm font-semibold text-green-600">Forwarded to PO Members</span>'
+            "1": '<span class="text-sm font-semibold text-green-600 capitalize">Open</span>',
+            "2": '<span class="text-sm font-semibold text-blue-600 capitalize">Forwarded to Buyer</span>',
+            "3": '<span class="text-sm font-semibold text-yellow-600 capitalize">Awaiting PO</span>',
+            "4": '<span class="text-sm font-semibold text-indigo-600 capitalize">Received Proforma PO</span>',
+            "5": '<span class="text-sm font-semibold text-red-600 capitalize">Forwarded to Buyer Head</span>',
+            "6": '<span class="text-sm font-semibold text-gray-600 capitalize">Forwarded to PO Team</span>',
+            "7": '<span class="text-sm font-semibold text-green-600 capitalize">PO generated</span>',
+            "8": '<span class="text-sm font-semibold text-red-600 capitalize">Rejected</span>',
+            "9": '<span class="text-sm font-semibold text-green-600 capitalize">Forwarded to PO Members</span>'
         }
     },
     dashboard: {
@@ -92,15 +92,15 @@ const CardConfigs = {
         showFields: { refId:true, poNumber:true, poHead:true, poTeam:true, supplier:true, category:true, purchType:true, qty:true, createdBy:true, createdOn:true, remarks:false },
         showButtons: { edit:false, proforma:true, po:true },
         statusBadges: {
-            "1": '<span class="text-sm font-semibold text-green-600">Open</span>',
-            "2": '<span class="text-sm font-semibold text-blue-600">Forwarded to Buyer</span>',
-            "3": '<span class="text-sm font-semibold text-yellow-600">Awaiting PO</span>',
-            "4": '<span class="text-sm font-semibold text-indigo-600">Received Proforma PO</span>',
-            "5": '<span class="text-sm font-semibold text-red-600">Forwarded to Buyer Head</span>',
-            "6": '<span class="text-sm font-semibold text-gray-600">Forwarded to PO Team</span>',
-            "7": '<span class="text-sm font-semibold text-green-600">PO generated</span>',
-            "8": '<span class="text-sm font-semibold text-red-600">Rejected</span>',
-            "9": '<span class="text-sm font-semibold text-green-600">Forwarded to PO Members</span>'
+            "1": '<span class="text-sm font-semibold text-green-600 capitalize">Open</span>',
+            "2": '<span class="text-sm font-semibold text-blue-600 capitalize">Forwarded to Buyer</span>',
+            "3": '<span class="text-sm font-semibold text-yellow-600 capitalize">Awaiting PO</span>',
+            "4": '<span class="text-sm font-semibold text-indigo-600 capitalize">Received Proforma PO</span>',
+            "5": '<span class="text-sm font-semibold text-red-600 capitalize">Forwarded to Buyer Head</span>',
+            "6": '<span class="text-sm font-semibold text-gray-600 capitalize">Forwarded to PO Team</span>',
+            "7": '<span class="text-sm font-semibold text-green-600 capitalize">PO generated</span>',
+            "8": '<span class="text-sm font-semibold text-red-600 capitalize">Rejected</span>',
+            "9": '<span class="text-sm font-semibold text-green-600 capitalize">Forwarded to PO Members</span>'
         }
     }
 };
@@ -167,11 +167,11 @@ function renderCards(dataArray, role = 'buyer', containerId = 'cardContainer') {
                 const icon = fieldIcons[key] || '<i class="fas fa-circle text-blue-500"></i>';
                 fieldsHtml += `
                     <div class="flex items-center gap-2">
-                        <span class="font-semibold w-24 flex items-center gap-1">
+                        <span class="font-semibold w-24 flex items-center gap-1 capitalize">
                             ${icon}
                             ${label}:
                         </span>
-                        <span>${typeof mappedItem[key] === 'string' && key !== 'refId' && key !== 'poNumber' && key !== 'createdOn' && key !== 'qty' ? toTitleCase(mappedItem[key]) : mappedItem[key]}</span>
+                        <span class="capitalize">${typeof mappedItem[key] === 'string' && key !== 'refId' && key !== 'poNumber' && key !== 'createdOn' && key !== 'qty' ? toTitleCase(mappedItem[key]) : mappedItem[key]}</span>
                     </div>
                 `;
             }
@@ -215,12 +215,12 @@ if (config.showButtons.po && item.po_status === 7) {
                 <div class="card-body p-4 flex flex-col flex-grow relative">
                     <div class="absolute top-2 right-2 product cursor-pointer" data-pr-id='${mappedItem.refId}' data-status-id='${item.po_status}' data-role='${config.role}'>
                         <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden flex justify-center items-center bg-base-200">
-                            <img src="../${mappedItem.product}" alt="product" class="w-full h-full object-cover cursor-pointer" onerror="this.onerror=null; this.src='../assets/brand/no-image.png';"/>
+                            <img src="../${mappedItem.product}" alt="product" class="w-full h-full object-cover cursor-pointer" loading="lazy" decoding="async" onerror="this.onerror=null; this.src='../assets/brand/no-image.png';"/>
                         </div>
                     </div>
                     <!-- Header -->
                     <div class="mb-3 pr-20">
-                        <h2 class="text-base font-bold mb-1 truncate">Buyer Head: ${mappedItem.buyerHead}</h2>
+                        <h2 class="text-base font-bold mb-1 truncate capitalize">Buyer Head: ${mappedItem.buyerHead}</h2>
                         ${statusBadge}
                     </div>
 

@@ -53,16 +53,20 @@ try {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>PR Tracker</title>
+    
+    <!-- Resource Hints for Performance -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com">
+    
+    <!-- Critical CSS - Load First -->
     <link href="../assets/css/daisyui@5.css" rel="stylesheet" type="text/css" />
-    <script src="../assets/js/browser@4.js"></script>
     <link href="../assets/css/themes.css" rel="stylesheet" type="text/css" />
+    
+    <!-- Non-Critical CSS -->
     <link rel="stylesheet" href="../assets/css/font-awesome-6.0.0.min.css">
     <link rel="stylesheet" href="../assets/css/flatpickr.min.css">
-    <script src="../common/js/notifications.js"></script>
-    <script src="../assets/js/flatpickr.min.js"></script>
-    <script src="../assets/js/jquery.min.js"></script>
     <link rel="stylesheet" href="../assets/css/select2.min.css">
-    <script src="../assets/js/select2.min.js"></script>
+    
+    <!-- Favicon -->
     <link rel="shortcut icon" href="../assets/brand/favicon.ico" type="image/x-icon">
 </head>
 <body>
@@ -142,10 +146,7 @@ try {
                         </div>
                         <ul tabindex="0" class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
                             <li class="menu-title">
-                                <span><?php echo htmlspecialchars($username); ?></span>
-                            </li>
-                            <li class="menu-title">
-                                <span class="text-xs"><?php echo htmlspecialchars($role); ?></span>
+                                <span><?php echo htmlspecialchars($username); ?></span><span class="text-blue-500"><?php echo htmlspecialchars($role); ?></span>
                             </li>
                             <li><hr class="my-1"></li>
                             <li>
@@ -173,28 +174,4 @@ try {
 
             <!-- Page Content -->
             <main class="flex-1 p-4 lg:p-6">
-                <?php
-                // Theme toggle script
-                ?>
-                <script>
-                    // Theme toggle functionality
-                    (function() {
-                        const themeToggle = document.getElementById('themeToggle');
-                        const themeIcon = document.getElementById('themeIcon');
-                        const html = document.documentElement;
-                        
-                        // Get saved theme or default to dark
-                        const savedTheme = localStorage.getItem('theme') || 'black';
-                        html.setAttribute('data-theme', savedTheme);
-                        themeIcon.textContent = savedTheme === 'black' ? '🌙' : '☀️';
-                        
-                        themeToggle.addEventListener('click', () => {
-                            const currentTheme = html.getAttribute('data-theme');
-                            const newTheme = currentTheme === 'black' ? 'corporate' : 'black';
-                            html.setAttribute('data-theme', newTheme);
-                            localStorage.setItem('theme', newTheme);
-                            themeIcon.textContent = newTheme === 'black' ? '🌙' : '☀️';
-                        });
-                    })();
-                </script>
 

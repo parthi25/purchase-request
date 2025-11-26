@@ -26,7 +26,7 @@ $currentPage = 'buyer-category-mapping.php';
     <!-- Form Card -->
     <div class="card bg-base-100 shadow-xl mb-6">
         <div class="card-body">
-            <h2 class="card-title mb-4">
+            <h2 class="card-title mb-4 capitalize">
                 <i class="fas fa-link"></i>
                 <span id="formTitle">Map Category to Buyer</span>
             </h2>
@@ -83,7 +83,7 @@ $currentPage = 'buyer-category-mapping.php';
     <div class="card bg-base-100 shadow-xl">
         <div class="card-body">
             <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
-                <h2 class="card-title">
+                <h2 class="card-title capitalize">
                     <i class="fas fa-list"></i>
                     Buyer Category Mappings
                 </h2>

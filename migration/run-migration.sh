@@ -90,6 +90,19 @@ else
     SKIP_ALTER_MIGRATION=0
 fi
 
+# Check for proforma item columns migration
+if [ -f "database/migrations/add_proforma_item_columns_simple.sql" ]; then
+    SKIP_PROFORMA_COLUMNS=0
+    PROFORMA_SQL_FILE="database/migrations/add_proforma_item_columns_simple.sql"
+elif [ -f "database/migrations/add_proforma_item_columns.sql" ]; then
+    SKIP_PROFORMA_COLUMNS=0
+    PROFORMA_SQL_FILE="database/migrations/add_proforma_item_columns.sql"
+else
+    echo "[WARNING] database/migrations/add_proforma_item_columns.sql not found!"
+    echo "This migration will be skipped."
+    SKIP_PROFORMA_COLUMNS=1
+fi
+
 echo "[INFO] Database Configuration:"
 echo "  Host: $DB_HOST"
 echo "  Port: $DB_PORT"
@@ -136,6 +149,18 @@ if mysql "${MYSQL_ARGS[@]}" < "migration/complete_migration.sql"; then
             MIGRATION_SUCCESS=1
         fi
     fi
+    
+    # Run migration for proforma item columns
+    if [ "$SKIP_PROFORMA_COLUMNS" -eq 0 ]; then
+        echo ""
+        echo "[INFO] Running proforma item columns migration..."
+        if mysql "${MYSQL_ARGS[@]}" < "$PROFORMA_SQL_FILE"; then
+            echo "[INFO] Proforma item columns migration completed successfully."
+        else
+            echo "[WARNING] Proforma item columns migration had errors (columns may already exist - safe to ignore)."
+            # Don't set MIGRATION_SUCCESS=1 here as "Duplicate column name" errors are expected if columns exist
+        fi
+    fi
 else
     MIGRATION_SUCCESS=1
 fi
@@ -156,6 +181,9 @@ if [ $MIGRATION_SUCCESS -eq 0 ]; then
     echo "  5. Inserted master data (statuses, permissions, workflows)"
     if [ "$SKIP_ALTER_MIGRATION" -eq 0 ]; then
         echo "  6. Altered buyer_head_categories table structure (removed Name and cat columns, added cat_id)"
+    fi
+    if [ "$SKIP_PROFORMA_COLUMNS" -eq 0 ]; then
+        echo "  7. Added item_details_url and item_info columns to proforma table"
     fi
     echo ""
     echo "Next steps:"

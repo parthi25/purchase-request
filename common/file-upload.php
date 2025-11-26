@@ -9,14 +9,38 @@
     
     <h3 id="fileModalTitle" class="font-bold text-lg mb-4"></h3>
 
-    <!-- File List -->
-    <div id="fileList" class="space-y-2 mb-4 max-h-60 overflow-y-auto">
+    <!-- File List / Image Carousel -->
+    <div id="fileList" class="mb-4 flex flex-col items-center">
       <p class="text-sm text-gray-500">No files found.</p>
     </div>
 
     <!-- Upload Form -->
     <div class="space-y-2">
       <input type="file" id="fileInput" class="file-input file-input-bordered w-full" />
+      
+      <!-- New Item Upload and Info (only for proforma) -->
+      <div id="newItemFields" class="hidden space-y-2">
+        <div class="divider my-2">New Item Details</div>
+        <div>
+          <label class="label">
+            <span class="label-text">New Item Upload</span>
+          </label>
+          <input type="file" id="itemDetailsFileInput" class="file-input file-input-bordered w-full" />
+          <label class="label">
+            <span class="label-text-alt text-gray-500">Upload item details file (optional)</span>
+          </label>
+        </div>
+        <div>
+          <label class="label">
+            <span class="label-text">New Item Info</span>
+          </label>
+          <textarea id="itemInfoInput" class="textarea textarea-bordered w-full" rows="3" placeholder="Item Code: ABC123, Name: Product Name, Price: $100, Type: New Item"></textarea>
+          <label class="label">
+            <span class="label-text-alt text-gray-500">Enter item information (optional)</span>
+          </label>
+        </div>
+      </div>
+      
       <button id="uploadFileBtn" class="btn btn-primary w-full">Upload New File</button>
     </div>
 

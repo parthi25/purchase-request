@@ -300,18 +300,18 @@ console.log("fall backg");
       const cardHtml = `
         <div class="card w-84 bg-base-100 shadow-md border border-gray-200 mb-4 opacity-0 translate-y-4 scale-95 transition-all duration-500 ease-in-out hover:shadow-lg hover:scale-105 rounded-2xl">
           <div class="card-body p-4">
-            <h2 class="text-base font-bold mb-1">Buyer Head: ${item.buyerHead || 'N/A'}</h2>
+            <h2 class="text-base font-bold mb-1 capitalize">Buyer Head: ${item.buyerHead || 'N/A'}</h2>
             <div class="space-y-1.5 text-sm">
-              <div class="flex"><span class="font-semibold w-24">Ref ID:</span><span>${item.refId || 'N/A'}</span></div>
-              <div class="flex"><span class="font-semibold w-24">Supplier:</span><span>${item.supplier || 'N/A'}</span></div>
-              <div class="flex"><span class="font-semibold w-24">Category:</span><span>${item.category || 'N/A'}</span></div>
+              <div class="flex"><span class="font-semibold w-24 capitalize">Ref ID:</span><span class="capitalize">${item.refId || 'N/A'}</span></div>
+              <div class="flex"><span class="font-semibold w-24 capitalize">Supplier:</span><span class="capitalize">${item.supplier || 'N/A'}</span></div>
+              <div class="flex"><span class="font-semibold w-24 capitalize">Category:</span><span class="capitalize">${item.category || 'N/A'}</span></div>
             </div>
             <div class="divider my-3"></div>
             <div class="flex justify-between items-center">
-              <button class="text-sm font-semibold text-blue-600 hover:text-blue-800">Read More</button>
+              <button class="text-sm font-semibold text-blue-600 hover:text-blue-800 capitalize">Read More</button>
               <div class="flex gap-2">
-                <button class="btn btn-sm btn-outline">Proforma√</button>
-                <button class="btn btn-sm btn-outline">PO</button>
+                <button class="btn btn-sm btn-outline capitalize">Proforma√</button>
+                <button class="btn btn-sm btn-outline capitalize">PO</button>
               </div>
             </div>
           </div>

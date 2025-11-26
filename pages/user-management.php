@@ -27,7 +27,7 @@ $currentPage = 'user-management.php';
     <!-- Form Card -->
     <div class="card bg-base-100 shadow-xl mb-6">
         <div class="card-body">
-            <h2 class="card-title mb-4">
+            <h2 class="card-title mb-4 capitalize">
                 <i class="fas fa-user-plus"></i>
                 <span id="formTitle">Add New User</span>
             </h2>
@@ -119,7 +119,7 @@ $currentPage = 'user-management.php';
     <div class="card bg-base-100 shadow-xl">
         <div class="card-body">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-                <h2 class="card-title">
+                <h2 class="card-title capitalize">
                     <i class="fas fa-users"></i> <span class="hidden sm:inline">User List</span><span class="sm:hidden">Users</span>
                 </h2>
                 <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">

@@ -23,7 +23,7 @@ include '../common/layout.php'; ?>
         <div class="card-body">
             <div class="form-control">
                 <label class="label">
-                    <span class="label-text font-semibold">Filter by Role</span>
+                    <span class="label-text font-semibold capitalize">Filter by Role</span>
                 </label>
                 <select id="roleFilter" class="select select-bordered w-full max-w-xs">
                     <option value="">All Roles</option>
@@ -35,7 +35,7 @@ include '../common/layout.php'; ?>
     <!-- Form Card -->
     <div class="card bg-base-100 shadow-xl mb-6">
         <div class="card-body">
-            <h2 class="card-title mb-4">
+            <h2 class="card-title mb-4 capitalize">
                 <i class="fas fa-bars"></i>
                 <span id="formTitle">Add New Menu Item</span>
             </h2>
@@ -120,7 +120,7 @@ include '../common/layout.php'; ?>
     <div class="card bg-base-100 shadow-xl">
         <div class="card-body">
             <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
-                <h2 class="card-title">
+                <h2 class="card-title capitalize">
                     <i class="fas fa-list"></i>
                     Menu Items
                 </h2>

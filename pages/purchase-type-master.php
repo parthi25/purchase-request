@@ -26,7 +26,7 @@ $currentPage = 'purchase-type-master.php';
     <!-- Form Card -->
     <div class="card bg-base-100 shadow-xl mb-6">
         <div class="card-body">
-            <h2 class="card-title mb-4">
+            <h2 class="card-title mb-4 capitalize">
                 <i class="fas fa-tag"></i>
                 <span id="formTitle">Add Purchase Type</span>
             </h2>
@@ -69,7 +69,7 @@ $currentPage = 'purchase-type-master.php';
     <div class="card bg-base-100 shadow-xl">
         <div class="card-body">
             <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
-                <h2 class="card-title">
+                <h2 class="card-title capitalize">
                     <i class="fas fa-list"></i>
                     Purchase Types
                 </h2>
