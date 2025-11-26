@@ -25,7 +25,7 @@ cd ..
 
 REM Check if PHP is available (preferred method)
 where php >nul 2>&1
-if %ERRORLEVEL% EQU 0 (
+if !ERRORLEVEL! EQU 0 (
     echo [INFO] Using PHP to read database configuration...
     echo.
     php -r "require 'config/env.php'; require 'config/db.php'; echo 'DB_HOST=' . ($_ENV['DB_HOST'] ?? '127.0.0.1') . PHP_EOL; echo 'DB_USER=' . ($_ENV['DB_USER'] ?? 'root') . PHP_EOL; echo 'DB_PASS=' . ($_ENV['DB_PASS'] ?? '') . PHP_EOL; echo 'DB_NAME=' . ($_ENV['DB_NAME'] ?? 'jcrc') . PHP_EOL; echo 'DB_PORT=' . ($_ENV['DB_PORT'] ?? '3307') . PHP_EOL;" > %TEMP%\db_config.txt
@@ -58,7 +58,7 @@ echo.
 
 REM Check if MySQL is available
 where mysql >nul 2>&1
-if %ERRORLEVEL% NEQ 0 (
+if !ERRORLEVEL! NEQ 0 (
     echo [ERROR] MySQL command line client not found in PATH.
     echo Please ensure MySQL is installed and mysql.exe is in your system PATH.
     echo.
@@ -137,56 +137,72 @@ set "MYSQL_CMD=%MYSQL_CMD% %DB_NAME%"
 
 REM Execute MySQL command with SQL file
 echo [INFO] Running complete migration...
-%MYSQL_CMD% < "migration\complete_migration.sql"
-set MIGRATION_SUCCESS=%ERRORLEVEL%
+echo [DEBUG] Executing: %MYSQL_CMD% ^< "migration\complete_migration.sql"
+%MYSQL_CMD% < "migration\complete_migration.sql" 2>&1
+set MIGRATION_SUCCESS=!ERRORLEVEL!
+echo [DEBUG] Migration exit code: !MIGRATION_SUCCESS!
 
-if %MIGRATION_SUCCESS% EQU 0 (
+if "!MIGRATION_SUCCESS!"=="0" (
     REM Run additional migration for buyer_head_categories structure
-    if %SKIP_ALTER_MIGRATION% EQU 0 (
+    if "!SKIP_ALTER_MIGRATION!"=="0" (
         echo.
         echo [INFO] Running buyer_head_categories structure migration...
-        %MYSQL_CMD% < "database\migrations\alter_buyer_head_categories_structure.sql"
+        echo [DEBUG] Executing: %MYSQL_CMD% ^< "database\migrations\alter_buyer_head_categories_structure.sql"
+        %MYSQL_CMD% < "database\migrations\alter_buyer_head_categories_structure.sql" 2>&1
+        set ALTER_RESULT=!ERRORLEVEL!
+        echo [DEBUG] Alter migration exit code: !ALTER_RESULT!
         
-        if %ERRORLEVEL% EQU 0 (
+        if "!ALTER_RESULT!"=="0" (
             echo [INFO] buyer_head_categories structure migration completed successfully.
         ) else (
-            echo [WARNING] buyer_head_categories structure migration had errors, but continuing...
+            echo [ERROR] buyer_head_categories structure migration failed with exit code: !ALTER_RESULT!
+            echo [WARNING] Continuing with other migrations...
             set MIGRATION_SUCCESS=1
         )
     )
     
     REM Run migration for buyer_category_mapping table
-    if %SKIP_BUYER_CATEGORY_MAPPING% EQU 0 (
+    if "!SKIP_BUYER_CATEGORY_MAPPING!"=="0" (
         echo.
         echo [INFO] Running buyer_category_mapping table creation...
-        %MYSQL_CMD% < "migration\create_buyer_category_mapping.sql"
+        echo [DEBUG] Executing: %MYSQL_CMD% ^< "migration\create_buyer_category_mapping.sql"
+        %MYSQL_CMD% < "migration\create_buyer_category_mapping.sql" 2>&1
+        set BUYER_CAT_RESULT=!ERRORLEVEL!
+        echo [DEBUG] Buyer category mapping exit code: !BUYER_CAT_RESULT!
         
-        if %ERRORLEVEL% EQU 0 (
+        if "!BUYER_CAT_RESULT!"=="0" (
             echo [INFO] buyer_category_mapping table creation completed successfully.
         ) else (
-            echo [WARNING] buyer_category_mapping table creation had errors, but continuing...
+            echo [ERROR] buyer_category_mapping table creation failed with exit code: !BUYER_CAT_RESULT!
+            echo [WARNING] Continuing with other migrations...
             set MIGRATION_SUCCESS=1
         )
     )
     
     REM Run migration for proforma item columns
-    if %SKIP_PROFORMA_COLUMNS% EQU 0 (
+    if "!SKIP_PROFORMA_COLUMNS!"=="0" (
         echo.
         echo [INFO] Running proforma item columns migration...
-        echo [INFO] Using SQL file: %PROFORMA_SQL_FILE%
-        %MYSQL_CMD% < "%PROFORMA_SQL_FILE%" 2>nul
-        set PROFORMA_RESULT=%ERRORLEVEL%
+        echo [INFO] Using SQL file: !PROFORMA_SQL_FILE!
+        echo [DEBUG] Executing: %MYSQL_CMD% ^< "!PROFORMA_SQL_FILE!"
+        %MYSQL_CMD% < "!PROFORMA_SQL_FILE!" 2>&1
+        set PROFORMA_RESULT=!ERRORLEVEL!
+        echo [DEBUG] Proforma migration exit code: !PROFORMA_RESULT!
         
-        if %PROFORMA_RESULT% EQU 0 (
+        if "!PROFORMA_RESULT!"=="0" (
             echo [INFO] Proforma item columns migration completed successfully.
         ) else (
-            echo [WARNING] Proforma item columns migration had errors (columns may already exist - safe to ignore).
+            echo [WARNING] Proforma item columns migration had errors (exit code: !PROFORMA_RESULT!)
+            echo [WARNING] Columns may already exist - safe to ignore.
             REM Don't set MIGRATION_SUCCESS=1 here as "Duplicate column name" errors are expected if columns exist
         )
     )
+) else (
+    echo [ERROR] Main migration failed with exit code: !MIGRATION_SUCCESS!
+    echo [ERROR] Please check the error messages above for details.
 )
 
-if %MIGRATION_SUCCESS% EQU 0 (
+if "!MIGRATION_SUCCESS!"=="0" (
     echo.
     echo ============================================
     echo   Migration Successful!
@@ -200,13 +216,13 @@ if %MIGRATION_SUCCESS% EQU 0 (
     echo   3. Added foreign key relationships
     echo   4. Added performance indexes
     echo   5. Inserted master data (statuses, permissions, workflows)
-    if %SKIP_ALTER_MIGRATION% EQU 0 (
+    if "!SKIP_ALTER_MIGRATION!"=="0" (
         echo   6. Altered buyer_head_categories table structure (removed Name and cat columns, added cat_id)
     )
-    if %SKIP_BUYER_CATEGORY_MAPPING% EQU 0 (
+    if "!SKIP_BUYER_CATEGORY_MAPPING!"=="0" (
         echo   7. Created buyer_category_mapping table (direct buyer to category mapping)
     )
-    if %SKIP_PROFORMA_COLUMNS% EQU 0 (
+    if "!SKIP_PROFORMA_COLUMNS!"=="0" (
         echo   8. Added item_details_url and item_info columns to proforma table
     )
     echo.
