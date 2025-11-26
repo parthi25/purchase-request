@@ -66,6 +66,10 @@ try {
     <link rel="stylesheet" href="../assets/css/flatpickr.min.css">
     <link rel="stylesheet" href="../assets/css/select2.min.css">
     <script src="../assets/js/jquery.min.js"></script>
+    <script src="../assets/js/select2.min.js"></script>
+        <script src="../assets/js/browser@4.js"></script>
+    <script src="../common/js/notifications.js"></script>
+    <script src="../assets/js/flatpickr.min.js"></script>
     <!-- Favicon -->
     <link rel="shortcut icon" href="../assets/brand/favicon.ico" type="image/x-icon">
 </head>
