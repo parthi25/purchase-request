@@ -160,7 +160,7 @@ try {
                         </div>
                         <ul tabindex="0" class="mt-3 z-[1] p-2 shadow menu menu-sm dropdown-content bg-base-100 rounded-box w-52">
                             <li class="menu-title">
-                                <span><?php echo htmlspecialchars($username); ?></span><span class="text-blue-500"><?php echo htmlspecialchars($role); ?></span>
+                                <span><?php echo htmlspecialchars($username); ?></span><span class="text-blue-500"><?php echo htmlspecialchars($roleName); ?></span>
                             </li>
                             <li><hr class="my-1"></li>
                             <li>
