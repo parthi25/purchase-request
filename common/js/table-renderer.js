@@ -421,6 +421,10 @@ formatCell(row, column) {
         case "id":
             return row.id || "Unknown";
         case "po_status":
+            // Use database statuses if available, otherwise fallback to config
+            if (window.StatusBadges) {
+                return window.StatusBadges.getBadge(row.po_status, 'simple');
+            }
             return (
                 this.config.statusBadges[String(row.po_status)] ||
                 '<span class="text-base-content/50">Unknown</span>'

@@ -7,6 +7,8 @@
 session_start();
 require_once '../config/db.php';
 require_once '../config/response.php';
+require_once '../config/security.php';
+require_once '../config/env.php';
 
 // Enable MySQLi error reporting
 mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
@@ -106,6 +108,55 @@ try {
     $stmt->bind_param("iiiiisssi", $po_qty, $po_num, $po_lines, $user_id, $inv_am, $buyer, $supplier, $current_date, $po_id);
     $stmt->execute();
     $stmt->close();
+
+    // --- Handle PO file upload if provided ---
+    if (isset($_FILES['po_file']) && $_FILES['po_file']['error'] === UPLOAD_ERR_OK) {
+        $uploadConfig = getUploadConfig();
+        $uploadDir = realpath(__DIR__ . '/../' . $uploadConfig['dir']);
+        
+        if (!is_dir($uploadDir) && !mkdir($uploadDir, 0755, true)) {
+            throw new Exception("Failed to create upload directory.");
+        }
+
+        $allowedMimeTypes = $uploadConfig['allowed_types'];
+        $maxFileSize = $uploadConfig['max_size'];
+        $file = $_FILES['po_file'];
+
+        // Validate file using Security class
+        $fileErrors = Security::validateFile($file, $allowedMimeTypes, $maxFileSize);
+        if (!empty($fileErrors)) {
+            throw new Exception("File validation failed: " . implode(', ', $fileErrors));
+        }
+
+        // Generate secure filename
+        $originalFileName = basename($file["name"]);
+        $secureFileName = Security::generateSecureFilename($originalFileName);
+        $filePath = $uploadDir . '/' . $secureFileName;
+        $fileUrl = '/' . $uploadConfig['dir'] . '/' . $secureFileName;
+
+        // Additional security: Check file content
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        $detectedMimeType = finfo_file($finfo, $file["tmp_name"]);
+        finfo_close($finfo);
+
+        if (!in_array($detectedMimeType, $allowedMimeTypes)) {
+            throw new Exception("File type mismatch detected.");
+        }
+
+        // Move file with error handling
+        if (!move_uploaded_file($file["tmp_name"], $filePath)) {
+            throw new Exception("File upload failed - unable to move file to destination.");
+        }
+
+        // Set proper file permissions
+        chmod($filePath, 0644);
+
+        // Insert file record into po_documents table
+        $fileStmt = $conn->prepare("INSERT INTO po_documents (ord_id, url, filename, uploaded_by, uploaded_at) VALUES (?, ?, ?, ?, ?)");
+        $fileStmt->bind_param("issis", $po_id, $fileUrl, $secureFileName, $user_id, $current_date);
+        $fileStmt->execute();
+        $fileStmt->close();
+    }
 
     // Commit transaction
     $conn->commit();

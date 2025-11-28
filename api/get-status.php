@@ -110,7 +110,7 @@ try {
             "admin" => [1],
             "buyer" => [3, 4, 5],
             "B_Head" => [2, 6, 8],
-            "PO_Team" => [9],
+            "PO_Head" => [9],
             "PO_Team_Member" => [7]
         ];
 
@@ -160,7 +160,7 @@ try {
             // Always return success, even if empty - don't show errors
             sendResponse(200, "success", "Status options retrieved", $statuses ?? []);
         } else {
-            $next_status_id = $role == 'PO_Team' ? $current_status_id + 3 : $current_status_id + 1;
+            $next_status_id = $role == 'PO_Head' ? $current_status_id + 3 : $current_status_id + 1;
 
             if (!in_array($next_status_id, $statusAccess[$role])) {
                 // No status available - return empty array silently

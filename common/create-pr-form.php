@@ -17,20 +17,20 @@
 
     <!-- New Supplier (hidden by default) -->
     <div class="hidden" id="newSupplierContainer">
-        <label class="label"><span class="label-text">New Supplier Name</span></label>
+        <label class="label"><span class="label-text">New Supplier Name <span class="text-error">*</span></span></label>
         <input type="text" class="input input-bordered w-full" id="newSupplierInput" name="newSupplierInput"
             placeholder="Enter new supplier name">
     </div>
 
     <!-- Agent Name -->
     <div class="form-control">
-        <label class="label"><span class="label-text">Agent Name</span></label>
+        <label class="label"><span class="label-text">Agent Name <span class="text-error">*</span></span></label>
         <input type="text" class="input input-bordered w-full" id="agentInput" readonly name="agentInput">
     </div>
 
     <!-- Agent City -->
     <div class="form-control">
-        <label class="label"><span class="label-text">Agent City</span></label>
+        <label class="label"><span class="label-text">Agent City <span class="text-error">*</span></span></label>
         <input type="text" class="input input-bordered w-full" id="cityInput" readonly name="cityInput">
     </div>
 

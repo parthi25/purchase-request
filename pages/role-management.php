@@ -25,23 +25,20 @@ include '../common/layout.php'; ?>
                 <i class="fas fa-user-shield"></i>
                 <span id="formTitle">Add New Role</span>
             </h2>
-            <form id="roleForm" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <form id="roleForm" class="flex flex-wrap items-end gap-3">
                 <input type="hidden" name="id" id="roleId">
                 
-                <div class="form-control">
+                <div class="form-control flex-1 min-w-[150px]">
                     <label class="label">
                         <span class="label-text">Role Code <span class="text-error">*</span></span>
                     </label>
                     <div class="join w-full">
                         <span class="join-item btn btn-disabled bg-base-200"><i class="fas fa-code"></i></span>
-                        <input type="text" name="role_code" id="roleCode" class="input input-bordered join-item flex-1" placeholder="e.g., admin, buyer" required pattern="[a-zA-Z0-9_]+" title="Only letters, numbers, and underscores allowed">
+                        <input type="text" name="role_code" id="roleCode" class="input input-bordered join-item flex-1" placeholder="e.g., admin" required pattern="[a-zA-Z0-9_]+" title="Only letters, numbers, and underscores allowed">
                     </div>
-                    <label class="label">
-                        <span class="label-text-alt text-warning">Used in code (cannot be changed after creation)</span>
-                    </label>
                 </div>
                 
-                <div class="form-control">
+                <div class="form-control flex-1 min-w-[150px]">
                     <label class="label">
                         <span class="label-text">Role Name <span class="text-error">*</span></span>
                     </label>
@@ -51,14 +48,14 @@ include '../common/layout.php'; ?>
                     </div>
                 </div>
                 
-                <div class="form-control">
+                <div class="form-control flex-1 min-w-[150px]">
                     <label class="label">
                         <span class="label-text">Description</span>
                     </label>
-                    <textarea name="description" id="description" class="textarea textarea-bordered" placeholder="Role description"></textarea>
+                    <input type="text" name="description" id="description" class="input input-bordered" placeholder="Role description">
                 </div>
                 
-                <div class="form-control">
+                <div class="form-control min-w-[120px]">
                     <label class="label">
                         <span class="label-text">Display Order</span>
                     </label>
@@ -72,7 +69,7 @@ include '../common/layout.php'; ?>
                     </label>
                 </div>
                 
-                <div class="form-control sm:col-span-2 lg:col-span-3">
+                <div class="form-control">
                     <div class="flex gap-2">
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save"></i>
@@ -254,9 +251,15 @@ include '../common/layout.php'; ?>
                 return;
             }
 
+            // Get CSRF token
+            const csrfResponse = await fetch('../auth/get-csrf-token.php');
+            const csrfData = await csrfResponse.json();
+            const csrfToken = csrfData.status === 'success' ? csrfData.data.csrf_token : '';
+
             const formData = new FormData();
             formData.append('action', 'delete');
             formData.append('id', id);
+            formData.append('csrf_token', csrfToken);
 
             fetch('../api/admin/roles.php', {
                 method: 'POST',
@@ -288,11 +291,17 @@ include '../common/layout.php'; ?>
         });
 
         // Form submit
-        document.getElementById('roleForm').addEventListener('submit', (e) => {
+        document.getElementById('roleForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            
+            // Get CSRF token
+            const csrfResponse = await fetch('../auth/get-csrf-token.php');
+            const csrfData = await csrfResponse.json();
+            const csrfToken = csrfData.status === 'success' ? csrfData.data.csrf_token : '';
             
             const formData = new FormData(e.target);
             formData.append('action', editingId ? 'update' : 'create');
+            formData.append('csrf_token', csrfToken);
             if (editingId) {
                 formData.append('id', editingId);
             }

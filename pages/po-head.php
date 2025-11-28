@@ -1,7 +1,7 @@
 <?php include '../common/layout.php'; ?>
     <?php if (!in_array($_SESSION['role'] ?? '', ['PO_Head', 'PO_Team_Member'])): ?>
     <!-- Create PR Button - Above Filter -->
-    <div class="mb-3 flex justify-end">
+    <div class="mb-3 hidden lg:flex justify-end">
         <button id="openCreatePRBtn" class="btn btn-accent shadow-lg">Create PR</button>
     </div>
     <?php endif; ?>

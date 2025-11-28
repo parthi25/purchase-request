@@ -30,10 +30,10 @@ $currentPage = 'buyer-mapping.php';
                 <i class="fas fa-users"></i>
                 <span id="formTitle">Map Buyer</span>
             </h2>
-            <form id="buyerMappingForm" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <form id="buyerMappingForm" class="flex flex-wrap items-end gap-3">
                 <input type="hidden" name="id" id="mappingId">
                 
-                <div class="form-control">
+                <div class="form-control flex-1 min-w-[200px]">
                     <label class="label">
                         <span class="label-text">Buyer Head <span class="text-error">*</span></span>
                     </label>
@@ -45,7 +45,7 @@ $currentPage = 'buyer-mapping.php';
                     </div>
                 </div>
                 
-                <div class="form-control">
+                <div class="form-control flex-1 min-w-[200px]">
                     <label class="label">
                         <span class="label-text">Buyer <span class="text-error">*</span></span>
                     </label>
@@ -57,7 +57,7 @@ $currentPage = 'buyer-mapping.php';
                     </div>
                 </div>
                 
-                <div class="form-control sm:col-span-2 lg:col-span-3">
+                <div class="form-control">
                     <div class="flex gap-2">
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save"></i>

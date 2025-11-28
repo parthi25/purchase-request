@@ -30,10 +30,10 @@ $currentPage = 'purchase-type-master.php';
                 <i class="fas fa-tag"></i>
                 <span id="formTitle">Add Purchase Type</span>
             </h2>
-            <form id="purchaseTypeForm" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <form id="purchaseTypeForm" class="flex flex-wrap items-end gap-3">
                 <input type="hidden" name="id" id="purchaseTypeId">
                 
-                <div class="form-control">
+                <div class="form-control flex-1 min-w-[200px]">
                     <label class="label">
                         <span class="label-text">Purchase Type Name <span class="text-error">*</span></span>
                     </label>
@@ -43,7 +43,7 @@ $currentPage = 'purchase-type-master.php';
                     </div>
                 </div>
                 
-                <div class="form-control sm:col-span-2 lg:col-span-3">
+                <div class="form-control">
                     <div class="flex gap-2">
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save"></i>

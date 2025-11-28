@@ -92,7 +92,7 @@ if ($tableCheck && $tableCheck->num_rows > 0) {
     if ($type === 'proforma') {
         $hasPermission = in_array($prStatus, [1, 5]) && in_array($userRole, ['B_Head', 'bhead']);
     } else if ($type === 'po') {
-        $hasPermission = $prStatus === 7 && in_array($userRole, ['PO_Team', 'PO_Team_Member', 'pohead', 'poteammember']);
+        $hasPermission = $prStatus === 7 && in_array($userRole, ['PO_Head', 'PO_Team_Member', 'pohead', 'poteammember']);
     } else if ($type === 'product') {
         $hasPermission = in_array($prStatus, [1, 2, 3, 4, 5]) && in_array($userRole, ['B_Head', 'buyer', 'admin', 'bhead']);
     }

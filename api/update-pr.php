@@ -94,7 +94,7 @@ if ($buyer_id !== null && $buyer_id > 0) {
 
 // Validate po_team exists if provided
 if ($po_team !== null && $po_team > 0) {
-    $userStmt = $conn->prepare("SELECT u.id FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE u.id = ? AND r.role_code = 'PO_Team'");
+    $userStmt = $conn->prepare("SELECT u.id FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE u.id = ? AND r.role_code = 'PO_Head'");
     $userStmt->bind_param("i", $po_team);
     $userStmt->execute();
     $userStmt->store_result();

@@ -1,6 +1,6 @@
 <?php include '../common/layout.php'; ?>
     <!-- Create PR Button - Above Filter -->
-    <div class="mb-3 flex justify-end">
+    <div class="mb-3 hidden lg:flex justify-end">
         <button id="openCreatePRBtn" class="btn btn-accent shadow-lg">Create PR</button>
     </div>
     <div class="bg-base-200 border-base-300 collapse border">

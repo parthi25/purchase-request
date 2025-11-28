@@ -7,7 +7,8 @@ if (!isset($_SESSION["user_id"])) {
     exit;
 }
 
-$role = $_SESSION['role'] ?? 'PO_Head';
+$role = $_SESSION['role'] ?? ''; // Use role_code, not role_name
+$roleName = $_SESSION['role_name'] ?? 'User'; // Keep role_name for display
 $username = $_SESSION['username'] ?? 'User';
 $userid = $_SESSION['user_id'] ?? 0;
 
@@ -20,25 +21,30 @@ $menuItems = [];
 $menuGroups = [];
 
 try {
-    $menuQuery = "SELECT * FROM role_menu_settings 
-                  WHERE role = ? AND is_active = 1 AND is_visible = 1 
-                  ORDER BY menu_group ASC, menu_order ASC, menu_item_label ASC";
-    $menuStmt = $conn->prepare($menuQuery);
-    if ($menuStmt) {
-        $menuStmt->bind_param("s", $role);
-        $menuStmt->execute();
-        $menuResult = $menuStmt->get_result();
+    // Only query if we have a valid role
+    if (!empty($role)) {
+        $menuQuery = "SELECT * FROM role_menu_settings 
+                      WHERE role = ? AND is_active = 1 AND is_visible = 1 
+                      ORDER BY menu_group ASC, menu_order ASC, menu_item_label ASC";
+        $menuStmt = $conn->prepare($menuQuery);
+        if ($menuStmt) {
+            $menuStmt->bind_param("s", $role);
+            $menuStmt->execute();
+            $menuResult = $menuStmt->get_result();
         
-        while ($menuRow = $menuResult->fetch_assoc()) {
-            $menuGroup = $menuRow['menu_group'] ?? 'main';
-            if (!isset($menuGroups[$menuGroup])) {
-                $menuGroups[$menuGroup] = [];
+            while ($menuRow = $menuResult->fetch_assoc()) {
+                $menuGroup = $menuRow['menu_group'] ?? 'main';
+                if (!isset($menuGroups[$menuGroup])) {
+                    $menuGroups[$menuGroup] = [];
+                }
+                $menuGroups[$menuGroup][] = $menuRow;
             }
-            $menuGroups[$menuGroup][] = $menuRow;
+            
+            $menuResult->free();
+            $menuStmt->close();
         }
-        
-        $menuResult->free();
-        $menuStmt->close();
+    } else {
+        error_log("Warning: No role found in session for user ID: " . $userid);
     }
 } catch (Exception $e) {
     error_log("Error loading menu items: " . $e->getMessage());
@@ -70,6 +76,8 @@ try {
         <script src="../assets/js/browser@4.js"></script>
     <script src="../common/js/notifications.js"></script>
     <script src="../assets/js/flatpickr.min.js"></script>
+    <script src="../common/js/status-badges.js"></script>
+    <script src="../common/js/page-loader.js"></script>
     <!-- Favicon -->
     <link rel="shortcut icon" href="../assets/brand/favicon.ico" type="image/x-icon">
 </head>
@@ -110,6 +118,8 @@ try {
                         
                         // Fallback: If no menu items found, show basic menu
                         if (empty($menuGroups)) {
+                            // Log for debugging
+                            error_log("No menu items found for role: " . htmlspecialchars($role ?? 'unknown'));
                             echo '<li><a href="dashboard.php">Dashboard</a></li>';
                             echo '<li><a href="profile.php">Profile</a></li>';
                         }
@@ -176,6 +186,74 @@ try {
                 </div>
             </div>
 
-            <!-- Page Content -->
-            <main class="flex-1 p-4 lg:p-6">
+            <!-- Page Loader (Skeleton) -->
+            <div id="pageLoader" class="flex-1 p-4 lg:p-6">
+                <div class="space-y-6 animate-pulse">
+                    <!-- Header Skeleton -->
+                    <div class="flex justify-between items-center mb-6">
+                        <div class="skeleton h-10 w-48"></div>
+                        <div class="skeleton h-10 w-32"></div>
+                    </div>
+                    
+                    <!-- Filter/Controls Skeleton -->
+                    <div class="card bg-base-100 shadow-xl">
+                        <div class="card-body">
+                            <div class="flex flex-wrap gap-4">
+                                <div class="skeleton h-12 w-48"></div>
+                                <div class="skeleton h-12 w-64"></div>
+                                <div class="skeleton h-12 w-32"></div>
+                                <div class="skeleton h-12 w-24"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Card/Stats Skeletons -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div class="card bg-base-100 shadow-xl">
+                            <div class="card-body">
+                                <div class="skeleton h-6 w-32 mb-2"></div>
+                                <div class="skeleton h-8 w-24 mb-2"></div>
+                                <div class="skeleton h-4 w-20"></div>
+                            </div>
+                        </div>
+                        <div class="card bg-base-100 shadow-xl">
+                            <div class="card-body">
+                                <div class="skeleton h-6 w-32 mb-2"></div>
+                                <div class="skeleton h-8 w-24 mb-2"></div>
+                                <div class="skeleton h-4 w-20"></div>
+                            </div>
+                        </div>
+                        <div class="card bg-base-100 shadow-xl">
+                            <div class="card-body">
+                                <div class="skeleton h-6 w-32 mb-2"></div>
+                                <div class="skeleton h-8 w-24 mb-2"></div>
+                                <div class="skeleton h-4 w-20"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Table/Content Skeleton -->
+                    <div class="card bg-base-100 shadow-xl">
+                        <div class="card-body">
+                            <div class="skeleton h-8 w-64 mb-4"></div>
+                            <div class="space-y-3">
+                                <div class="skeleton h-12 w-full"></div>
+                                <div class="skeleton h-12 w-full"></div>
+                                <div class="skeleton h-12 w-full"></div>
+                                <div class="skeleton h-12 w-full"></div>
+                                <div class="skeleton h-12 w-full"></div>
+                                <div class="skeleton h-12 w-full"></div>
+                            </div>
+                            <div class="flex justify-center gap-2 mt-4">
+                                <div class="skeleton h-10 w-10"></div>
+                                <div class="skeleton h-10 w-10"></div>
+                                <div class="skeleton h-10 w-10"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page Content (Hidden initially) -->
+            <main id="pageContent" class="flex-1 p-4 lg:p-6 hidden">
 

@@ -36,6 +36,69 @@ $currentPage = 'edit-pr.php';
         </div>
     </div>
 
+    <!-- PR List Table Card -->
+    <div class="card bg-base-100 shadow-xl mb-6">
+        <div class="card-body">
+            <h2 class="card-title mb-4 capitalize">
+                <i class="fas fa-list"></i>
+                Purchase Requests List
+            </h2>
+            
+            <!-- Search and Filter -->
+            <div class="form-control mb-4">
+                <div class="join w-full">
+                    <input type="text" id="tableSearchInput" class="input input-bordered join-item flex-1" placeholder="Search by ID, Supplier, Category, or Status...">
+                    <button type="button" id="tableSearchBtn" class="btn btn-primary join-item">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                    <button type="button" id="tableResetBtn" class="btn btn-outline join-item">
+                        <i class="fas fa-redo"></i> Reset
+                    </button>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="overflow-x-auto">
+                <table class="table table-zebra w-full">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Supplier</th>
+                            <th>Category</th>
+                            <th>Status</th>
+                            <th>Buyer Head</th>
+                            <th>Buyer</th>
+                            <th>Qty</th>
+                            <th>UOM</th>
+                            <th>Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="prTableBody">
+                        <tr>
+                            <td colspan="10" class="text-center">
+                                <span class="loading loading-spinner loading-lg"></span>
+                                <p class="mt-2">Loading PRs...</p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div id="paginationContainer" class="flex justify-center items-center gap-2 mt-4">
+                <!-- Pagination will be rendered here -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="text-center py-8 hidden">
+                <i class="fas fa-inbox text-6xl text-base-content opacity-20 mb-4"></i>
+                <h5 class="text-xl font-semibold">No PRs found</h5>
+                <p>Try adjusting your search criteria</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Edit Form Card (Hidden initially) -->
     <div class="card bg-base-100 shadow-xl mb-6 hidden" id="editFormCard">
         <div class="card-body">
@@ -598,6 +661,186 @@ document.getElementById('deleteBtn').addEventListener('click', async function() 
     }
 });
 
+// Table pagination variables
+let currentTablePage = 1;
+let tableSearchQuery = '';
+const itemsPerPage = 10;
+
+// Load PRs table
+async function loadPRsTable(page = 1, search = '') {
+    currentTablePage = page;
+    tableSearchQuery = search || document.getElementById('tableSearchInput').value.trim();
+    
+    const tbody = document.getElementById('prTableBody');
+    const emptyState = document.getElementById('emptyState');
+    const paginationContainer = document.getElementById('paginationContainer');
+    
+    // Show loading
+    tbody.innerHTML = `
+        <tr>
+            <td colspan="10" class="text-center">
+                <span class="loading loading-spinner loading-lg"></span>
+                <p class="mt-2">Loading PRs...</p>
+            </td>
+        </tr>
+    `;
+    
+    try {
+        const url = `../fetch/api/list-prs.php?page=${page}&per_page=${itemsPerPage}${tableSearchQuery ? '&search=' + encodeURIComponent(tableSearchQuery) : ''}`;
+        const res = await fetch(url);
+        const json = await res.json();
+        
+        if (json.status !== 'success') {
+            throw new Error(json.message || 'Failed to load PRs');
+        }
+        
+        const data = json.data.data || [];
+        const pagination = json.data.pagination || {};
+        
+        if (data.length === 0) {
+            tbody.innerHTML = '';
+            emptyState.classList.remove('hidden');
+            paginationContainer.innerHTML = '';
+            return;
+        }
+        
+        emptyState.classList.add('hidden');
+        
+        // Render table rows
+        tbody.innerHTML = data.map(pr => `
+            <tr class="hover cursor-pointer" onclick="selectPRFromTable(${pr.id})">
+                <td><strong>${pr.id}</strong></td>
+                <td>${pr.supplier}</td>
+                <td>${pr.category}</td>
+                <td>
+                    <span class="badge badge-primary">${pr.status}</span>
+                </td>
+                <td>${pr.buyer_head}</td>
+                <td>${pr.buyer}</td>
+                <td>${pr.qty}</td>
+                <td>${pr.uom}</td>
+                <td>${new Date(pr.created_at).toLocaleDateString()}</td>
+                <td>
+                    <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); selectPRFromTable(${pr.id})">
+                        <i class="fas fa-edit"></i> Edit
+                    </button>
+                </td>
+            </tr>
+        `).join('');
+        
+        // Render pagination
+        renderTablePagination(pagination);
+        
+    } catch (err) {
+        console.error('Error loading PRs table:', err);
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="10" class="text-center text-error">
+                    <i class="fas fa-exclamation-circle"></i> Failed to load PRs
+                </td>
+            </tr>
+        `;
+        paginationContainer.innerHTML = '';
+    }
+}
+
+// Render pagination controls
+function renderTablePagination(pagination) {
+    const container = document.getElementById('paginationContainer');
+    
+    if (!pagination || pagination.total_pages <= 1) {
+        container.innerHTML = '';
+        return;
+    }
+    
+    const current = pagination.current_page || 1;
+    const total = pagination.total_pages || 1;
+    
+    let html = '<div class="join">';
+    
+    // Previous button
+    if (pagination.has_prev) {
+        html += `<button class="join-item btn btn-sm" onclick="loadPRsTable(${current - 1})">«</button>`;
+    } else {
+        html += `<button class="join-item btn btn-sm btn-disabled">«</button>`;
+    }
+    
+    // Page numbers
+    const maxPages = 5;
+    let startPage = Math.max(1, current - Math.floor(maxPages / 2));
+    let endPage = Math.min(total, startPage + maxPages - 1);
+    
+    if (endPage - startPage < maxPages - 1) {
+        startPage = Math.max(1, endPage - maxPages + 1);
+    }
+    
+    if (startPage > 1) {
+        html += `<button class="join-item btn btn-sm" onclick="loadPRsTable(1)">1</button>`;
+        if (startPage > 2) {
+            html += `<button class="join-item btn btn-sm btn-disabled">...</button>`;
+        }
+    }
+    
+    for (let i = startPage; i <= endPage; i++) {
+        if (i === current) {
+            html += `<button class="join-item btn btn-sm btn-active">${i}</button>`;
+        } else {
+            html += `<button class="join-item btn btn-sm" onclick="loadPRsTable(${i})">${i}</button>`;
+        }
+    }
+    
+    if (endPage < total) {
+        if (endPage < total - 1) {
+            html += `<button class="join-item btn btn-sm btn-disabled">...</button>`;
+        }
+        html += `<button class="join-item btn btn-sm" onclick="loadPRsTable(${total})">${total}</button>`;
+    }
+    
+    // Next button
+    if (pagination.has_next) {
+        html += `<button class="join-item btn btn-sm" onclick="loadPRsTable(${current + 1})">»</button>`;
+    } else {
+        html += `<button class="join-item btn btn-sm btn-disabled">»</button>`;
+    }
+    
+    html += '</div>';
+    html += `<div class="ml-4 text-sm text-base-content opacity-70">Page ${current} of ${total} (${pagination.total_items} total)</div>`;
+    
+    container.innerHTML = html;
+}
+
+// Select PR from table
+async function selectPRFromTable(prId) {
+    // Set search input and trigger search
+    document.getElementById('searchRefId').value = prId;
+    await searchPR();
+    
+    // Scroll to edit form
+    const editFormCard = document.getElementById('editFormCard');
+    if (editFormCard) {
+        editFormCard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+// Table search button
+document.getElementById('tableSearchBtn').addEventListener('click', function() {
+    loadPRsTable(1);
+});
+
+// Table reset button
+document.getElementById('tableResetBtn').addEventListener('click', function() {
+    document.getElementById('tableSearchInput').value = '';
+    loadPRsTable(1, '');
+});
+
+// Table search input enter key
+document.getElementById('tableSearchInput').addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        loadPRsTable(1);
+    }
+});
+
 // Initialize
 $(document).ready(function() {
     fetchPurchaseTypes();
@@ -605,6 +848,7 @@ $(document).ready(function() {
     fetchPOTeam();
     fetchPOTeamMembers();
     fetchStatuses();
+    loadPRsTable(); // Load PRs table on page load
 });
 </script>
 

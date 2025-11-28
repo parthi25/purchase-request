@@ -49,6 +49,11 @@ try {
     $buyerStmt->bind_result($buyer);
     $buyerStmt->fetch();
     $buyerStmt->close();
+    
+    // Set buyer to 0 if null (to satisfy NOT NULL constraint)
+    if ($buyer === null) {
+        $buyer = 0;
+    }
 
     // Check if record exists in pr_assignments
     $checkStmt = $conn->prepare("SELECT id FROM pr_assignments WHERE ord_id = ?");
@@ -61,21 +66,21 @@ try {
     if ($checkStmt->num_rows > 0) {
         // Update existing record
         $updateMemberStmt = $conn->prepare("UPDATE pr_assignments 
-                                            SET created_by = ?, po_team_member = ?, buyer = ?, updated_at = ? 
+                                            SET created_by = ?, po_team_member = ?, updated_at = ? 
                                             WHERE ord_id = ?");
         if (!$updateMemberStmt)
             throw new Exception('Failed to prepare pr_assignments update query');
-        $updateMemberStmt->bind_param("iissi", $created_by, $pr_assignments, $buyer, $updated_at, $id);
+        $updateMemberStmt->bind_param("iisi", $created_by, $pr_assignments, $updated_at, $id);
         if (!$updateMemberStmt->execute())
             throw new Exception('Failed to update pr_assignments: ' . $updateMemberStmt->error);
     } else {
         // Insert new record
         $insertStmt = $conn->prepare("INSERT INTO pr_assignments 
-                                      (created_by, po_team_member, created_at, updated_at, ord_id) 
-                                      VALUES (?, ?, ?, ?, ?)");
+                                      (created_by, po_team_member, created_at, updated_at, ord_id, buyer) 
+                                      VALUES (?, ?, ?, ?, ?, ?)");
         if (!$insertStmt)
             throw new Exception('Failed to prepare pr_assignments insert query');
-        $insertStmt->bind_param("iissi", $created_by, $pr_assignments, $created_at, $updated_at, $id);
+        $insertStmt->bind_param("iissii", $created_by, $pr_assignments, $created_at, $updated_at, $id, $buyer);
         if (!$insertStmt->execute())
             throw new Exception('Failed to insert pr_assignments: ' . $insertStmt->error);
     }

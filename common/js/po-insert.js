@@ -92,11 +92,28 @@ document.addEventListener('DOMContentLoaded', function() {
   insertPOBtn.addEventListener('click', async function() {
     const formData = new FormData(poInsertForm);
     const recordId = document.getElementById('po-selectedRecordId').value;
+    const poFileInput = document.getElementById('po-file');
 
     formData.append('ids', recordId);
     formData.append('statusSelect', '9'); // Assuming status for PO insertion
     formData.append('poTeamInput', ''); // Add logic if needed
     formData.append('buyerInput', document.getElementById('po-Buyer').value);
+
+    // Add file if selected
+    if (poFileInput.files.length > 0) {
+      formData.append('po_file', poFileInput.files[0]);
+    }
+
+    // Get CSRF token
+    try {
+      const csrfResponse = await fetch('../auth/get-csrf-token.php');
+      const csrfData = await csrfResponse.json();
+      if (csrfData.status === 'success') {
+        formData.append('csrf_token', csrfData.data.csrf_token);
+      }
+    } catch (error) {
+      console.error('Error fetching CSRF token:', error);
+    }
 
     try {
       insertPOBtn.disabled = true;

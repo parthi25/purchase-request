@@ -122,7 +122,13 @@ function renderCards(dataArray, role = 'buyer', containerId = 'cardContainer') {
     }
 
     dataArray.forEach(item => {
-        const statusBadge = config.statusBadges?.[String(item.po_status)] || '';
+        // Use database statuses if available, otherwise fallback to config
+        let statusBadge = '';
+        if (window.StatusBadges) {
+            statusBadge = window.StatusBadges.getBadge(item.po_status, 'card');
+        } else {
+            statusBadge = config.statusBadges?.[String(item.po_status)] || '';
+        }
 
         // Map API fields to card renderer expected fields
         const mappedItem = {

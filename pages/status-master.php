@@ -16,44 +16,30 @@ if (!in_array($_SESSION['role'], ['super_admin', 'master'])) {
 $role = $_SESSION['role'] ?? '';
 $username = $_SESSION['username'] ?? 'User';
 $userid = $_SESSION['user_id'] ?? 0;
-$currentPage = 'buyer-category-mapping.php';
+$currentPage = 'status-master.php';
 ?>
 <?php include '../common/layout.php'; ?>
     <div class="flex justify-between items-center mb-4 sm:mb-6">
-        <h1 class="text-2xl sm:text-3xl font-bold">Buyer Category Mapping</h1>
+        <h1 class="text-2xl sm:text-3xl font-bold">Status Master</h1>
     </div>
 
     <!-- Form Card -->
     <div class="card bg-base-100 shadow-xl mb-6">
         <div class="card-body">
             <h2 class="card-title mb-4 capitalize">
-                <i class="fas fa-link"></i>
-                <span id="formTitle">Map Category to Buyer</span>
+                <i class="fas fa-flag"></i>
+                <span id="formTitle">Add Status</span>
             </h2>
-            <form id="mappingForm" class="flex flex-wrap items-end gap-3">
-                <input type="hidden" name="id" id="mappingId">
+            <form id="statusForm" class="flex flex-wrap items-end gap-3">
+                <input type="hidden" name="id" id="statusId">
                 
                 <div class="form-control flex-1 min-w-[200px]">
                     <label class="label">
-                        <span class="label-text">Buyer <span class="text-error">*</span></span>
+                        <span class="label-text">Status Name <span class="text-error">*</span></span>
                     </label>
                     <div class="join w-full">
-                        <span class="join-item btn btn-disabled bg-base-200"><i class="fas fa-user"></i></span>
-                        <select name="buyer_id" id="buyer_id" class="select select-bordered join-item flex-1" required>
-                            <option value="">Select Buyer</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="form-control flex-1 min-w-[200px]">
-                    <label class="label">
-                        <span class="label-text">Category <span class="text-error">*</span></span>
-                    </label>
-                    <div class="join w-full">
-                        <span class="join-item btn btn-disabled bg-base-200"><i class="fas fa-tag"></i></span>
-                        <select name="category_id" id="category_id" class="select select-bordered join-item flex-1" required>
-                            <option value="">Select Category</option>
-                        </select>
+                        <span class="join-item btn btn-disabled bg-base-200"><i class="fas fa-flag"></i></span>
+                        <input type="text" name="status" id="status" class="input input-bordered join-item flex-1" required placeholder="Enter status name">
                     </div>
                 </div>
                 
@@ -61,7 +47,7 @@ $currentPage = 'buyer-category-mapping.php';
                     <div class="flex gap-2">
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save"></i>
-                            <span id="submitBtnText">Add Mapping</span>
+                            <span id="submitBtnText">Add Status</span>
                         </button>
                         <button type="button" class="btn btn-ghost" id="cancelBtn" style="display: none;">
                             <i class="fas fa-times"></i>
@@ -79,13 +65,13 @@ $currentPage = 'buyer-category-mapping.php';
         </div>
     </div>
 
-    <!-- Mappings Table -->
+    <!-- Statuses Table -->
     <div class="card bg-base-100 shadow-xl">
         <div class="card-body">
             <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
                 <h2 class="card-title capitalize">
                     <i class="fas fa-list"></i>
-                    Buyer Category Mappings
+                    Statuses
                 </h2>
                 <div class="flex gap-2">
                     <div class="dropdown dropdown-end">
@@ -100,7 +86,7 @@ $currentPage = 'buyer-category-mapping.php';
                     <button id="refreshBtn" class="btn btn-outline btn-sm sm:btn-md">
                         <i class="fas fa-sync-alt"></i>
                     </button>
-                    <input type="text" id="searchInput" placeholder="Search mappings..." class="input input-bordered w-64">
+                    <input type="text" id="searchInput" placeholder="Search statuses..." class="input input-bordered w-64">
                 </div>
             </div>
             
@@ -109,14 +95,13 @@ $currentPage = 'buyer-category-mapping.php';
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Buyer</th>
-                            <th>Category</th>
+                            <th>Status Name</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="mappingTableBody">
+                    <tbody id="statusTableBody">
                         <tr>
-                            <td colspan="4" class="text-center">Loading...</td>
+                            <td colspan="3" class="text-center">Loading...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -127,24 +112,35 @@ $currentPage = 'buyer-category-mapping.php';
             </div>
         </div>
     </div>
+    
+    <!-- Hidden table for exports -->
+    <table id="exportTable" class="hidden">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Status Name</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 <script>
-let currentPage = 1;
-let searchTimeout = null;
-const itemsPerPage = 10;
-
-$("#mappingForm").submit(function(e) {
+$("#statusForm").submit(function(e) {
     e.preventDefault();
     const formData = new FormData(this);
-    const action = $("#mappingId").val() ? "update" : "create";
+    const action = $("#statusId").val() ? "update" : "create";
+    const statusName = $("#status").val();
 
     (async () => {
         const confirmResult = await showConfirm(
-            action === "create" ? 'Confirm Mapping' : 'Update Mapping',
-            action === "create" ? 'Create this buyer-category mapping?' : 'Update this buyer-category mapping?',
-            'Yes, save it!',
+            action === "create" ? 'Add New Status?' : 'Update Status?',
+            action === "create" 
+                ? `Add "${statusName}" as a new status?` 
+                : `Update this status to "${statusName}"?`,
+            action === "create" ? 'Yes, add it!' : 'Yes, update it!',
             'Cancel'
         );
         
@@ -156,7 +152,7 @@ $("#mappingForm").submit(function(e) {
             formData.append('csrf_token', csrfToken);
             
             $.ajax({
-                url: "../api/admin/buyer-category-mapping.php",
+                url: "../api/admin/statuses.php",
                 type: "POST",
                 data: formData,
                 processData: false,
@@ -165,7 +161,13 @@ $("#mappingForm").submit(function(e) {
                     if (response.status === 'success') {
                         showToast(response.message, 'success', 2000);
                         resetForm();
-                        loadMappings();
+                        loadStatuses();
+                        // Clear status badge cache to force refresh
+                        if (window.StatusBadges) {
+                            window.StatusBadges.fetchStatuses().then(() => {
+                                window.StatusBadges.init();
+                            });
+                        }
                     } else {
                         showToast(response.message || 'An error occurred', 'error');
                     }
@@ -179,19 +181,21 @@ $("#mappingForm").submit(function(e) {
 });
 
 $("#deleteBtn").click(function() {
-    deleteMapping();
+    deleteStatus();
 });
 
-async function deleteMapping() {
-    const id = $("#mappingId").val();
+async function deleteStatus() {
+    const id = $("#statusId").val();
     if (!id) {
-        showToast('Please select a mapping to delete first.', 'warning');
+        showToast('Please select a status to delete first.', 'warning');
         return;
     }
 
+    const statusName = $("#status").val();
+
     const confirmResult = await showConfirm(
-        'Delete Mapping?',
-        'This will permanently delete this buyer-category mapping.',
+        'Delete Status?',
+        `This will permanently delete the status: ${statusName}\n\nWarning: This action cannot be undone!`,
         'Yes, delete it!',
         'Cancel'
     );
@@ -202,106 +206,81 @@ async function deleteMapping() {
         const csrfData = await csrfResponse.json();
         const csrfToken = csrfData.status === 'success' ? csrfData.data.csrf_token : '';
         
-        $.post("../api/admin/buyer-category-mapping.php", { 
+        $.post("../api/admin/statuses.php", { 
             delete_id: id,
             csrf_token: csrfToken
         }, function(response) {
             if (response.status === 'success') {
                 showToast(response.message, 'success', 2000);
                 resetForm();
-                loadMappings();
+                loadStatuses();
+                // Clear status badge cache to force refresh
+                if (window.StatusBadges) {
+                    window.StatusBadges.fetchStatuses().then(() => {
+                        window.StatusBadges.init();
+                    });
+                }
             } else {
-                showToast(response.message || 'Failed to delete mapping', 'error');
+                showToast(response.message || 'Failed to delete status', 'error');
             }
         }, 'json');
     }
 }
 
 function resetForm() {
-    $("#mappingForm")[0].reset();
-    $("#mappingId").val('');
-    $("#formTitle").text('Map Category to Buyer');
-    $("#submitBtnText").text('Add Mapping');
+    $("#statusForm")[0].reset();
+    $("#statusId").val('');
+    $("#formTitle").text('Add Status');
+    $("#submitBtnText").text('Add Status');
     $("#cancelBtn").hide();
     $("#deleteBtn").hide();
 }
-
-$("#resetBtn").click(function() {
-    resetForm();
-});
 
 $("#cancelBtn").click(function() {
     resetForm();
 });
 
-function loadBuyers() {
-    $.getJSON("../api/admin/get-users.php?role=buyer", function(data) {
-        if (data.status === 'success') {
-            const select = $("#buyer_id");
-            select.empty();
-            select.append($("<option>", {value: "", text: "Select Buyer"}));
-            
-            data.data.forEach(user => {
-                select.append($("<option>", {
-                    value: user.id,
-                    text: user.fullname
-                }));
-            });
-        }
-    });
-}
+$("#resetBtn").click(function() {
+    resetForm();
+});
 
-function loadCategories() {
-    $.getJSON("../api/admin/categories.php?limit=1000", function(data) {
-        if (data.status === 'success') {
-            const responseData = data.data || {};
-            const categories = responseData.data || data.data || [];
-            const select = $("#category_id");
-            select.empty();
-            select.append($("<option>", {value: "", text: "Select Category"}));
-            
-            categories.forEach(cat => {
-                select.append($("<option>", {
-                    value: cat.id,
-                    text: cat.maincat
-                }));
-            });
-        }
-    });
-}
+let currentPage = 1;
+let searchTimeout = null;
+const itemsPerPage = 10;
 
-function loadMappings(page = 1, search = '') {
+function loadStatuses(page = 1, search = '') {
     const searchValue = search || $("#searchInput").val().trim();
-    const url = `../api/admin/buyer-category-mapping.php?page=${page}&limit=${itemsPerPage}${searchValue ? '&search=' + encodeURIComponent(searchValue) : ''}`;
+    const url = `../api/admin/statuses.php?page=${page}&limit=${itemsPerPage}${searchValue ? '&search=' + encodeURIComponent(searchValue) : ''}`;
     
     $.getJSON(url, function(data) {
         if (data.status === 'success') {
             const responseData = data.data || {};
-            const mappings = responseData.data || [];
+            const statuses = responseData.data || [];
             const pagination = responseData.pagination || {};
-            const tbody = $("#mappingTableBody");
+            const tbody = $("#statusTableBody");
+            const exportTable = $("#exportTable tbody");
             
             tbody.empty();
+            exportTable.empty();
             
             currentPage = pagination.current_page || page;
             
-            if (mappings.length === 0) {
-                tbody.html('<tr><td colspan="4" class="text-center">No mappings found</td></tr>');
+            if (statuses.length === 0) {
+                tbody.html('<tr><td colspan="3" class="text-center">No statuses found</td></tr>');
                 renderPagination(pagination);
                 return;
             }
 
-            tbody.html(mappings.map(row => `
+            tbody.html(statuses.map(status => `
                 <tr>
-                    <td>${row.id}</td>
-                    <td><strong>${row.buyer_name}</strong></td>
-                    <td>${row.category_name}</td>
+                    <td>${status.id}</td>
+                    <td><strong>${status.status}</strong></td>
                     <td>
                         <div class="flex gap-2">
-                            <button class="btn btn-sm btn-primary edit-btn" data-id="${row.id}">
+                            <button class="btn btn-sm btn-primary edit-btn" data-id="${status.id}">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="btn btn-sm btn-error delete-btn" data-id="${row.id}">
+                            <button class="btn btn-sm btn-error delete-btn" data-id="${status.id}">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -309,10 +288,36 @@ function loadMappings(page = 1, search = '') {
                 </tr>
             `).join(''));
             
+            // For export, we need all data - fetch without pagination
+            if (searchValue) {
+                $.getJSON(`../api/admin/statuses.php?search=${encodeURIComponent(searchValue)}`, function(exportData) {
+                    if (exportData.status === 'success') {
+                        const allStatuses = exportData.data?.data || [];
+                        allStatuses.forEach(status => {
+                            exportTable.append(`
+                                <tr>
+                                    <td>${status.id}</td>
+                                    <td>${status.status}</td>
+                                </tr>
+                            `);
+                        });
+                    }
+                });
+            } else {
+                statuses.forEach(status => {
+                    exportTable.append(`
+                        <tr>
+                            <td>${status.id}</td>
+                            <td>${status.status}</td>
+                        </tr>
+                    `);
+                });
+            }
+            
             renderPagination(pagination);
         }
-    }, 'json').fail(function() {
-        showToast('Failed to load mappings', 'error');
+    }).fail(function() {
+        showToast('Failed to load statuses', 'error');
     });
 }
 
@@ -329,12 +334,14 @@ function renderPagination(pagination) {
     
     let paginationHTML = '<div class="join">';
     
+    // Previous button
     if (current > 1) {
-        paginationHTML += `<button class="join-item btn btn-sm" onclick="loadMappings(${current - 1})">«</button>`;
+        paginationHTML += `<button class="join-item btn btn-sm" onclick="loadStatuses(${current - 1})">«</button>`;
     } else {
         paginationHTML += `<button class="join-item btn btn-sm btn-disabled">«</button>`;
     }
     
+    // Page numbers
     const maxPages = 5;
     let startPage = Math.max(1, current - Math.floor(maxPages / 2));
     let endPage = Math.min(total, startPage + maxPages - 1);
@@ -344,7 +351,7 @@ function renderPagination(pagination) {
     }
     
     if (startPage > 1) {
-        paginationHTML += `<button class="join-item btn btn-sm" onclick="loadMappings(1)">1</button>`;
+        paginationHTML += `<button class="join-item btn btn-sm" onclick="loadStatuses(1)">1</button>`;
         if (startPage > 2) {
             paginationHTML += `<button class="join-item btn btn-sm btn-disabled">...</button>`;
         }
@@ -354,7 +361,7 @@ function renderPagination(pagination) {
         if (i === current) {
             paginationHTML += `<button class="join-item btn btn-sm btn-active">${i}</button>`;
         } else {
-            paginationHTML += `<button class="join-item btn btn-sm" onclick="loadMappings(${i})">${i}</button>`;
+            paginationHTML += `<button class="join-item btn btn-sm" onclick="loadStatuses(${i})">${i}</button>`;
         }
     }
     
@@ -362,11 +369,12 @@ function renderPagination(pagination) {
         if (endPage < total - 1) {
             paginationHTML += `<button class="join-item btn btn-sm btn-disabled">...</button>`;
         }
-        paginationHTML += `<button class="join-item btn btn-sm" onclick="loadMappings(${total})">${total}</button>`;
+        paginationHTML += `<button class="join-item btn btn-sm" onclick="loadStatuses(${total})">${total}</button>`;
     }
     
+    // Next button
     if (current < total) {
-        paginationHTML += `<button class="join-item btn btn-sm" onclick="loadMappings(${current + 1})">»</button>`;
+        paginationHTML += `<button class="join-item btn btn-sm" onclick="loadStatuses(${current + 1})">»</button>`;
     } else {
         paginationHTML += `<button class="join-item btn btn-sm btn-disabled">»</button>`;
     }
@@ -378,146 +386,115 @@ function renderPagination(pagination) {
 }
 
 // Make functions global for event delegation
-window.editMapping = function(id) {
-    $.getJSON("../api/admin/buyer-category-mapping.php?limit=1000", function(data) {
+window.editStatus = function(id) {
+    // Fetch all statuses to find the one to edit
+    $.getJSON("../api/admin/statuses.php?limit=1000", function(data) {
         if (data.status === 'success') {
             const responseData = data.data || {};
-            const mappings = responseData.data || data.data || [];
-            const row = mappings.find(r => r.id == id);
-            if (!row) {
-                showToast('Mapping not found', 'error');
+            const statuses = responseData.data || data.data || [];
+            const status = statuses.find(s => s.id == id);
+            if (!status) {
+                showToast('Status not found', 'error');
                 return;
             }
             
-            $("#mappingId").val(row.id);
-            $("#formTitle").text('Edit Mapping');
-            $("#submitBtnText").text('Update Mapping');
+            $("#statusId").val(status.id);
+            $("#status").val(status.status);
+            $("#formTitle").text('Edit Status');
+            $("#submitBtnText").text('Update Status');
             $("#cancelBtn").show();
             $("#deleteBtn").show();
             
-            ensureOptionExists("#buyer_id", row.buyer_id, row.buyer_name);
-            $("#buyer_id").val(row.buyer_id);
-            
-            ensureOptionExists("#category_id", row.category_id, row.category_name);
-            $("#category_id").val(row.category_id);
-            
-            $("#mappingForm").scrollIntoView({ behavior: 'smooth', block: 'start' });
+            $("#statusForm")[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     });
 };
 
-window.deleteMappingById = function(id) {
-    $("#mappingId").val(id);
-    deleteMapping();
+window.deleteStatusById = function(id) {
+    // Fetch all statuses to find the one to delete
+    $.getJSON("../api/admin/statuses.php?limit=1000", function(data) {
+        if (data.status === 'success') {
+            const responseData = data.data || {};
+            const statuses = responseData.data || data.data || [];
+            const status = statuses.find(s => s.id == id);
+            if (!status) {
+                showToast('Status not found', 'error');
+                return;
+            }
+            
+            $("#statusId").val(status.id);
+            $("#status").val(status.status);
+            deleteStatus();
+        }
+    });
 };
 
-function ensureOptionExists(selectId, value, text) {
-    const select = $(selectId);
-    if (select.find(`option[value="${value}"]`).length === 0) {
-        select.append($("<option>", {
-            value: value,
-            text: text
-        }));
-    }
-}
-
-$("#searchInput").on("keyup", function() {
-    clearTimeout(searchTimeout);
-    const value = $(this).val().trim();
-    searchTimeout = setTimeout(function() {
-        loadMappings(1, value);
-    }, 500);
-});
-
-// Event delegation for edit and delete buttons
-$(document).on('click', '.edit-btn', function(e) {
-    e.preventDefault();
-    const id = $(this).data('id');
-    if (id) {
-        window.editMapping(id);
-    }
-});
-
-$(document).on('click', '.delete-btn', function(e) {
-    e.preventDefault();
-    const id = $(this).data('id');
-    if (id) {
-        window.deleteMappingById(id);
-    }
-});
-
-$("#refreshBtn").click(function() {
-    $(this).find('i').addClass('fa-spin');
-    loadMappings(currentPage);
-    setTimeout(() => {
-        $(this).find('i').removeClass('fa-spin');
-    }, 700);
-});
-
 function exportToExcel() {
+    // Check if XLSX is available
     if (typeof XLSX === 'undefined') {
         showToast('Excel export library not loaded. Please refresh the page.', 'error');
         return;
     }
     
     const searchValue = $("#searchInput").val().trim();
-    const url = `../api/admin/buyer-category-mapping.php?limit=10000${searchValue ? '&search=' + encodeURIComponent(searchValue) : ''}`;
+    const url = `../api/admin/statuses.php?limit=10000${searchValue ? '&search=' + encodeURIComponent(searchValue) : ''}`;
     
     $.getJSON(url, function(data) {
         if (data.status === 'success') {
             const responseData = data.data || {};
-            const mappings = responseData.data || data.data || [];
+            const statuses = responseData.data || data.data || [];
             
-            if (mappings.length === 0) {
-                showToast('No mappings found to export', 'warning');
+            if (statuses.length === 0) {
+                showToast('No statuses found to export', 'warning');
                 return;
             }
             
             try {
-                const headers = [['ID', 'Buyer', 'Category']];
-                const rows = mappings.map(row => [row.id, row.buyer_name, row.category_name]);
+                const headers = [['ID', 'Status Name']];
+                const rows = statuses.map(status => [status.id, status.status]);
                 const ws = XLSX.utils.aoa_to_sheet([...headers, ...rows]);
                 const wb = XLSX.utils.book_new();
-                XLSX.utils.book_append_sheet(wb, ws, "Mappings");
+                XLSX.utils.book_append_sheet(wb, ws, "Statuses");
                 const date = new Date();
                 const dateStr = date.toISOString().split('T')[0];
-                XLSX.writeFile(wb, `Buyer_Category_Mappings_${dateStr}.xlsx`);
+                XLSX.writeFile(wb, `Statuses_${dateStr}.xlsx`);
                 
-                showToast('Mappings have been exported to Excel', 'success', 1500);
+                showToast('Statuses have been exported to Excel', 'success', 1500);
             } catch (error) {
                 console.error('Export error:', error);
                 showToast('An error occurred while exporting: ' + error.message, 'error');
             }
         }
     }).fail(function() {
-        showToast('Failed to load mappings for export', 'error');
+        showToast('Failed to load statuses for export', 'error');
     });
 }
 
 function exportToCSV() {
+    // Check if FileSaver is available
     if (typeof saveAs === 'undefined') {
         showToast('FileSaver library not loaded. Please refresh the page.', 'error');
         return;
     }
     
     const searchValue = $("#searchInput").val().trim();
-    const url = `../api/admin/buyer-category-mapping.php?limit=10000${searchValue ? '&search=' + encodeURIComponent(searchValue) : ''}`;
+    const url = `../api/admin/statuses.php?limit=10000${searchValue ? '&search=' + encodeURIComponent(searchValue) : ''}`;
     
     $.getJSON(url, function(data) {
         if (data.status === 'success') {
             const responseData = data.data || {};
-            const mappings = responseData.data || data.data || [];
+            const statuses = responseData.data || data.data || [];
             
-            if (mappings.length === 0) {
-                showToast('No mappings found to export', 'warning');
+            if (statuses.length === 0) {
+                showToast('No statuses found to export', 'warning');
                 return;
             }
             
             try {
-                const headers = ['ID', 'Buyer', 'Category'];
-                const csvRows = mappings.map(row => {
-                    const rowData = [row.id, row.buyer_name.replace(/"/g, '""'), row.category_name.replace(/"/g, '""')];
-                    return rowData.map(cell => {
+                const headers = ['ID', 'Status Name'];
+                const csvRows = statuses.map(status => {
+                    const row = [status.id, status.status.replace(/"/g, '""')];
+                    return row.map(cell => {
                         let text = String(cell);
                         if (text.includes(',') || text.includes('"') || text.includes('\n')) {
                             text = `"${text}"`;
@@ -531,16 +508,16 @@ function exportToCSV() {
                 const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
                 const date = new Date();
                 const dateStr = date.toISOString().split('T')[0];
-                saveAs(blob, `Buyer_Category_Mappings_${dateStr}.csv`);
+                saveAs(blob, `Statuses_${dateStr}.csv`);
                 
-                showToast('Mappings have been exported to CSV', 'success', 1500);
+                showToast('Statuses have been exported to CSV', 'success', 1500);
             } catch (error) {
                 console.error('Export error:', error);
                 showToast('An error occurred while exporting: ' + error.message, 'error');
             }
         }
     }).fail(function() {
-        showToast('Failed to load mappings for export', 'error');
+        showToast('Failed to load statuses for export', 'error');
     });
 }
 
@@ -554,10 +531,41 @@ $('#exportCSV').click(function(e) {
     exportToCSV();
 });
 
+$("#searchInput").on("keyup", function() {
+    clearTimeout(searchTimeout);
+    const value = $(this).val().trim();
+    searchTimeout = setTimeout(function() {
+        loadStatuses(1, value);
+    }, 500);
+});
+
+// Event delegation for edit and delete buttons
+$(document).on('click', '.edit-btn', function(e) {
+    e.preventDefault();
+    const id = $(this).data('id');
+    if (id) {
+        window.editStatus(id);
+    }
+});
+
+$(document).on('click', '.delete-btn', function(e) {
+    e.preventDefault();
+    const id = $(this).data('id');
+    if (id) {
+        window.deleteStatusById(id);
+    }
+});
+
+$("#refreshBtn").click(function() {
+    $(this).find('i').addClass('fa-spin');
+    loadStatuses(currentPage);
+    setTimeout(() => {
+        $(this).find('i').removeClass('fa-spin');
+    }, 700);
+});
+
 $(document).ready(function() {
-    loadBuyers();
-    loadCategories();
-    loadMappings();
+    loadStatuses();
 });
 </script>
 

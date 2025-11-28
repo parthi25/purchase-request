@@ -25,38 +25,32 @@ include '../common/layout.php'; ?>
                 <i class="fas fa-cog"></i>
                 <span id="formTitle">Add Initial Page Setting</span>
             </h2>
-            <form id="initialSettingsForm" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <form id="initialSettingsForm" class="flex flex-wrap items-end gap-3">
                 <input type="hidden" name="id" id="settingId">
                 
-                <div class="form-control">
+                <div class="form-control flex-1 min-w-[150px]">
                     <label class="label">
                         <span class="label-text">Role <span class="text-error">*</span></span>
                     </label>
-                    <select name="role" id="settingRole" class="select select-bordered" required>
+                    <select name="role" id="settingRole" class="select select-bordered w-full" required>
                         <option value="">Select Role</option>
                     </select>
                 </div>
                 
-                <div class="form-control">
+                <div class="form-control flex-1 min-w-[200px]">
                     <label class="label">
                         <span class="label-text">Initial Page URL <span class="text-error">*</span></span>
                     </label>
-                    <input type="text" name="initial_page_url" id="initialPageUrl" class="input input-bordered" placeholder="e.g., admin.php" required>
-                    <label class="label">
-                        <span class="label-text-alt">Page to show when user logs in</span>
-                    </label>
+                    <input type="text" name="initial_page_url" id="initialPageUrl" class="input input-bordered w-full" placeholder="e.g., admin.php" required>
                 </div>
                 
-                <div class="form-control">
+                <div class="form-control flex-1 min-w-[150px]">
                     <label class="label">
                         <span class="label-text">Initial Status Filter</span>
                     </label>
-                    <select name="initial_status_filter" id="initialStatusFilter" class="select select-bordered">
+                    <select name="initial_status_filter" id="initialStatusFilter" class="select select-bordered w-full">
                         <option value="">No Filter</option>
                     </select>
-                    <label class="label">
-                        <span class="label-text-alt">Optional: Default status filter to apply</span>
-                    </label>
                 </div>
                 
                 <div class="form-control">
@@ -66,7 +60,7 @@ include '../common/layout.php'; ?>
                     </label>
                 </div>
                 
-                <div class="form-control sm:col-span-2 lg:col-span-3">
+                <div class="form-control">
                     <div class="flex gap-2">
                         <button type="submit" class="btn btn-primary">
                             <i class="fas fa-save"></i>
@@ -295,14 +289,27 @@ include '../common/layout.php'; ?>
         };
 
         // Delete setting - make it global
-        window.deleteSetting = function(id) {
-            if (!confirm('Are you sure you want to delete this initial page setting?')) {
+        window.deleteSetting = async function(id) {
+            const confirmResult = await showConfirm(
+                'Delete Setting?',
+                'Are you sure you want to delete this initial page setting?',
+                'Yes, delete it!',
+                'Cancel'
+            );
+            
+            if (!confirmResult.isConfirmed) {
                 return;
             }
+
+            // Get CSRF token
+            const csrfResponse = await fetch('../auth/get-csrf-token.php');
+            const csrfData = await csrfResponse.json();
+            const csrfToken = csrfData.status === 'success' ? csrfData.data.csrf_token : '';
 
             const formData = new FormData();
             formData.append('action', 'delete');
             formData.append('id', id);
+            formData.append('csrf_token', csrfToken);
 
             fetch('../api/admin/role-initial-settings.php', {
                 method: 'POST',
@@ -334,12 +341,18 @@ include '../common/layout.php'; ?>
         });
 
         // Form submit
-        document.getElementById('initialSettingsForm').addEventListener('submit', (e) => {
+        document.getElementById('initialSettingsForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+            
+            // Get CSRF token
+            const csrfResponse = await fetch('../auth/get-csrf-token.php');
+            const csrfData = await csrfResponse.json();
+            const csrfToken = csrfData.status === 'success' ? csrfData.data.csrf_token : '';
             
             const formData = new FormData(e.target);
             const action = editingId ? 'update' : 'create';
             formData.append('action', action);
+            formData.append('csrf_token', csrfToken);
             
             // Ensure id is set for update
             if (editingId) {

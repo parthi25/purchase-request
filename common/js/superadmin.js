@@ -413,10 +413,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Open permission modal
-    window.openPermissionModal = function(id = null) {
+    window.openPermissionModal = async function(id = null) {
         const modal = document.getElementById('permissionModal');
         const form = document.getElementById('permissionForm');
         const title = document.getElementById('permissionModalTitle');
+        
+        // Get CSRF token
+        try {
+            const response = await fetch('../auth/get-csrf-token.php');
+            const data = await response.json();
+            if (data.status === 'success') {
+                document.getElementById('permissionCsrfToken').value = data.data.csrf_token;
+            }
+        } catch (error) {
+            console.error('Failed to get CSRF token:', error);
+        }
         
         form.reset();
         document.getElementById('permissionId').value = id || '';
@@ -435,10 +446,21 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // Open flow modal
-    window.openFlowModal = function(id = null) {
+    window.openFlowModal = async function(id = null) {
         const modal = document.getElementById('flowModal');
         const form = document.getElementById('flowForm');
         const title = document.getElementById('flowModalTitle');
+        
+        // Get CSRF token
+        try {
+            const response = await fetch('../auth/get-csrf-token.php');
+            const data = await response.json();
+            if (data.status === 'success') {
+                document.getElementById('flowCsrfToken').value = data.data.csrf_token;
+            }
+        } catch (error) {
+            console.error('Failed to get CSRF token:', error);
+        }
         
         form.reset();
         document.getElementById('flowId').value = id || '';
@@ -472,6 +494,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const url = '../api/admin/status-permissions.php';
             const data = {};
             formData.forEach((value, key) => data[key] = value);
+            
+            // Ensure CSRF token is included
+            const csrfToken = document.getElementById('permissionCsrfToken').value;
+            if (csrfToken) {
+                data['csrf_token'] = csrfToken;
+            }
             
             const options = {
                 method: id ? 'PUT' : 'POST',
@@ -509,6 +537,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const url = '../api/admin/status-permissions.php';
             const data = {};
             formData.forEach((value, key) => data[key] = value);
+            
+            // Ensure CSRF token is included
+            const csrfToken = document.getElementById('flowCsrfToken').value;
+            if (csrfToken) {
+                data['csrf_token'] = csrfToken;
+            }
             
             const options = {
                 method: id ? 'PUT' : 'POST',
@@ -615,10 +649,21 @@ document.addEventListener('DOMContentLoaded', function() {
     };
 
     // Open PR permission modal
-    window.openPRPermissionModal = function(id = null) {
+    window.openPRPermissionModal = async function(id = null) {
         const modal = document.getElementById('prPermissionModal');
         const form = document.getElementById('prPermissionForm');
         const title = document.getElementById('prPermissionModalTitle');
+        
+        // Get CSRF token
+        try {
+            const response = await fetch('../auth/get-csrf-token.php');
+            const data = await response.json();
+            if (data.status === 'success') {
+                document.getElementById('prPermissionCsrfToken').value = data.data.csrf_token;
+            }
+        } catch (error) {
+            console.error('Failed to get CSRF token:', error);
+        }
         
         form.reset();
         document.getElementById('prPermissionId').value = id || '';
@@ -659,6 +704,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const url = '../api/admin/status-permissions.php';
             const data = {};
             formData.forEach((value, key) => data[key] = value);
+            
+            // Ensure CSRF token is included
+            const csrfToken = document.getElementById('prPermissionCsrfToken').value;
+            if (csrfToken) {
+                data['csrf_token'] = csrfToken;
+            }
             
             const options = {
                 method: id ? 'PUT' : 'POST',
@@ -772,10 +823,21 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Open Modal Field modal
-    window.openModalFieldModal = function(id = null) {
+    window.openModalFieldModal = async function(id = null) {
         const modal = document.getElementById('modalFieldModal');
         const form = document.getElementById('modalFieldForm');
         const title = document.getElementById('modalFieldModalTitle');
+        
+        // Get CSRF token
+        try {
+            const response = await fetch('../auth/get-csrf-token.php');
+            const data = await response.json();
+            if (data.status === 'success') {
+                document.getElementById('modalFieldCsrfToken').value = data.data.csrf_token;
+            }
+        } catch (error) {
+            console.error('Failed to get CSRF token:', error);
+        }
         
         form.reset();
         document.getElementById('modalFieldId').value = id || '';
@@ -816,6 +878,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const url = '../api/admin/status-permissions.php';
             const data = {};
             formData.forEach((value, key) => data[key] = value);
+            
+            // Ensure CSRF token is included
+            const csrfToken = document.getElementById('modalFieldCsrfToken').value;
+            if (csrfToken) {
+                data['csrf_token'] = csrfToken;
+            }
             
             const options = {
                 method: id ? 'PUT' : 'POST',

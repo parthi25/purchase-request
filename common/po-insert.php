@@ -2,7 +2,7 @@
     <div class="modal-box max-w-lg">
       <h3 class="font-bold text-lg mb-4">Insert PO</h3>
 
-      <form method="dialog" id="poInsertForm" class="space-y-3">
+      <form method="dialog" id="poInsertForm" class="space-y-3" enctype="multipart/form-data">
         <input type="hidden" id="po-selectedRecordId">
 
         <div id="po-ponum">
@@ -54,6 +54,16 @@
             <span class="label-text">PO Date</span>
           </label>
           <input type="text" id="po-PODate" name="PODate" class="input input-bordered w-full" readonly>
+        </div>
+
+        <div>
+          <label class="label">
+            <span class="label-text">PO File <span class="text-warning">(Optional)</span></span>
+          </label>
+          <input type="file" id="po-file" name="po_file" class="file-input file-input-bordered w-full" accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png">
+          <label class="label">
+            <span class="label-text-alt">Accepted formats: PDF, DOC, DOCX, XLS, XLSX, JPG, JPEG, PNG</span>
+          </label>
         </div>
 
         <div class="modal-action">

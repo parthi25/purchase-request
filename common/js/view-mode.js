@@ -405,6 +405,11 @@ console.log("fall backg");
   },
 
   getStatusBadge(status) {
+    // Use database statuses if available, otherwise fallback to hardcoded
+    if (window.StatusBadges) {
+      return window.StatusBadges.getBadge(status, 'simple');
+    }
+    // Fallback to hardcoded badges if StatusBadges not loaded yet
     const badges = {
       "1": '<span class="text-success">Open</span>',
       "2": '<span class="text-info">Forwarded</span>',

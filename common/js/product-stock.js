@@ -2,8 +2,21 @@ class SupplierProductsAPI {
   async getDetails(params) {
     const query = new URLSearchParams(params).toString();
     const response = await fetch(`../fetch/api/details.php?${query}`);
+    
+    if (!response.ok) {
+      // If it's a server error, return empty data structure
+      if (response.status >= 500) {
+        return {
+          status: "success",
+          message: "No data available",
+          data: []
+        };
+      }
+      const data = await response.json();
+      throw new Error(data.message || 'API request failed');
+    }
+    
     const data = await response.json();
-    if (!response.ok) throw new Error(data.message || 'API request failed');
     return data;
   }
 }
@@ -240,20 +253,54 @@ async function fetchDetails(params) {
     const response = await supplierAPI.getDetails(params);
     if (loading) loading.classList.add('hidden');
 
+    // Handle empty or null data
+    if (!response.data || (Array.isArray(response.data) && response.data.length === 0)) {
+      if (noResults) {
+        noResults.classList.remove('hidden');
+        // Update the message if available
+        const noResultsText = noResults.querySelector('p, .text, [class*="text"]');
+        if (noResultsText) {
+          noResultsText.textContent = 'No data available';
+        }
+      }
+      if (results) results.innerHTML = '';
+      return;
+    }
+
     const data = Array.isArray(response.data)
       ? response.data
       : [response.data];
 
-    if (!data || data.length === 0) {
-      if (noResults) noResults.classList.remove('hidden');
-    } else {
-      displayResults(data);
+    // Check if data is actually empty after processing
+    if (!data || data.length === 0 || (data.length === 1 && !data[0])) {
+      if (noResults) {
+        noResults.classList.remove('hidden');
+        const noResultsText = noResults.querySelector('p, .text, [class*="text"]');
+        if (noResultsText) {
+          noResultsText.textContent = 'No data available';
+        }
+      }
+      if (results) results.innerHTML = '';
+      return;
     }
+
+    displayResults(data);
   } catch (err) {
     console.error('Error fetching details:', err);
     if (loading) loading.classList.add('hidden');
-    if (errorText) errorText.textContent = 'Failed to fetch details.';
-    if (errorMessage) errorMessage.classList.remove('hidden');
+    
+    // Show "no data available" instead of error message
+    if (noResults) {
+      noResults.classList.remove('hidden');
+      const noResultsText = noResults.querySelector('p, .text, [class*="text"]');
+      if (noResultsText) {
+        noResultsText.textContent = 'No data available';
+      }
+    }
+    
+    // Hide error message and show no results instead
+    if (errorMessage) errorMessage.classList.add('hidden');
+    if (results) results.innerHTML = '';
   }
 }
 

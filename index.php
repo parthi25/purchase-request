@@ -202,7 +202,6 @@
                             'B_Head': './pages/buyer-head.php',
                             'PO_Head': './pages/po-head.php',
                             'PO_Team_Member': './pages/po-member.php',
-                            'PO_Team': './pages/po-member.php',
                             'super_admin': './pages/admin.php',
                             'master': './pages/admin.php'
                         };

@@ -158,6 +158,7 @@ include '../common/layout.php'; ?>
             <form id="permissionForm">
                 <input type="hidden" id="permissionId" name="id">
                 <input type="hidden" name="type" value="permission">
+                <input type="hidden" name="csrf_token" id="permissionCsrfToken" value="">
                 
                 <div class="form-control mb-4">
                     <label class="label">
@@ -202,6 +203,7 @@ include '../common/layout.php'; ?>
             <form id="flowForm">
                 <input type="hidden" id="flowId" name="id">
                 <input type="hidden" name="type" value="flow">
+                <input type="hidden" name="csrf_token" id="flowCsrfToken" value="">
                 
                 <div class="form-control mb-4">
                     <label class="label">
@@ -269,6 +271,7 @@ include '../common/layout.php'; ?>
             <form id="prPermissionForm">
                 <input type="hidden" id="prPermissionId" name="id">
                 <input type="hidden" name="type" value="role_pr_permissions">
+                <input type="hidden" name="csrf_token" id="prPermissionCsrfToken" value="">
                 
                 <div class="form-control mb-4">
                     <label class="label">
@@ -327,6 +330,7 @@ include '../common/layout.php'; ?>
             <form id="modalFieldForm">
                 <input type="hidden" id="modalFieldId" name="id">
                 <input type="hidden" name="type" value="status_modal_fields">
+                <input type="hidden" name="csrf_token" id="modalFieldCsrfToken" value="">
                 
                 <div class="form-control mb-4">
                     <label class="label">

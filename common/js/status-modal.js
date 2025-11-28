@@ -30,12 +30,16 @@ document.addEventListener("DOMContentLoaded", function () {
     'remark': { field: remarkField, input: remarkInput, loader: null }
   };
 
+  // Track required fields for current status
+  let requiredFields = new Map();
+
   // Status change handler - Now fetches from database
   async function handleStatusChange(status) {
     console.log("Status changed to:", status);
 
-    // First hide all fields
+    // First hide all fields and clear required fields tracking
     hideAllFields();
+    requiredFields.clear();
 
     if (!status) {
       return;
@@ -66,6 +70,7 @@ document.addEventListener("DOMContentLoaded", function () {
           
           if (poHeadFieldConfig.is_required) {
             mappedField.input.setAttribute('required', 'required');
+            requiredFields.set('po_head', mappedField);
           } else {
             mappedField.input.removeAttribute('required');
           }
@@ -86,9 +91,10 @@ document.addEventListener("DOMContentLoaded", function () {
             const mappedField = fieldMapping[fieldName];
             fieldsToShow.push(mappedField.field);
             
-            // Mark as required if needed
+            // Mark as required if needed and track it
             if (fieldConfig.is_required) {
               mappedField.input.setAttribute('required', 'required');
+              requiredFields.set(fieldName, mappedField);
             } else {
               mappedField.input.removeAttribute('required');
             }
@@ -115,9 +121,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Fallback function for old hardcoded behavior (if database doesn't have config)
   function handleStatusChangeFallback(status) {
+    // Clear required fields first
+    requiredFields.clear();
+    
     switch (status) {
       case "2": // Forwarded to Buyer
         showFields([buyerField, remarkField]);
+        buyerInput.setAttribute('required', 'required');
+        requiredFields.set('buyer', fieldMapping['buyer']);
         loadBuyers();
         break;
 
@@ -149,6 +160,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
       case "9": // Forwarded to PO Team
         showFields([poTeamField, remarkField]);
+        poTeamInput.setAttribute('required', 'required');
+        requiredFields.set('po_team', fieldMapping['po_team']);
         loadPoTeamMembers();
         break;
 
@@ -268,6 +281,76 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
+    // Validate required fields before submitting
+    const validationErrors = [];
+    const fieldLabels = {
+      'buyer': 'Buyer',
+      'po_head': 'PO Head',
+      'po_team': 'PO Team Member',
+      'qty': 'Quantity',
+      'file_upload': 'File Upload',
+      'remark': 'Remark'
+    };
+
+    // Debug: Log required fields
+    console.log('Required fields to validate:', Array.from(requiredFields.keys()));
+    console.log('Current status:', status);
+
+    // Check all required fields
+    requiredFields.forEach((mappedField, fieldName) => {
+      const input = mappedField.input;
+      const fieldContainer = mappedField.field;
+      let isEmpty = false;
+
+      // Check if field is visible (not hidden)
+      // A field is visible if it doesn't have the "hidden" class
+      const isHidden = fieldContainer.classList.contains("hidden");
+      
+      if (isHidden) {
+        return; // Skip hidden fields
+      }
+
+      // Additional check: verify the field is actually in the DOM and visible
+      if (!input || !fieldContainer || !document.body.contains(input)) {
+        return; // Skip if element doesn't exist
+      }
+
+      // Validate based on field type
+      if (fieldName === 'file_upload') {
+        // For file upload, check if files are selected
+        isEmpty = !input.files || input.files.length === 0;
+      } else if (input.tagName === 'SELECT') {
+        // For select elements, check if value is empty (default option has value="")
+        // Also check if it's the default "Select option" or empty string
+        const selectValue = input.value;
+        isEmpty = !selectValue || selectValue === "" || selectValue === "Select option" || selectValue === "Select status";
+      } else {
+        // For text inputs, textareas, number inputs
+        isEmpty = !input.value || (typeof input.value === 'string' && input.value.trim() === "");
+      }
+
+      if (isEmpty) {
+        const label = fieldLabels[fieldName] || fieldName;
+        validationErrors.push(`${label} is required`);
+        // Add visual feedback - highlight the field
+        input.classList.add('input-error', 'border-error');
+        fieldContainer.classList.add('has-error');
+        console.log(`Validation failed: ${label} is required but empty`);
+      } else {
+        // Remove error styling if field is valid
+        input.classList.remove('input-error', 'border-error');
+        fieldContainer.classList.remove('has-error');
+      }
+    });
+    
+    console.log('Validation errors:', validationErrors);
+
+    // If there are validation errors, show them and stop submission
+    if (validationErrors.length > 0) {
+      showAlert(validationErrors.join(", "), "warning");
+      return;
+    }
+
     const formData = new FormData();
     formData.append("ids", prId);
     formData.append("status", status);
@@ -359,6 +442,12 @@ function showFields(fieldsToShow) {
   fieldsToShow.forEach((field) => {
     field.classList.add("form-control", "mb-4");
     field.classList.remove("hidden");
+    // Remove any error styling when showing fields
+    const input = field.querySelector('select, input, textarea');
+    if (input) {
+      input.classList.remove('input-error', 'border-error');
+    }
+    field.classList.remove('has-error');
   });
 }
 
@@ -372,6 +461,7 @@ function showFields(fieldsToShow) {
     fileInput.value = "";
     remarkInput.value = "";
     hideAllFields();
+    requiredFields.clear();
   }
 
   function showAlert(message, type = "info") {

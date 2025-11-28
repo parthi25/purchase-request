@@ -4,7 +4,7 @@ include '../config/db.php';
 include '../config/response.php';
 
 // Check if user is logged in and has appropriate role
-if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role'], ['B_Head', 'PO_Team', 'PO_Team_Member','admin'])) {
+if (!isset($_SESSION['user_id']) || !in_array($_SESSION['role'], ['B_Head', 'PO_Head', 'PO_Team_Member','admin'])) {
     sendResponse(403, "error", "Unauthorized access");
 }
 
@@ -16,7 +16,29 @@ if (is_array($_POST['ids'])) {
 
 $status = intval($_POST['status']);
 $remark = isset($_POST['remarkInput']) ? $_POST['remarkInput'] : null;
-$po_team = $_POST['poTeamInput'] ?? 37;
+
+// Get first PO Head ID as default fallback
+$defaultPoHeadId = null;
+$poHeadQuery = "SELECT u.id FROM users u INNER JOIN roles r ON u.role_id = r.id WHERE r.role_code = 'PO_Head' AND u.is_active = 1 ORDER BY u.id ASC LIMIT 1";
+$poHeadResult = $conn->query($poHeadQuery);
+if ($poHeadResult && $poHeadResult->num_rows > 0) {
+    $poHeadRow = $poHeadResult->fetch_assoc();
+    $defaultPoHeadId = intval($poHeadRow['id']);
+    $poHeadResult->free();
+}
+
+// Check for poHeadInput first (for status 6), then fallback to poTeamInput, then default PO Head ID
+$po_team = isset($_POST['poHeadInput']) && !empty($_POST['poHeadInput']) 
+    ? intval($_POST['poHeadInput']) 
+    : (isset($_POST['poTeamInput']) && !empty($_POST['poTeamInput'])
+        ? intval($_POST['poTeamInput']) 
+        : ($defaultPoHeadId ? $defaultPoHeadId : null));
+
+// If still no PO team assigned, return error
+if ($po_team === null) {
+    sendResponse(400, "error", "No PO Head found in system. Please contact administrator.");
+}
+
 $statusDate = (new DateTime())->format('Y-m-d H:i:s');
 $buyer_id = isset($_POST['buyerInput']) ? intval($_POST['buyerInput']) : null;
 

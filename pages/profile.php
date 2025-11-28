@@ -27,21 +27,21 @@
 
           <div class="form-control">
             <label class="label">
-              <span class="label-text font-semibold">Old Password</span>
+              <span class="label-text font-semibold">Old Password <span class="text-error">*</span></span>
             </label>
             <input type="password" id="old_password" class="input input-bordered w-full">
           </div>
 
           <div class="form-control">
             <label class="label">
-              <span class="label-text font-semibold">New Password</span>
+              <span class="label-text font-semibold">New Password <span class="text-error">*</span></span>
             </label>
             <input type="password" id="new_password" class="input input-bordered w-full">
           </div>
 
           <div class="form-control">
             <label class="label">
-              <span class="label-text font-semibold">Confirm New Password</span>
+              <span class="label-text font-semibold">Confirm New Password <span class="text-error">*</span></span>
             </label>
             <input type="password" id="confirm_password" class="input input-bordered w-full">
           </div>
@@ -93,10 +93,23 @@
                 return;
             }
 
+            // Get CSRF token
+            let csrfToken = '';
+            try {
+                const csrfResponse = await fetch('../auth/get-csrf-token.php');
+                const csrfData = await csrfResponse.json();
+                csrfToken = csrfData.status === 'success' ? csrfData.data.csrf_token : '';
+            } catch (error) {
+                console.error('Failed to get CSRF token:', error);
+                showAlert('Failed to get security token. Please refresh the page.', 'error');
+                return;
+            }
+
             const payload = {
                 old_password: oldPassword,
                 new_password: newPassword,
-                confirm_password: confirmPassword
+                confirm_password: confirmPassword,
+                csrf_token: csrfToken
             };
 
             try {

@@ -79,6 +79,7 @@ try {
     $_SESSION['user_id'] = $user['id'];
     $_SESSION['username'] = $user['username'];
     $_SESSION['role'] = $roleCode; // Store role_code in session
+    $_SESSION['role_name'] = $user['role_name'];
     $_SESSION['fullname'] = $user['fullname'];
     $_SESSION['last_activity'] = time();
     

@@ -23,7 +23,7 @@ try {
     $users = [];
     while ($row = $result->fetch_assoc()) {
         // Use fullname if available, otherwise fallback to username
-        $row['fullname'] = !empty($row['fullname']) ? $row['fullname'] : $row['username'];
+        $row['fullname'] = !empty($row['username']) ? $row['username'] : $row['username'];
         $users[] = $row;
     }
 
