@@ -10,7 +10,7 @@
                     <h2 class="text-xl font-semibold mb-4">Filters</h2>
                     
                     <!-- Search and Date Range -->
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div class="form-control">
                             <label class="label">
                                 <span class="label-text font-semibold">Search</span>
@@ -19,15 +19,9 @@
                         </div>
                         <div class="form-control">
                             <label class="label">
-                                <span class="label-text font-semibold">Start Date</span>
+                                <span class="label-text font-semibold">Date Range</span>
                             </label>
-                            <input type="date" id="startDate" class="input input-bordered w-full" />
-                        </div>
-                        <div class="form-control">
-                            <label class="label">
-                                <span class="label-text font-semibold">End Date</span>
-                            </label>
-                            <input type="date" id="endDate" class="input input-bordered w-full" />
+                            <input type="text" id="dateRange" placeholder="Select Date Range" class="input input-bordered w-full" />
                         </div>
                     </div>
 
@@ -155,8 +149,9 @@
                     <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
                         <h2 class="text-2xl font-semibold">Purchase Orders</h2>
                         <div class="flex flex-wrap gap-2 items-center">
-                            <div class="badge badge-primary badge-lg">Total: <span id="totalRecords">0</span></div>
-                            <div class="badge badge-success badge-lg">Completed: <span id="completedBadge">0</span></div>
+                            <div class="badge badge-primary badge-lg cursor-pointer hover:badge-primary-focus" id="totalBadgeClickable" title="Click to show all orders">Total: <span id="totalRecords">0</span></div>
+                            <div class="badge badge-success badge-lg cursor-pointer hover:badge-success-focus" id="completedBadgeClickable" title="Click to filter completed orders">Completed: <span id="completedBadge">0</span></div>
+                            <div class="badge badge-warning badge-lg cursor-pointer hover:badge-warning-focus" id="pendingBadgeClickable" title="Click to filter pending orders">Pending: <span id="pendingBadge">0</span></div>
                             <button id="columnToggleBtn" class="btn btn-outline btn-sm">
                                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -257,6 +252,82 @@
     <script src="../assets/js/chart.umd.min.js"></script>
     <!-- XLSX for Excel export -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    
+    <style>
+        /* Responsive Flatpickr Calendar Styles */
+        .flatpickr-calendar {
+            max-width: 100% !important;
+            width: auto !important;
+        }
+        
+        .fp-side-panel {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        /* Mobile: Stack vertically */
+        @media (max-width: 768px) {
+            .flatpickr-calendar {
+                flex-direction: column !important;
+                max-width: 100vw !important;
+                left: 50% !important;
+                transform: translateX(-50%) !important;
+                right: auto !important;
+            }
+            
+            .flatpickr-calendar .fp-side-panel {
+                border-right: none !important;
+                border-top: 1px solid rgba(0, 0, 0, 0.1) !important;
+                border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+                margin-right: 0 !important;
+                margin-top: 0 !important;
+                padding-top: 10px !important;
+                width: 100% !important;
+                flex-direction: row !important;
+                flex-wrap: wrap !important;
+                gap: 4px !important;
+                max-height: 120px !important;
+            }
+            
+            .flatpickr-calendar .fp-side-panel button {
+                flex: 1 1 auto !important;
+                min-width: auto !important;
+                font-size: 11px !important;
+                padding: 6px 8px !important;
+            }
+            
+            .flatpickr-innerContainer {
+                width: 100% !important;
+            }
+        }
+        
+        /* Tablet: Adjust layout */
+        @media (min-width: 769px) and (max-width: 1024px) {
+            .flatpickr-calendar {
+                max-width: 90vw !important;
+            }
+            
+            .flatpickr-calendar .fp-side-panel {
+                width: 90px !important;
+                font-size: 11px !important;
+            }
+            
+            .flatpickr-calendar .fp-side-panel button {
+                font-size: 11px !important;
+                padding: 6px 8px !important;
+            }
+        }
+        
+        /* Small screens: Ensure calendar doesn't overflow */
+        @media (max-width: 480px) {
+            .flatpickr-calendar {
+                width: calc(100vw - 20px) !important;
+                left: 10px !important;
+                right: 10px !important;
+                transform: none !important;
+            }
+        }
+    </style>
 
 
 
@@ -278,6 +349,10 @@
                 filtersInitialized: false,
                 lastOptionsHash: null,
                 abortController: null,
+                dateRangePicker: null,
+                startDate: '',
+                endDate: '',
+                resizeHandler: null,
                 // Column visibility management
                 availableColumns: [
                     { key: 'id', label: 'ID', visible: true, order: 1 },
@@ -312,6 +387,7 @@
             },
 
             init() {
+                this.initDateRangePicker();
                 this.setupDefaultDates();
                 this.bindEvents();
                 this.initCharts();
@@ -528,12 +604,165 @@
                 }
             },
 
+            initDateRangePicker() {
+                const dateRangeInput = document.getElementById('dateRange');
+                if (dateRangeInput) {
+                    this.state.dateRangePicker = flatpickr(dateRangeInput, {
+                        mode: "range",
+                        dateFormat: "Y-m-d",
+                        onChange: (selectedDates, dateStr, instance) => {
+                            if (selectedDates.length === 2) {
+                                this.state.startDate = selectedDates[0].toISOString().split('T')[0];
+                                this.state.endDate = selectedDates[1].toISOString().split('T')[0];
+                            } else if (selectedDates.length === 0) {
+                                this.state.startDate = '';
+                                this.state.endDate = '';
+                            }
+                        },
+                        onReady: (selectedDates, dateStr, instance) => {
+                            this.addQuickSelectButtons(instance);
+                            this.setupResponsiveHandlers(instance);
+                        },
+                        onOpen: (selectedDates, dateStr, instance) => {
+                            this.addQuickSelectButtons(instance);
+                            this.setupResponsiveHandlers(instance);
+                        }
+                    });
+                }
+            },
+
+            setupResponsiveHandlers(instance) {
+                // Remove existing resize listener if any
+                if (this.state.resizeHandler) {
+                    window.removeEventListener('resize', this.state.resizeHandler);
+                }
+                
+                // Add resize listener to update layout on screen size change
+                this.state.resizeHandler = () => {
+                    if (instance.calendarContainer && instance.isOpen) {
+                        this.addQuickSelectButtons(instance);
+                    }
+                };
+                
+                window.addEventListener('resize', this.state.resizeHandler);
+            },
+
+            addQuickSelectButtons(instance) {
+                const calendarContainer = instance.calendarContainer;
+                if (!calendarContainer) return;
+
+                // Remove existing side panel if any
+                const existingPanel = calendarContainer.querySelector('.fp-side-panel');
+                if (existingPanel) {
+                    existingPanel.remove();
+                }
+
+                // Check screen size for responsive layout
+                const isMobile = window.innerWidth <= 768;
+                
+                // Ensure calendar container uses flex layout
+                if (calendarContainer.style.display !== 'flex') {
+                    calendarContainer.style.display = 'flex';
+                    // On mobile, stack vertically; on desktop, row-reverse (panel on left)
+                    calendarContainer.style.flexDirection = isMobile ? 'column' : 'row-reverse';
+                }
+                // Add min-width to fit content (but respect max-width from CSS)
+                calendarContainer.style.minWidth = 'fit-content';
+                calendarContainer.style.maxWidth = '100%';
+
+                // Create a side panel
+                const panel = document.createElement("div");
+                panel.className = "fp-side-panel p-2 border-r mr-2 flex flex-col gap-1";
+                // Responsive styling
+                if (isMobile) {
+                    panel.style.cssText = 'margin-top: 0; padding-top: 10px; width: 100%; flex-direction: row; flex-wrap: wrap; gap: 4px; border-right: none; border-top: 1px solid rgba(0,0,0,0.1); max-height: 120px; overflow-y: auto;';
+                } else {
+                    panel.style.cssText = 'margin-top: 20px; padding-top: 20px;';
+                }
+
+                // Get today's date
+                const today = new Date();
+                const yesterday = new Date(today);
+                yesterday.setDate(yesterday.getDate() - 1);
+                
+                // Get first and last day of current month
+                const firstDayThisMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+                const lastDayThisMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                
+                // Get first and last day of last month
+                const firstDayLastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+                const lastDayLastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+
+                // Get first and last day of current year
+                const firstDayThisYear = new Date(today.getFullYear(), 0, 1);
+                const lastDayThisYear = new Date(today.getFullYear(), 11, 31);
+                
+                // Get first and last day of last year
+                const firstDayLastYear = new Date(today.getFullYear() - 1, 0, 1);
+                const lastDayLastYear = new Date(today.getFullYear() - 1, 11, 31);
+
+                // Get first and last day of current quarter
+                const currentQuarter = Math.floor(today.getMonth() / 3);
+                const firstDayThisQuarter = new Date(today.getFullYear(), currentQuarter * 3, 1);
+                const lastDayThisQuarter = new Date(today.getFullYear(), (currentQuarter + 1) * 3, 0);
+                
+                // Get first and last day of last quarter
+                const lastQuarter = currentQuarter === 0 ? 3 : currentQuarter - 1;
+                const lastQuarterYear = currentQuarter === 0 ? today.getFullYear() - 1 : today.getFullYear();
+                const firstDayLastQuarter = new Date(lastQuarterYear, lastQuarter * 3, 1);
+                const lastDayLastQuarter = new Date(lastQuarterYear, (lastQuarter + 1) * 3, 0);
+
+                const ranges = [
+                    { label: "Today", start: today, end: today, category: "day" },
+                    { label: "Yesterday", start: yesterday, end: yesterday, category: "day" },
+                    { label: "This Month", start: firstDayThisMonth, end: lastDayThisMonth, category: "month" },
+                    { label: "Last Month", start: firstDayLastMonth, end: lastDayLastMonth, category: "month" },
+                    { label: "This Quarter", start: firstDayThisQuarter, end: lastDayThisQuarter, category: "quarter" },
+                    { label: "Last Quarter", start: firstDayLastQuarter, end: lastDayLastQuarter, category: "quarter" },
+                    { label: "This Year", start: firstDayThisYear, end: lastDayThisYear, category: "year" },
+                    { label: "Last Year", start: firstDayLastYear, end: lastDayLastYear, category: "year" },
+                    { label: "Overall", start: null, end: null, category: "overall" }, // null means no date filter
+                ];
+
+                ranges.forEach(r => {
+                    const btn = document.createElement("button");
+                    btn.textContent = r.label;
+                    btn.className = "btn btn-xs btn-outline";
+                    // Responsive button styling
+                    if (isMobile) {
+                        btn.style.cssText = 'white-space: nowrap; text-align: center; min-width: auto; flex: 1 1 auto; font-size: 11px; padding: 6px 8px;';
+                    } else {
+                        btn.style.cssText = 'white-space: nowrap; text-align: left; min-width: fit-content; width: auto; padding-left: 12px; padding-right: 12px;';
+                    }
+                    btn.addEventListener("click", () => {
+                        if (r.start === null && r.end === null) {
+                            // Overall - clear dates
+                            instance.clear();
+                            this.state.startDate = '';
+                            this.state.endDate = '';
+                        } else {
+                            instance.setDate([r.start, r.end], true);
+                            this.state.startDate = r.start.toISOString().split('T')[0];
+                            this.state.endDate = r.end.toISOString().split('T')[0];
+                        }
+                        setTimeout(() => instance.close(), 100);
+                    });
+                    panel.appendChild(btn);
+                });
+
+                calendarContainer.appendChild(panel);
+            },
+
             setupDefaultDates() {
                 const endDate = new Date();
                 const startDate = new Date();
                 startDate.setDate(startDate.getDate() - 30);
-                document.getElementById('startDate').value = startDate.toISOString().split('T')[0];
-                document.getElementById('endDate').value = endDate.toISOString().split('T')[0];
+                
+                if (this.state.dateRangePicker) {
+                    this.state.dateRangePicker.setDate([startDate, endDate], true);
+                    this.state.startDate = startDate.toISOString().split('T')[0];
+                    this.state.endDate = endDate.toISOString().split('T')[0];
+                }
             },
 
             bindEvents() {
@@ -566,6 +795,59 @@
                         });
                     }, 0);
                 }, { passive: false });
+
+                // Pending badge click handler
+                const pendingBadge = document.getElementById('pendingBadgeClickable');
+                if (pendingBadge) {
+                    pendingBadge.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        setTimeout(() => {
+                            requestAnimationFrame(() => {
+                                this.filterPendingOrders();
+                            });
+                        }, 0);
+                    });
+                }
+
+                // Total badge click handler - show all orders
+                const totalBadge = document.getElementById('totalBadgeClickable');
+                if (totalBadge) {
+                    totalBadge.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        setTimeout(() => {
+                            requestAnimationFrame(() => {
+                                // Clear status filter to show all
+                                const $statusFilter = $('#statusFilter');
+                                if ($statusFilter.length && $statusFilter.hasClass('select2-hidden-accessible')) {
+                                    $statusFilter.val(null).trigger('change');
+                                }
+                                this.state.currentPage = 1;
+                                setTimeout(() => {
+                                    this.loadData();
+                                }, 300);
+                            });
+                        }, 0);
+                    });
+                }
+
+                // Completed badge click handler - filter by completed orders
+                const completedBadge = document.getElementById('completedBadgeClickable');
+                if (completedBadge) {
+                    completedBadge.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
+                        setTimeout(() => {
+                            requestAnimationFrame(() => {
+                                this.filterCompletedOrders();
+                            });
+                        }, 0);
+                    });
+                }
 
                 document.getElementById('perPageSelect').addEventListener('change', (e) => {
                     requestAnimationFrame(() => {
@@ -603,8 +885,6 @@
                 
                 // Batch all remaining DOM reads
                 const searchInput = document.getElementById('searchInput');
-                const startDate = document.getElementById('startDate');
-                const endDate = document.getElementById('endDate');
                 
                 // Write phase - batch all DOM writes using requestAnimationFrame
                 requestAnimationFrame(() => {
@@ -617,13 +897,14 @@
                     if (searchInput) searchInput.value = '';
                     this.state.searchQuery = '';
                     
-                    // Reset dates
-                    if (startDate && endDate) {
+                    // Reset dates using flatpickr
+                    if (this.state.dateRangePicker) {
                         const endDateObj = new Date();
                         const startDateObj = new Date();
                         startDateObj.setDate(startDateObj.getDate() - 30);
-                        startDate.value = startDateObj.toISOString().split('T')[0];
-                        endDate.value = endDateObj.toISOString().split('T')[0];
+                        this.state.dateRangePicker.setDate([startDateObj, endDateObj], true);
+                        this.state.startDate = startDateObj.toISOString().split('T')[0];
+                        this.state.endDate = endDateObj.toISOString().split('T')[0];
                     }
                     
                     this.state.currentPage = 1;
@@ -633,6 +914,90 @@
                         this.loadData();
                     });
                 });
+            },
+
+            async filterPendingOrders() {
+                try {
+                    // Fetch all available statuses
+                    const response = await fetch('../fetch/fetch-filter-status.php?per_page=100');
+                    const data = await response.json();
+                    
+                    if (data.results && Array.isArray(data.results)) {
+                        // Filter out "PO generated" status (completed status)
+                        const pendingStatuses = data.results
+                            .filter(status => {
+                                const statusText = status.text || status.id || '';
+                                return !statusText.toLowerCase().includes('po generated');
+                            })
+                            .map(status => status.id || status.text);
+                        
+                        // Set the status filter to pending statuses
+                        const $statusFilter = $('#statusFilter');
+                        if ($statusFilter.length && $statusFilter.hasClass('select2-hidden-accessible')) {
+                            $statusFilter.val(pendingStatuses).trigger('change');
+                        } else {
+                            // If Select2 is not initialized yet, wait a bit and try again
+                            setTimeout(() => {
+                                const $retry = $('#statusFilter');
+                                if ($retry.length) {
+                                    $retry.val(pendingStatuses).trigger('change');
+                                }
+                            }, 500);
+                        }
+                        
+                        // Reset to first page and reload data
+                        this.state.currentPage = 1;
+                        setTimeout(() => {
+                            this.loadData();
+                        }, 300); // Small delay to ensure Select2 has updated
+                    }
+                } catch (error) {
+                    console.error('Error filtering pending orders:', error);
+                    showToast('Failed to filter pending orders', 'error');
+                }
+            },
+
+            async filterCompletedOrders() {
+                try {
+                    // Fetch all available statuses
+                    const response = await fetch('../fetch/fetch-filter-status.php?per_page=100');
+                    const data = await response.json();
+                    
+                    if (data.results && Array.isArray(data.results)) {
+                        // Find "PO generated" status (completed status)
+                        const completedStatus = data.results.find(status => {
+                            const statusText = status.text || status.id || '';
+                            return statusText.toLowerCase().includes('po generated');
+                        });
+                        
+                        if (completedStatus) {
+                            const completedStatusValue = completedStatus.id || completedStatus.text;
+                            
+                            // Set the status filter to completed status only
+                            const $statusFilter = $('#statusFilter');
+                            if ($statusFilter.length && $statusFilter.hasClass('select2-hidden-accessible')) {
+                                $statusFilter.val([completedStatusValue]).trigger('change');
+                            } else {
+                                // If Select2 is not initialized yet, wait a bit and try again
+                                setTimeout(() => {
+                                    const $retry = $('#statusFilter');
+                                    if ($retry.length) {
+                                        $retry.val([completedStatusValue]).trigger('change');
+                                    }
+                                }, 500);
+                            }
+                            
+                            // Reset to first page and reload data
+                            this.state.currentPage = 1;
+                            setTimeout(() => {
+                                this.loadData();
+                            }, 300); // Small delay to ensure Select2 has updated
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error filtering completed orders:', error);
+                    showToast('Failed to filter completed orders', 'error');
+                }
             },
 
             initCharts() {
@@ -828,10 +1193,8 @@
                 }
 
                 // Add date filters
-                const startDate = document.getElementById('startDate').value;
-                const endDate = document.getElementById('endDate').value;
-                if (startDate) params.append('start_date', startDate);
-                if (endDate) params.append('end_date', endDate);
+                if (this.state.startDate) params.append('start_date', this.state.startDate);
+                if (this.state.endDate) params.append('end_date', this.state.endDate);
 
                 // Add filter values (Select2)
                 const addMultiselectFilter = (name, filterId) => {
@@ -1507,8 +1870,17 @@
                 }
 
                 const totalRecords = document.getElementById('totalRecords');
+                const total = pagination.total || 0;
                 if (totalRecords) {
-                    totalRecords.textContent = (pagination.total || 0).toLocaleString();
+                    totalRecords.textContent = total.toLocaleString();
+                }
+
+                // Calculate and display pending count (difference between total and completed)
+                const pendingBadge = document.getElementById('pendingBadge');
+                if (pendingBadge) {
+                    const completed = stats.completed_count || 0;
+                    const pending = Math.max(0, total - completed);
+                    pendingBadge.textContent = pending.toLocaleString();
                 }
 
                 // Update pagination info
@@ -1640,10 +2012,8 @@
                         }
                     });
 
-                    const startDate = document.getElementById('startDate').value;
-                    const endDate = document.getElementById('endDate').value;
-                    if (startDate) params.append('start_date', startDate);
-                    if (endDate) params.append('end_date', endDate);
+                    if (this.state.startDate) params.append('start_date', this.state.startDate);
+                    if (this.state.endDate) params.append('end_date', this.state.endDate);
 
                     const response = await fetch(`../fetch/fetch-dash.php?${params.toString()}`);
                     const result = await response.json();

@@ -243,8 +243,8 @@ document.addEventListener('DOMContentLoaded', () => {
             <div class="divider my-4">Other Files</div>
             <div class="space-y-2 max-h-60 overflow-y-auto">
               ${nonImageFiles.map(file => `
-                <div class="flex items-center justify-between bg-base-200 p-3 rounded-lg">
-                  <div class="flex items-center gap-3 flex-1">
+                <div class="flex items-center justify-between bg-base-200 p-3 rounded-lg min-w-[300px] min-h-[60px]">
+                  <div class="flex items-center gap-3 flex-1 min-w-0">
                     <div class="flex-shrink-0">
                       ${getFileIcon(file.url)}
                     </div>
@@ -254,13 +254,21 @@ document.addEventListener('DOMContentLoaded', () => {
                       </a>
                     </div>
                   </div>
-                  ${deleteAllowed ? `
-                    <button class="btn btn-xs btn-error delete-file ml-2 flex-shrink-0" 
-                            data-id="${file.id}" 
-                            data-url="${currentUrls.delete}">
-                      Delete
-                    </button>
-                  ` : ''}
+                  <div class="flex items-center gap-2 flex-shrink-0 ml-2">
+                    <a href="../${file.url}" download="${getFileName(file.url)}" class="btn btn-xs btn-primary">
+                      <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                      </svg>
+                      Download
+                    </a>
+                    ${deleteAllowed ? `
+                      <button class="btn btn-xs btn-error delete-file" 
+                              data-id="${file.id}" 
+                              data-url="${currentUrls.delete}">
+                        Delete
+                      </button>
+                    ` : ''}
+                  </div>
                 </div>
               `).join('')}
             </div>
@@ -271,8 +279,8 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         // No images, show regular list
         fileList.innerHTML = files.map(file => `
-          <div class="flex items-center justify-between bg-base-200 p-3 rounded-lg">
-            <div class="flex items-center gap-3 flex-1">
+          <div class="flex items-center justify-between bg-base-200 p-3 rounded-lg min-w-[300px] min-h-[60px]">
+            <div class="flex items-center gap-3 flex-1 min-w-0">
               <div class="flex-shrink-0">
                 ${getFileIcon(file.url)}
               </div>
@@ -285,13 +293,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
               </div>
             </div>
-            ${deleteAllowed ? `
-              <button class="btn btn-xs btn-error delete-file ml-2 flex-shrink-0" 
-                      data-id="${file.id}" 
-                      data-url="${currentUrls.delete}">
-                Delete
-              </button>
-            ` : ''}
+            <div class="flex items-center gap-2 flex-shrink-0 ml-2">
+              <a href="../${file.url}" download="${getFileName(file.url)}" class="btn btn-xs btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Download
+              </a>
+              ${deleteAllowed ? `
+                <button class="btn btn-xs btn-error delete-file" 
+                        data-id="${file.id}" 
+                        data-url="${currentUrls.delete}">
+                  Delete
+                </button>
+              ` : ''}
+            </div>
           </div>
         `).join('');
       }
@@ -324,8 +340,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         return `
-          <div class="flex items-center justify-between bg-base-200 p-3 rounded-lg">
-            <div class="flex items-center gap-3 flex-1">
+          <div class="flex items-center justify-between bg-base-200 p-3 rounded-lg min-w-[300px] min-h-[60px]">
+            <div class="flex items-center gap-3 flex-1 min-w-0">
               <div class="flex-shrink-0">
                 ${getFileIcon(file.url)}
               </div>
@@ -340,13 +356,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 ${itemInfoHtml}
               </div>
             </div>
-            ${deleteAllowed ? `
-              <button class="btn btn-xs btn-error delete-file ml-2 flex-shrink-0" 
-                      data-id="${file.id}" 
-                      data-url="${currentUrls.delete}">
-                Delete
-              </button>
-            ` : ''}
+            <div class="flex items-center gap-2 flex-shrink-0 ml-2">
+              <a href="../${file.url}" download="${getFileName(file.url)}" class="btn btn-xs btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+                Download
+              </a>
+              ${deleteAllowed ? `
+                <button class="btn btn-xs btn-error delete-file" 
+                        data-id="${file.id}" 
+                        data-url="${currentUrls.delete}">
+                  Delete
+                </button>
+              ` : ''}
+            </div>
           </div>
         `;
       }).join('');

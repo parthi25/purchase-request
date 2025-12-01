@@ -108,8 +108,40 @@ $statusMapping = [
     5 => 'status_4',
     6 => 'status_5',
     7 => 'status_6',
-    8 => 'status_7'
+    8 => 'status_7',
+    9 => 'status_8'
 ];
+
+// Fetch remark field column name from database for this status
+$remarkFieldColumn = null;
+if ($remark) {
+    try {
+        $remarkQuery = "SELECT db_column_name FROM status_modal_fields 
+                       WHERE status_id = ? AND field_name = 'remark' AND db_column_name IS NOT NULL 
+                       LIMIT 1";
+        $remarkStmt = $conn->prepare($remarkQuery);
+        if ($remarkStmt) {
+            $remarkStmt->bind_param("i", $status);
+            $remarkStmt->execute();
+            $remarkResult = $remarkStmt->get_result();
+            if ($remarkRow = $remarkResult->fetch_assoc()) {
+                $remarkFieldColumn = $remarkRow['db_column_name'];
+            }
+            $remarkStmt->close();
+        }
+    } catch (Exception $e) {
+        error_log("Error fetching remark column: " . $e->getMessage());
+        // Fallback to old mapping if database query fails
+        $remarkFieldMapping = [
+            2 => 'b_remark',
+            5 => 'to_bh_rm',
+            6 => 'po_team_rm',
+            8 => 'rrm',
+            9 => 'rrm'
+        ];
+        $remarkFieldColumn = $remarkFieldMapping[$status] ?? null;
+    }
+}
 
 $updateFields = ["updated_at = CURRENT_TIMESTAMP", "po_status = ?"];
 $updateValues = [$status];
@@ -121,15 +153,9 @@ if (isset($statusMapping[$status])) {
     $updateTypes .= "s";
 }
 
-if ($remark) {
-    if ($status === 2)
-        $updateFields[] = "b_remark = ?";
-    if ($status === 5)
-        $updateFields[] = "to_bh_rm = ?";
-    if ($status === 6)
-        $updateFields[] = "po_team_rm = ?";
-    if ($status === 8)
-        $updateFields[] = "rrm = ?";
+// Handle remark field - use column from database if available
+if ($remark && $remarkFieldColumn) {
+    $updateFields[] = "{$remarkFieldColumn} = ?";
     $updateValues[] = $remark;
     $updateTypes .= "s";
 }

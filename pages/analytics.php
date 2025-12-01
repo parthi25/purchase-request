@@ -31,15 +31,9 @@ $currentPage = 'analytics.php';
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
             <div class="form-control">
                 <label class="label">
-                    <span class="label-text font-semibold">Start Date</span>
+                    <span class="label-text font-semibold">Date Range</span>
                 </label>
-                <input type="date" id="startDate" class="input input-bordered w-full" />
-            </div>
-            <div class="form-control">
-                <label class="label">
-                    <span class="label-text font-semibold">End Date</span>
-                </label>
-                <input type="date" id="endDate" class="input input-bordered w-full" />
+                <input type="text" id="dateRange" placeholder="Select Date Range" class="input input-bordered w-full" />
             </div>
             <div class="form-control">
                 <label class="label">
@@ -167,16 +161,98 @@ $currentPage = 'analytics.php';
 <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
 <script src="../assets/js/chart.umd.min.js"></script>
 <script src="../assets/js/select2.min.js"></script>
+
+<style>
+    /* Responsive Flatpickr Calendar Styles */
+    .flatpickr-calendar {
+        max-width: 100% !important;
+        width: auto !important;
+    }
+    
+    .fp-side-panel {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    
+    /* Mobile: Stack vertically */
+    @media (max-width: 768px) {
+        .flatpickr-calendar {
+            flex-direction: column !important;
+            max-width: 100vw !important;
+            left: 50% !important;
+            transform: translateX(-50%) !important;
+            right: auto !important;
+        }
+        
+        .flatpickr-calendar .fp-side-panel {
+            border-right: none !important;
+            border-top: 1px solid rgba(0, 0, 0, 0.1) !important;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1) !important;
+            margin-right: 0 !important;
+            margin-top: 0 !important;
+            padding-top: 10px !important;
+            width: 100% !important;
+            flex-direction: row !important;
+            flex-wrap: wrap !important;
+            gap: 4px !important;
+            max-height: 120px !important;
+        }
+        
+        .flatpickr-calendar .fp-side-panel button {
+            flex: 1 1 auto !important;
+            min-width: auto !important;
+            font-size: 11px !important;
+            padding: 6px 8px !important;
+        }
+        
+        .flatpickr-innerContainer {
+            width: 100% !important;
+        }
+    }
+    
+    /* Tablet: Adjust layout */
+    @media (min-width: 769px) and (max-width: 1024px) {
+        .flatpickr-calendar {
+            max-width: 90vw !important;
+        }
+        
+        .flatpickr-calendar .fp-side-panel {
+            width: 90px !important;
+            font-size: 11px !important;
+        }
+        
+        .flatpickr-calendar .fp-side-panel button {
+            font-size: 11px !important;
+            padding: 6px 8px !important;
+        }
+    }
+    
+    /* Small screens: Ensure calendar doesn't overflow */
+    @media (max-width: 480px) {
+        .flatpickr-calendar {
+            width: calc(100vw - 20px) !important;
+            left: 10px !important;
+            right: 10px !important;
+            transform: none !important;
+        }
+    }
+</style>
 <script>
 $(document).ready(function() {
     const AnalyticsDashboard = {
         state: {
             charts: {},
             analyticsData: {},
-            filters: {}
+            filters: {},
+            dateRangePicker: null,
+            startDate: '',
+            endDate: '',
+            resizeHandler: null
         },
 
         init() {
+            this.initDateRangePicker();
+            this.setupDefaultDates();
             this.initSelect2();
             this.initCharts();
             this.loadFilterOptions();
@@ -185,6 +261,167 @@ $(document).ready(function() {
             setTimeout(() => {
                 this.loadAnalytics();
             }, 500);
+        },
+
+        initDateRangePicker() {
+            const dateRangeInput = document.getElementById('dateRange');
+            if (dateRangeInput) {
+                this.state.dateRangePicker = flatpickr(dateRangeInput, {
+                    mode: "range",
+                    dateFormat: "Y-m-d",
+                    onChange: (selectedDates, dateStr, instance) => {
+                        if (selectedDates.length === 2) {
+                            this.state.startDate = selectedDates[0].toISOString().split('T')[0];
+                            this.state.endDate = selectedDates[1].toISOString().split('T')[0];
+                        } else if (selectedDates.length === 0) {
+                            this.state.startDate = '';
+                            this.state.endDate = '';
+                        }
+                    },
+                    onReady: (selectedDates, dateStr, instance) => {
+                        this.addQuickSelectButtons(instance);
+                        this.setupResponsiveHandlers(instance);
+                    },
+                    onOpen: (selectedDates, dateStr, instance) => {
+                        this.addQuickSelectButtons(instance);
+                        this.setupResponsiveHandlers(instance);
+                    }
+                });
+            }
+        },
+
+        setupResponsiveHandlers(instance) {
+            // Remove existing resize listener if any
+            if (this.state.resizeHandler) {
+                window.removeEventListener('resize', this.state.resizeHandler);
+            }
+            
+            // Add resize listener to update layout on screen size change
+            this.state.resizeHandler = () => {
+                if (instance.calendarContainer && instance.isOpen) {
+                    this.addQuickSelectButtons(instance);
+                }
+            };
+            
+            window.addEventListener('resize', this.state.resizeHandler);
+        },
+
+        addQuickSelectButtons(instance) {
+            const calendarContainer = instance.calendarContainer;
+            if (!calendarContainer) return;
+
+            // Remove existing side panel if any
+            const existingPanel = calendarContainer.querySelector('.fp-side-panel');
+            if (existingPanel) {
+                existingPanel.remove();
+            }
+
+            // Check screen size for responsive layout
+            const isMobile = window.innerWidth <= 768;
+            
+            // Ensure calendar container uses flex layout
+            if (calendarContainer.style.display !== 'flex') {
+                calendarContainer.style.display = 'flex';
+                // On mobile, stack vertically; on desktop, row-reverse (panel on left)
+                calendarContainer.style.flexDirection = isMobile ? 'column' : 'row-reverse';
+            }
+            // Add min-width to fit content (but respect max-width from CSS)
+            calendarContainer.style.minWidth = 'fit-content';
+            calendarContainer.style.maxWidth = '100%';
+
+            // Create a side panel
+            const panel = document.createElement("div");
+            panel.className = "fp-side-panel p-2 border-r mr-2 flex flex-col gap-1";
+            // Responsive styling
+            if (isMobile) {
+                panel.style.cssText = 'margin-top: 0; padding-top: 10px; width: 100%; flex-direction: row; flex-wrap: wrap; gap: 4px; border-right: none; border-top: 1px solid rgba(0,0,0,0.1); max-height: 120px; overflow-y: auto;';
+            } else {
+                panel.style.cssText = 'margin-top: 20px; padding-top: 20px;';
+            }
+
+            // Get today's date
+            const today = new Date();
+            const yesterday = new Date(today);
+            yesterday.setDate(yesterday.getDate() - 1);
+            
+            // Get first and last day of current month
+            const firstDayThisMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+            const lastDayThisMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            
+            // Get first and last day of last month
+            const firstDayLastMonth = new Date(today.getFullYear(), today.getMonth() - 1, 1);
+            const lastDayLastMonth = new Date(today.getFullYear(), today.getMonth(), 0);
+
+            // Get first and last day of current year
+            const firstDayThisYear = new Date(today.getFullYear(), 0, 1);
+            const lastDayThisYear = new Date(today.getFullYear(), 11, 31);
+            
+            // Get first and last day of last year
+            const firstDayLastYear = new Date(today.getFullYear() - 1, 0, 1);
+            const lastDayLastYear = new Date(today.getFullYear() - 1, 11, 31);
+
+            // Get first and last day of current quarter
+            const currentQuarter = Math.floor(today.getMonth() / 3);
+            const firstDayThisQuarter = new Date(today.getFullYear(), currentQuarter * 3, 1);
+            const lastDayThisQuarter = new Date(today.getFullYear(), (currentQuarter + 1) * 3, 0);
+            
+            // Get first and last day of last quarter
+            const lastQuarter = currentQuarter === 0 ? 3 : currentQuarter - 1;
+            const lastQuarterYear = currentQuarter === 0 ? today.getFullYear() - 1 : today.getFullYear();
+            const firstDayLastQuarter = new Date(lastQuarterYear, lastQuarter * 3, 1);
+            const lastDayLastQuarter = new Date(lastQuarterYear, (lastQuarter + 1) * 3, 0);
+
+            const ranges = [
+                { label: "Today", start: today, end: today, category: "day" },
+                { label: "Yesterday", start: yesterday, end: yesterday, category: "day" },
+                { label: "This Month", start: firstDayThisMonth, end: lastDayThisMonth, category: "month" },
+                { label: "Last Month", start: firstDayLastMonth, end: lastDayLastMonth, category: "month" },
+                { label: "This Quarter", start: firstDayThisQuarter, end: lastDayThisQuarter, category: "quarter" },
+                { label: "Last Quarter", start: firstDayLastQuarter, end: lastDayLastQuarter, category: "quarter" },
+                { label: "This Year", start: firstDayThisYear, end: lastDayThisYear, category: "year" },
+                { label: "Last Year", start: firstDayLastYear, end: lastDayLastYear, category: "year" },
+                { label: "Overall", start: null, end: null, category: "overall" }, // null means no date filter
+            ];
+
+            ranges.forEach(r => {
+                const btn = document.createElement("button");
+                btn.textContent = r.label;
+                btn.className = "btn btn-xs btn-outline";
+                // Responsive button styling
+                if (isMobile) {
+                    btn.style.cssText = 'white-space: nowrap; text-align: center; min-width: auto; flex: 1 1 auto; font-size: 11px; padding: 6px 8px;';
+                } else {
+                    btn.style.cssText = 'white-space: nowrap; text-align: left; min-width: fit-content; width: auto; padding-left: 12px; padding-right: 12px;';
+                }
+                btn.addEventListener("click", () => {
+                    if (r.start === null && r.end === null) {
+                        // Overall - clear dates
+                        instance.clear();
+                        this.state.startDate = '';
+                        this.state.endDate = '';
+                    } else {
+                        instance.setDate([r.start, r.end], true);
+                        this.state.startDate = r.start.toISOString().split('T')[0];
+                        this.state.endDate = r.end.toISOString().split('T')[0];
+                    }
+                    setTimeout(() => instance.close(), 100);
+                });
+                panel.appendChild(btn);
+            });
+
+            calendarContainer.appendChild(panel);
+        },
+
+        setupDefaultDates() {
+            const endDate = new Date();
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() - 30);
+            
+            if (this.state.dateRangePicker) {
+                this.state.dateRangePicker.setDate([startDate, endDate], true);
+                this.state.startDate = startDate.toISOString().split('T')[0];
+                this.state.endDate = endDate.toISOString().split('T')[0];
+            }
         },
 
         initSelect2() {
@@ -365,7 +602,15 @@ $(document).ready(function() {
         bindEvents() {
             $('#applyFiltersBtn').click(() => this.loadAnalytics());
             $('#resetFiltersBtn').click(() => {
-                $('#startDate, #endDate').val('');
+                // Reset date range picker
+                if (this.state.dateRangePicker) {
+                    const endDate = new Date();
+                    const startDate = new Date();
+                    startDate.setDate(startDate.getDate() - 30);
+                    this.state.dateRangePicker.setDate([startDate, endDate], true);
+                    this.state.startDate = startDate.toISOString().split('T')[0];
+                    this.state.endDate = endDate.toISOString().split('T')[0];
+                }
                 $('#statusFilter, #buyerFilter, #categoryFilter, #purchFilter').val(null).trigger('change');
                 this.loadAnalytics();
             });
@@ -376,8 +621,8 @@ $(document).ready(function() {
 
         loadAnalytics() {
             const filters = {
-                start_date: $('#startDate').val(),
-                end_date: $('#endDate').val(),
+                start_date: this.state.startDate,
+                end_date: this.state.endDate,
                 status: $('#statusFilter').val(),
                 buyer: $('#buyerFilter').val(),
                 category: $('#categoryFilter').val(),
@@ -597,8 +842,8 @@ $(document).ready(function() {
 
         loadChartData(chartType, additionalFilters = {}) {
             const baseFilters = {
-                start_date: $('#startDate').val(),
-                end_date: $('#endDate').val(),
+                start_date: this.state.startDate,
+                end_date: this.state.endDate,
                 status: $('#statusFilter').val(),
                 buyer: $('#buyerFilter').val(),
                 category: $('#categoryFilter').val(),

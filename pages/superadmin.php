@@ -138,12 +138,13 @@ include '../common/layout.php'; ?>
                             <th>Field Name</th>
                             <th>Required</th>
                             <th>Order</th>
+                            <th>DB Column</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="modalFieldsTableBody">
                         <tr>
-                            <td colspan="6" class="text-center">Loading...</td>
+                            <td colspan="7" class="text-center">Loading...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -368,6 +369,23 @@ include '../common/layout.php'; ?>
                         <span class="label-text">Field Order</span>
                     </label>
                     <input type="number" id="modalFieldOrder" name="field_order" class="input input-bordered w-full" value="0" min="0" required>
+                </div>
+                
+                <div class="form-control mb-4" id="dbColumnNameContainer" style="display: none;">
+                    <label class="label">
+                        <span class="label-text">Database Column Name</span>
+                        <span class="label-text-alt text-gray-500">(Only for remark fields)</span>
+                    </label>
+                    <select id="modalFieldDbColumn" name="db_column_name" class="select select-bordered w-full">
+                        <option value="">Select Column (Optional)</option>
+                        <option value="b_remark">b_remark (Buyer Remark)</option>
+                        <option value="to_bh_rm">to_bh_rm (To Buyer Head Remark)</option>
+                        <option value="po_team_rm">po_team_rm (PO Team Remark)</option>
+                        <option value="rrm">rrm (Rejection/Response Remark)</option>
+                    </select>
+                    <label class="label">
+                        <span class="label-text-alt text-gray-500">Specify which database column should store this remark value</span>
+                    </label>
                 </div>
                 
                 <div class="modal-action">

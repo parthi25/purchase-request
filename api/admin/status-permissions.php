@@ -73,10 +73,11 @@ try {
                 $field_name = Security::sanitizeInput($_POST['field_name']);
                 $is_required = isset($_POST['is_required']) ? 1 : 0;
                 $field_order = intval($_POST['field_order'] ?? 0);
+                $db_column_name = !empty($_POST['db_column_name']) ? Security::sanitizeInput($_POST['db_column_name']) : null;
                 
-                $stmt = $conn->prepare("INSERT INTO status_modal_fields (status_id, field_name, is_required, field_order) 
-                                       VALUES (?, ?, ?, ?)");
-                $stmt->bind_param("isii", $status_id, $field_name, $is_required, $field_order);
+                $stmt = $conn->prepare("INSERT INTO status_modal_fields (status_id, field_name, is_required, field_order, db_column_name) 
+                                       VALUES (?, ?, ?, ?, ?)");
+                $stmt->bind_param("isiss", $status_id, $field_name, $is_required, $field_order, $db_column_name);
             } elseif ($type === 'role_pr_permissions') {
                 if (!isset($_POST['role'])) {
                     sendResponse(400, "error", "Missing required field: role is required");
@@ -157,11 +158,12 @@ try {
                 $field_name = Security::sanitizeInput($putData['field_name']);
                 $is_required = isset($putData['is_required']) ? 1 : 0;
                 $field_order = intval($putData['field_order'] ?? 0);
+                $db_column_name = !empty($putData['db_column_name']) ? Security::sanitizeInput($putData['db_column_name']) : null;
                 
                 $stmt = $conn->prepare("UPDATE status_modal_fields 
-                                       SET status_id = ?, field_name = ?, is_required = ?, field_order = ?
+                                       SET status_id = ?, field_name = ?, is_required = ?, field_order = ?, db_column_name = ?
                                        WHERE id = ?");
-                $stmt->bind_param("isiii", $status_id, $field_name, $is_required, $field_order, $id);
+                $stmt->bind_param("isiisi", $status_id, $field_name, $is_required, $field_order, $db_column_name, $id);
             } elseif ($type === 'role_pr_permissions') {
                 if (!isset($putData['role'])) {
                     sendResponse(400, "error", "Missing required field: role is required");

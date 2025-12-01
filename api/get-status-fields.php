@@ -27,7 +27,7 @@ try {
 
     // Fetch field configuration for the given status
     $stmt = $conn->prepare("
-        SELECT field_name, is_required, field_order
+        SELECT field_name, is_required, field_order, db_column_name
         FROM status_modal_fields
         WHERE status_id = ?
         ORDER BY field_order ASC
@@ -47,7 +47,8 @@ try {
         $fields[] = [
             'field_name' => $row['field_name'],
             'is_required' => (bool) $row['is_required'],
-            'field_order' => (int) $row['field_order']
+            'field_order' => (int) $row['field_order'],
+            'db_column_name' => $row['db_column_name'] ?? null
         ];
     }
     

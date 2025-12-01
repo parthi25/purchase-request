@@ -81,16 +81,17 @@ try {
     <!-- Favicon -->
     <link rel="shortcut icon" href="../assets/brand/favicon.ico" type="image/x-icon">
 </head>
-<body>
-    <div class="drawer lg:drawer-open">
+<body class="h-screen overflow-hidden">
+    <div class="drawer lg:drawer-open h-full">
         <input id="drawer-toggle" type="checkbox" class="drawer-toggle" />
         
         <!-- Sidebar -->
         <div class="drawer-side">
             <label for="drawer-toggle" class="drawer-overlay"></label>
-            <aside class="w-64 min-h-full bg-base-200">
-                <div class="p-4">
-                    <h2 class="text-2xl font-bold mb-6">Purchase Tracker</h2>
+            <aside class="w-64 h-full bg-base-200 overflow-y-auto">
+                <div class="">
+                    <!-- <h2 class="text-2xl font-bold mb-6">Purchase Tracker</h2> -->
+                     <img src="../assets/brand/jtlogo.png" alt="Purchase Tracker" class="w-full">
                     <ul class="menu p-0 w-full">
                         <?php
                         // Render dynamic menu items from database
@@ -106,7 +107,7 @@ try {
                                 $icon = !empty($menuItem['menu_item_icon']) ? $menuItem['menu_item_icon'] : '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>';
                                 
                                 echo '<li>';
-                                echo '<a href="' . htmlspecialchars($menuItem['menu_item_url']) . '" class="' . ($isActive ? 'active bg-primary text-primary-content' : '') . '">';
+                                echo '<a href="' . htmlspecialchars($menuItem['menu_item_url']) . '" class=text-xl "' . ($isActive ? 'active bg-primary text-primary-content' : '') . '">';
                                 echo $icon;
                                 echo htmlspecialchars($menuItem['menu_item_label']);
                                 echo '</a>';
@@ -130,9 +131,9 @@ try {
         </div>
 
         <!-- Main Content -->
-        <div class="drawer-content flex flex-col">
+        <div class="drawer-content flex flex-col h-full overflow-hidden">
             <!-- Top Navbar -->
-            <div class="navbar bg-base-200 shadow-sm sticky top-0 z-50">
+            <div class="navbar bg-base-200 shadow-sm z-50 flex-shrink-0">
                 <div class="flex-none lg:hidden">
                     <label for="drawer-toggle" class="btn btn-square btn-ghost">
                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-5 h-5 stroke-current">
@@ -187,7 +188,7 @@ try {
             </div>
 
             <!-- Page Loader (Skeleton) -->
-            <div id="pageLoader" class="flex-1 p-4 lg:p-6">
+            <div id="pageLoader" class="flex-1 p-4 lg:p-6 overflow-y-auto">
                 <div class="space-y-6 animate-pulse">
                     <!-- Header Skeleton -->
                     <div class="flex justify-between items-center mb-6">
@@ -255,5 +256,5 @@ try {
             </div>
 
             <!-- Page Content (Hidden initially) -->
-            <main id="pageContent" class="flex-1 p-4 lg:p-6 hidden">
+            <main id="pageContent" class="flex-1 p-4 lg:p-6 hidden overflow-y-auto">
 

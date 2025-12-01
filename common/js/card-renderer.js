@@ -14,7 +14,7 @@ const CardConfigs = {
         statusBadges: {
             "1": '<span class="text-sm font-semibold text-green-600 capitalize">Open</span>',
             "2": '<span class="text-sm font-semibold text-blue-600 capitalize">Forwarded to Buyer</span>',
-            "3": '<span class="text-sm font-semibold text-yellow-600 capitalize">Agent/Supplier contacted and Awaiting PO details</span>',
+            "3": '<span class="text-sm font-semibold text-yellow-600 truncate capitalize">Agent/Supplier contacted and Awaiting PO details</span>',
             "4": '<span class="text-sm font-semibold text-indigo-600 capitalize">Received Proforma PO</span>',
             "5": '<span class="text-sm font-semibold text-red-600 capitalize">Forwarded to Buyer Head</span>',
             "6": '<span class="text-sm font-semibold text-gray-600 capitalize">Forwarded to PO Team</span>',
@@ -46,7 +46,7 @@ const CardConfigs = {
         statusBadges: {
             "1": '<span class="text-sm font-semibold text-green-600 capitalize">Open</span>',
             "2": '<span class="text-sm font-semibold text-blue-600 capitalize">Forwarded to Buyer</span>',
-            "3": '<span class="text-sm font-semibold text-yellow-600 capitalize">Agent/Supplier contacted and Awaiting PO details</span>',
+            "3": '<span class="text-sm font-semibold text-yellow-600 truncate capitalize">Agent/Supplier contacted and Awaiting PO details</span>',
             "4": '<span class="text-sm font-semibold text-indigo-600 capitalize">Received Proforma PO</span>',
             "5": '<span class="text-sm font-semibold text-red-600 capitalize">Forwarded to Buyer Head</span>',
             "6": '<span class="text-sm font-semibold text-gray-600 capitalize">Forwarded to PO Team</span>',
@@ -177,7 +177,7 @@ function renderCards(dataArray, role = 'buyer', containerId = 'cardContainer') {
                             ${icon}
                             ${label}:
                         </span>
-                        <span class="capitalize">${typeof mappedItem[key] === 'string' && key !== 'refId' && key !== 'poNumber' && key !== 'createdOn' && key !== 'qty' ? toTitleCase(mappedItem[key]) : mappedItem[key]}</span>
+                        <span class="truncate capitalize">${typeof mappedItem[key] === 'string' && key !== 'refId' && key !== 'poNumber' && key !== 'createdOn' && key !== 'qty' ? toTitleCase(mappedItem[key]) : mappedItem[key]}</span>
                     </div>
                 `;
             }

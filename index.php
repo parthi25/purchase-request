@@ -1,3 +1,58 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
+// If user already has a session, redirect to their initial page
+if (isset($_SESSION["user_id"])) {
+    require_once __DIR__ . '/config/db.php';
+    
+    $userId = $_SESSION['user_id'];
+    $role = $_SESSION['role'] ?? '';
+    
+    // Get initial page URL from role_initial_settings
+    $initialPageUrl = null;
+    try {
+        if (!empty($role)) {
+            $initialQuery = "SELECT initial_page_url FROM role_initial_settings WHERE role = ? AND is_active = 1 LIMIT 1";
+            $initialStmt = $conn->prepare($initialQuery);
+            if ($initialStmt) {
+                $initialStmt->bind_param("s", $role);
+                $initialStmt->execute();
+                $initialResult = $initialStmt->get_result();
+                if ($initialRow = $initialResult->fetch_assoc()) {
+                    $initialPageUrl = $initialRow['initial_page_url'];
+                }
+                $initialResult->free();
+                $initialStmt->close();
+            }
+        }
+    } catch (Exception $e) {
+        error_log("Error fetching initial page: " . $e->getMessage());
+    }
+    
+    // Determine redirect URL
+    $redirectUrl = './pages/po-head.php'; // Default fallback
+    
+    if ($initialPageUrl) {
+        $redirectUrl = './pages/' . $initialPageUrl;
+    } else if ($role) {
+        // Fallback to default based on role
+        $defaultUrls = [
+            'admin' => './pages/admin.php',
+            'buyer' => './pages/buyer.php',
+            'B_Head' => './pages/buyer-head.php',
+            'PO_Head' => './pages/po-head.php',
+            'PO_Team_Member' => './pages/po-member.php',
+            'super_admin' => './pages/admin.php',
+            'master' => './pages/admin.php'
+        ];
+        $redirectUrl = $defaultUrls[$role] ?? './pages/po-head.php';
+    }
+    
+    header("Location: " . $redirectUrl);
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 

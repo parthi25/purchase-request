@@ -1,11 +1,11 @@
 <?php include '../common/layout.php'; ?>
     <?php if (!in_array($_SESSION['role'] ?? '', ['PO_Head', 'PO_Team_Member'])): ?>
-    <!-- Create PR Button - Above Filter -->
-    <div class="mb-3 hidden lg:flex justify-end">
+    <!-- Create PR Button - Sticky Top Right -->
+    <div class="hidden lg:block fixed top-20 right-6 z-40 pt-2">
         <button id="openCreatePRBtn" class="btn btn-accent shadow-lg">Create PR</button>
     </div>
     <?php endif; ?>
-    <div class="bg-base-200 border-base-300 collapse border">
+    <div class="bg-base-200 border-base-300 collapse border mt-1 lg:mt-15">
   <input type="checkbox" class="peer" />
   <div
     class="collapse-title bg-base-200 text-base-content font-semibold flex items-center justify-between"

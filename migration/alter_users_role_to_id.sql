@@ -92,17 +92,38 @@ DEALLOCATE PREPARE stmt;
 -- ============================================
 -- Step 3: Migrate existing role enum values to role_id
 -- ============================================
+-- First, check if role column exists
+SET @role_col_exists = (
+    SELECT COUNT(*) 
+    FROM INFORMATION_SCHEMA.COLUMNS 
+    WHERE TABLE_SCHEMA = DATABASE() 
+    AND TABLE_NAME = 'users' 
+    AND COLUMN_NAME = 'role'
+);
+
 -- Update role_id based on role enum value matching role_code
 -- Use BINARY comparison to avoid collation mismatch
-UPDATE `users` u
-INNER JOIN `roles` r ON BINARY u.role = BINARY r.role_code
-SET u.role_id = r.id
-WHERE u.role_id IS NULL;
+-- Only run if role column exists
+SET @migrate_role_sql = IF(
+    @role_col_exists > 0,
+    'UPDATE `users` u
+     INNER JOIN `roles` r ON BINARY u.role = BINARY r.role_code
+     SET u.role_id = r.id
+     WHERE u.role_id IS NULL',
+    'SELECT 1'
+);
+PREPARE stmt FROM @migrate_role_sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
 -- Handle any roles that don't match (set to default admin role)
-UPDATE `users` u
-SET u.role_id = (SELECT id FROM roles WHERE BINARY role_code = BINARY 'admin' LIMIT 1)
-WHERE u.role_id IS NULL;
+-- Also handle case where role column doesn't exist but role_id is NULL
+SET @set_default_role_sql = 'UPDATE `users` u
+     SET u.role_id = (SELECT id FROM roles WHERE BINARY role_code = BINARY ''admin'' LIMIT 1)
+     WHERE u.role_id IS NULL';
+PREPARE stmt FROM @set_default_role_sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
 
 -- ============================================
 -- Step 4: Make role_id NOT NULL after migration

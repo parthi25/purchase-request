@@ -199,8 +199,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 select.innerHTML = '<option value="">Select Role</option>';
                 roles.forEach(role => {
                     const option = document.createElement('option');
-                    option.value = role;
-                    option.textContent = role;
+                    // Handle both object format (code/name) and string format for backward compatibility
+                    const roleCode = role.code || role;
+                    const roleName = role.name || roleCode;
+                    option.value = roleCode;
+                    option.textContent = roleName;
                     select.appendChild(option);
                 });
             }
@@ -768,6 +771,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 'remark': 'Remark'
             };
             const fieldDisplayName = fieldNameMap[field.field_name] || field.field_name;
+            const dbColumnDisplay = field.db_column_name ? `<span class="text-xs text-gray-500">→ ${field.db_column_name}</span>` : '';
             
             return `
                 <tr>
@@ -780,6 +784,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         </span>
                     </td>
                     <td>${field.field_order}</td>
+                    <td>${field.db_column_name || '<span class="text-gray-400">-</span>'}</td>
                     <td>
                         <button class="btn btn-sm btn-primary" onclick="editModalField(${field.id})">Edit</button>
                         <button class="btn btn-sm btn-error" onclick="deleteModalField(${field.id})">Delete</button>
@@ -850,6 +855,20 @@ document.addEventListener('DOMContentLoaded', function() {
             statusSelect.innerHTML += `<option value="${status.id}">${status.status}</option>`;
         });
         
+        // Show/hide db_column_name field based on field_name selection
+        const fieldNameSelect = document.getElementById('modalFieldName');
+        const dbColumnContainer = document.getElementById('dbColumnNameContainer');
+        
+        function toggleDbColumnField() {
+            const isRemark = fieldNameSelect.value === 'remark';
+            dbColumnContainer.style.display = isRemark ? 'block' : 'none';
+            if (!isRemark) {
+                document.getElementById('modalFieldDbColumn').value = '';
+            }
+        }
+        
+        fieldNameSelect.addEventListener('change', toggleDbColumnField);
+        
         if (id) {
             const field = modalFields.find(f => f.id == id);
             if (field) {
@@ -857,7 +876,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById('modalFieldName').value = field.field_name;
                 document.getElementById('modalFieldRequired').checked = field.is_required == 1;
                 document.getElementById('modalFieldOrder').value = field.field_order;
+                if (field.db_column_name) {
+                    document.getElementById('modalFieldDbColumn').value = field.db_column_name;
+                }
+                toggleDbColumnField();
             }
+        } else {
+            toggleDbColumnField();
         }
         
         modal.showModal();
@@ -873,6 +898,10 @@ document.addEventListener('DOMContentLoaded', function() {
         formData.append('field_name', document.getElementById('modalFieldName').value);
         formData.append('is_required', document.getElementById('modalFieldRequired').checked ? '1' : '0');
         formData.append('field_order', document.getElementById('modalFieldOrder').value);
+        const dbColumnName = document.getElementById('modalFieldDbColumn').value;
+        if (dbColumnName) {
+            formData.append('db_column_name', dbColumnName);
+        }
         
         try {
             const url = '../api/admin/status-permissions.php';

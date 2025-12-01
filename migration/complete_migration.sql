@@ -244,9 +244,319 @@ CREATE TABLE IF NOT EXISTS `status_modal_fields` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================================
+-- PART 2.5: FIX ORPHANED DATA BEFORE FOREIGN KEYS
+-- ============================================
+-- Clean up orphaned data to prevent foreign key constraint failures
+-- This ensures all foreign key references point to valid records
+
+-- Ensure pr_statuses has all required statuses
+INSERT IGNORE INTO `pr_statuses` (`id`, `status`, `created_at`, `updated_at`) VALUES
+(1, 'Open', NOW(), NOW()),
+(2, 'Forwarded to Buyer', NOW(), NOW()),
+(3, 'Agent/Supplier contacted and Awaiting PO details', NOW(), NOW()),
+(4, 'Received Proforma PO', NOW(), NOW()),
+(5, 'Forwarded to Buyer Head', NOW(), NOW()),
+(6, 'Forwarded to PO Team', NOW(), NOW()),
+(7, 'PO generated', NOW(), NOW()),
+(8, 'Rejected', NOW(), NOW()),
+(9, 'Forwarded to PO Members', NOW(), NOW())
+ON DUPLICATE KEY UPDATE `status` = VALUES(`status`), `updated_at` = NOW();
+
+-- Ensure categories has at least one category
+INSERT IGNORE INTO `categories` (`id`, `maincat`, `created_at`, `updated_at`) VALUES
+(1, 'Default Category', NOW(), NOW())
+ON DUPLICATE KEY UPDATE `maincat` = VALUES(`maincat`), `updated_at` = NOW();
+
+-- Ensure purchase_types has at least one type
+INSERT IGNORE INTO `purchase_types` (`id`, `name`, `created_at`, `updated_at`) VALUES
+(1, 'Default Purchase Type', NOW(), NOW())
+ON DUPLICATE KEY UPDATE `name` = VALUES(`name`), `updated_at` = NOW();
+
+-- Fix orphaned created_by references in purchase_requests
+SET @fix_created_by_sql = IF(
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'purchase_requests') > 0
+    AND (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users') > 0,
+    'UPDATE `purchase_requests` pr
+     LEFT JOIN `users` u ON pr.created_by = u.id
+     SET pr.created_by = (SELECT id FROM users LIMIT 1)
+     WHERE pr.created_by IS NOT NULL AND u.id IS NULL',
+    'SELECT 1'
+);
+PREPARE stmt FROM @fix_created_by_sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Fix orphaned b_head references in purchase_requests
+SET @fix_b_head_sql = IF(
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'purchase_requests') > 0
+    AND (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users') > 0,
+    'UPDATE `purchase_requests` pr
+     LEFT JOIN `users` u ON pr.b_head = u.id
+     SET pr.b_head = (SELECT id FROM users LIMIT 1)
+     WHERE pr.b_head IS NOT NULL AND u.id IS NULL',
+    'SELECT 1'
+);
+PREPARE stmt FROM @fix_b_head_sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Fix orphaned buyer references (set to NULL - can be NULL)
+SET @fix_buyer_sql = IF(
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'purchase_requests') > 0
+    AND (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users') > 0,
+    'UPDATE `purchase_requests` pr
+     LEFT JOIN `users` u ON pr.buyer = u.id
+     SET pr.buyer = NULL
+     WHERE pr.buyer IS NOT NULL AND u.id IS NULL',
+    'SELECT 1'
+);
+PREPARE stmt FROM @fix_buyer_sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Fix orphaned po_team references (set to NULL - can be NULL)
+SET @fix_po_team_sql = IF(
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'purchase_requests') > 0
+    AND (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users') > 0,
+    'UPDATE `purchase_requests` pr
+     LEFT JOIN `users` u ON pr.po_team = u.id
+     SET pr.po_team = NULL
+     WHERE pr.po_team IS NOT NULL AND u.id IS NULL',
+    'SELECT 1'
+);
+PREPARE stmt FROM @fix_po_team_sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Fix orphaned supplier_id references
+SET @fix_supplier_sql = IF(
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'purchase_requests') > 0
+    AND (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'suppliers') > 0,
+    'UPDATE `purchase_requests` pr
+     LEFT JOIN `suppliers` s ON pr.supplier_id = s.id
+     SET pr.supplier_id = (SELECT id FROM suppliers LIMIT 1)
+     WHERE pr.supplier_id IS NOT NULL AND s.id IS NULL',
+    'SELECT 1'
+);
+PREPARE stmt FROM @fix_supplier_sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Fix orphaned new_supplier references (set to NULL - can be NULL)
+SET @fix_new_supplier_sql = IF(
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'purchase_requests') > 0
+    AND (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'supplier_requests') > 0,
+    'UPDATE `purchase_requests` pr
+     LEFT JOIN `supplier_requests` sr ON pr.new_supplier = sr.id
+     SET pr.new_supplier = NULL
+     WHERE pr.new_supplier IS NOT NULL AND sr.id IS NULL',
+    'SELECT 1'
+);
+PREPARE stmt FROM @fix_new_supplier_sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Fix orphaned category_id references
+SET @fix_category_sql = IF(
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'purchase_requests') > 0
+    AND (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'categories') > 0,
+    'UPDATE `purchase_requests` pr
+     LEFT JOIN `categories` c ON pr.category_id = c.id
+     SET pr.category_id = (SELECT id FROM categories LIMIT 1)
+     WHERE pr.category_id IS NOT NULL AND c.id IS NULL',
+    'SELECT 1'
+);
+PREPARE stmt FROM @fix_category_sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Fix orphaned purch_id references
+SET @fix_purchase_type_sql = IF(
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'purchase_requests') > 0
+    AND (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'purchase_types') > 0,
+    'UPDATE `purchase_requests` pr
+     LEFT JOIN `purchase_types` pt ON pr.purch_id = pt.id
+     SET pr.purch_id = (SELECT id FROM purchase_types LIMIT 1)
+     WHERE pr.purch_id IS NOT NULL AND pt.id IS NULL',
+    'SELECT 1'
+);
+PREPARE stmt FROM @fix_purchase_type_sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Fix orphaned po_status references (critical - must have valid status)
+SET @fix_status_sql = IF(
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'purchase_requests') > 0
+    AND (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'pr_statuses') > 0,
+    'UPDATE `purchase_requests` pr
+     LEFT JOIN `pr_statuses` ps ON pr.po_status = ps.id
+     SET pr.po_status = 1
+     WHERE pr.po_status IS NOT NULL AND ps.id IS NULL',
+    'SELECT 1'
+);
+PREPARE stmt FROM @fix_status_sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Fix orphaned ord_id in pr_assignments (delete orphaned records)
+SET @fix_assignment_pr_sql = IF(
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'pr_assignments') > 0
+    AND (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'purchase_requests') > 0,
+    'DELETE FROM `pr_assignments` pa
+     WHERE pa.ord_id IS NOT NULL 
+     AND NOT EXISTS (SELECT 1 FROM purchase_requests pr WHERE pr.id = pa.ord_id)',
+    'SELECT 1'
+);
+PREPARE stmt FROM @fix_assignment_pr_sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Fix orphaned po_team_member in pr_assignments (set to NULL)
+SET @fix_assignment_member_sql = IF(
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'pr_assignments') > 0
+    AND (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users') > 0,
+    'UPDATE `pr_assignments` pa
+     LEFT JOIN `users` u ON pa.po_team_member = u.id
+     SET pa.po_team_member = NULL
+     WHERE pa.po_team_member IS NOT NULL AND u.id IS NULL',
+    'SELECT 1'
+);
+PREPARE stmt FROM @fix_assignment_member_sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Fix orphaned ord_id in po_documents (delete orphaned records)
+SET @fix_po_doc_sql = IF(
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'po_documents') > 0
+    AND (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'purchase_requests') > 0,
+    'DELETE FROM `po_documents` pd
+     WHERE pd.ord_id IS NOT NULL 
+     AND NOT EXISTS (SELECT 1 FROM purchase_requests pr WHERE pr.id = pd.ord_id)',
+    'SELECT 1'
+);
+PREPARE stmt FROM @fix_po_doc_sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Fix orphaned ord_id in pr_attachments (delete orphaned records)
+SET @fix_attachment_sql = IF(
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'pr_attachments') > 0
+    AND (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'purchase_requests') > 0,
+    'DELETE FROM `pr_attachments` pa
+     WHERE pa.ord_id IS NOT NULL 
+     AND NOT EXISTS (SELECT 1 FROM purchase_requests pr WHERE pr.id = pa.ord_id)',
+    'SELECT 1'
+);
+PREPARE stmt FROM @fix_attachment_sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Fix orphaned created_by in supplier_requests
+SET @fix_supplier_req_created_by_sql = IF(
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'supplier_requests') > 0
+    AND (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users') > 0,
+    'UPDATE `supplier_requests` sr
+     LEFT JOIN `users` u ON sr.created_by = u.id
+     SET sr.created_by = (SELECT id FROM users LIMIT 1)
+     WHERE sr.created_by IS NOT NULL AND u.id IS NULL',
+    'SELECT 1'
+);
+PREPARE stmt FROM @fix_supplier_req_created_by_sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- ============================================
+-- PART 2.6: ENSURE INDEXES EXIST BEFORE FOREIGN KEYS
+-- ============================================
+-- Foreign keys require indexes on referenced columns
+-- Primary keys automatically have indexes, but we need indexes on foreign key columns
+
+-- Add indexes to purchase_requests foreign key columns (if they don't exist)
+SET @add_idx_created_by_sql = IF(
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS 
+     WHERE TABLE_SCHEMA = DATABASE() 
+     AND TABLE_NAME = 'purchase_requests' 
+     AND INDEX_NAME = 'idx_created_by') = 0
+    AND (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
+         WHERE TABLE_SCHEMA = DATABASE() 
+         AND TABLE_NAME = 'purchase_requests' 
+         AND COLUMN_NAME = 'created_by') > 0,
+    'ALTER TABLE `purchase_requests` ADD INDEX `idx_created_by` (`created_by`)',
+    'SELECT 1'
+);
+PREPARE stmt FROM @add_idx_created_by_sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+SET @add_idx_b_head_sql = IF(
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS 
+     WHERE TABLE_SCHEMA = DATABASE() 
+     AND TABLE_NAME = 'purchase_requests' 
+     AND INDEX_NAME = 'idx_b_head') = 0
+    AND (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
+         WHERE TABLE_SCHEMA = DATABASE() 
+         AND TABLE_NAME = 'purchase_requests' 
+         AND COLUMN_NAME = 'b_head') > 0,
+    'ALTER TABLE `purchase_requests` ADD INDEX `idx_b_head` (`b_head`)',
+    'SELECT 1'
+);
+PREPARE stmt FROM @add_idx_b_head_sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+SET @add_idx_supplier_id_sql = IF(
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS 
+     WHERE TABLE_SCHEMA = DATABASE() 
+     AND TABLE_NAME = 'purchase_requests' 
+     AND INDEX_NAME = 'idx_supplier_id') = 0
+    AND (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
+         WHERE TABLE_SCHEMA = DATABASE() 
+         AND TABLE_NAME = 'purchase_requests' 
+         AND COLUMN_NAME = 'supplier_id') > 0,
+    'ALTER TABLE `purchase_requests` ADD INDEX `idx_supplier_id` (`supplier_id`)',
+    'SELECT 1'
+);
+PREPARE stmt FROM @add_idx_supplier_id_sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+SET @add_idx_category_id_sql = IF(
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS 
+     WHERE TABLE_SCHEMA = DATABASE() 
+     AND TABLE_NAME = 'purchase_requests' 
+     AND INDEX_NAME = 'idx_category_id') = 0
+    AND (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
+         WHERE TABLE_SCHEMA = DATABASE() 
+         AND TABLE_NAME = 'purchase_requests' 
+         AND COLUMN_NAME = 'category_id') > 0,
+    'ALTER TABLE `purchase_requests` ADD INDEX `idx_category_id` (`category_id`)',
+    'SELECT 1'
+);
+PREPARE stmt FROM @add_idx_category_id_sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+SET @add_idx_purch_id_sql = IF(
+    (SELECT COUNT(*) FROM INFORMATION_SCHEMA.STATISTICS 
+     WHERE TABLE_SCHEMA = DATABASE() 
+     AND TABLE_NAME = 'purchase_requests' 
+     AND INDEX_NAME = 'idx_purch_id') = 0
+    AND (SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS 
+         WHERE TABLE_SCHEMA = DATABASE() 
+         AND TABLE_NAME = 'purchase_requests' 
+         AND COLUMN_NAME = 'purch_id') > 0,
+    'ALTER TABLE `purchase_requests` ADD INDEX `idx_purch_id` (`purch_id`)',
+    'SELECT 1'
+);
+PREPARE stmt FROM @add_idx_purch_id_sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- ============================================
 -- PART 3: ADD FOREIGN KEY RELATIONSHIPS
 -- ============================================
 -- Add foreign keys with error handling (skip if already exists)
+-- Data cleanup has been done above, so foreign keys should work now
 
 -- purchase_requests foreign keys
 SET @fk_sql = IF(
