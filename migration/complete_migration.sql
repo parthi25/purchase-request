@@ -249,6 +249,67 @@ CREATE TABLE IF NOT EXISTS `status_modal_fields` (
 -- Clean up orphaned data to prevent foreign key constraint failures
 -- This ensures all foreign key references point to valid records
 
+-- Ensure pr_statuses table has created_at and updated_at columns
+-- (in case table was created from existing table without these columns)
+SET @col_exists = (
+    SELECT COUNT(*) 
+    FROM INFORMATION_SCHEMA.COLUMNS 
+    WHERE TABLE_SCHEMA = DATABASE() 
+    AND TABLE_NAME = 'pr_statuses' 
+    AND COLUMN_NAME = 'created_at'
+);
+
+SET @add_cols_sql = IF(
+    @col_exists = 0,
+    'ALTER TABLE `pr_statuses` 
+     ADD COLUMN `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP AFTER `status`,
+     ADD COLUMN `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP AFTER `created_at`',
+    'SELECT 1'
+);
+PREPARE stmt FROM @add_cols_sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Ensure categories table has created_at and updated_at columns
+SET @col_exists_cat = (
+    SELECT COUNT(*) 
+    FROM INFORMATION_SCHEMA.COLUMNS 
+    WHERE TABLE_SCHEMA = DATABASE() 
+    AND TABLE_NAME = 'categories' 
+    AND COLUMN_NAME = 'created_at'
+);
+
+SET @add_cols_cat_sql = IF(
+    @col_exists_cat = 0,
+    'ALTER TABLE `categories` 
+     ADD COLUMN `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP AFTER `maincat`,
+     ADD COLUMN `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP AFTER `created_at`',
+    'SELECT 1'
+);
+PREPARE stmt FROM @add_cols_cat_sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
+-- Ensure purchase_types table has created_at and updated_at columns
+SET @col_exists_pt = (
+    SELECT COUNT(*) 
+    FROM INFORMATION_SCHEMA.COLUMNS 
+    WHERE TABLE_SCHEMA = DATABASE() 
+    AND TABLE_NAME = 'purchase_types' 
+    AND COLUMN_NAME = 'created_at'
+);
+
+SET @add_cols_pt_sql = IF(
+    @col_exists_pt = 0,
+    'ALTER TABLE `purchase_types` 
+     ADD COLUMN `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP AFTER `name`,
+     ADD COLUMN `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP AFTER `created_at`',
+    'SELECT 1'
+);
+PREPARE stmt FROM @add_cols_pt_sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+
 -- Ensure pr_statuses has all required statuses
 INSERT IGNORE INTO `pr_statuses` (`id`, `status`, `created_at`, `updated_at`) VALUES
 (1, 'Open', NOW(), NOW()),
@@ -402,7 +463,7 @@ DEALLOCATE PREPARE stmt;
 SET @fix_assignment_pr_sql = IF(
     (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'pr_assignments') > 0
     AND (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'purchase_requests') > 0,
-    'DELETE FROM `pr_assignments` pa
+    'DELETE pa FROM `pr_assignments` pa
      WHERE pa.ord_id IS NOT NULL 
      AND NOT EXISTS (SELECT 1 FROM purchase_requests pr WHERE pr.id = pa.ord_id)',
     'SELECT 1'
@@ -429,7 +490,7 @@ DEALLOCATE PREPARE stmt;
 SET @fix_po_doc_sql = IF(
     (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'po_documents') > 0
     AND (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'purchase_requests') > 0,
-    'DELETE FROM `po_documents` pd
+    'DELETE pd FROM `po_documents` pd
      WHERE pd.ord_id IS NOT NULL 
      AND NOT EXISTS (SELECT 1 FROM purchase_requests pr WHERE pr.id = pd.ord_id)',
     'SELECT 1'
@@ -442,7 +503,7 @@ DEALLOCATE PREPARE stmt;
 SET @fix_attachment_sql = IF(
     (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'pr_attachments') > 0
     AND (SELECT COUNT(*) FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'purchase_requests') > 0,
-    'DELETE FROM `pr_attachments` pa
+    'DELETE pa FROM `pr_attachments` pa
      WHERE pa.ord_id IS NOT NULL 
      AND NOT EXISTS (SELECT 1 FROM purchase_requests pr WHERE pr.id = pa.ord_id)',
     'SELECT 1'

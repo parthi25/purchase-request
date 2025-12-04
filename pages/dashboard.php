@@ -1058,7 +1058,11 @@
                         },
                         scales: {
                             y: {
-                                beginAtZero: true
+                                beginAtZero: true,
+                                ticks: {
+                                    stepSize: 1,
+                                    maxTicksLimit: 20
+                                }
                             }
                         }
                     }
@@ -1100,7 +1104,8 @@
                                 beginAtZero: true,
                                 ticks: {
                                     stepSize: 1,
-                                    precision: 0
+                                    precision: 0,
+                                    maxTicksLimit: 20
                                 }
                             },
                             x: {
@@ -1117,32 +1122,61 @@
             },
 
             updateCharts() {
-                // Defer chart updates to avoid blocking
-                requestAnimationFrame(() => {
-                    const stats = this.state.stats;
-                    
-                    // Update Status Distribution Chart
-                    if (stats.status_distribution && this.state.statusChart) {
+                const stats = this.state.stats;
+                
+                // Update charts in separate frames to avoid blocking
+                // Update Status Distribution Chart
+                if (stats.status_distribution && this.state.statusChart) {
+                    requestAnimationFrame(() => {
                         const statusLabels = Object.keys(stats.status_distribution);
                         const statusData = Object.values(stats.status_distribution);
                         
                         this.state.statusChart.data.labels = statusLabels;
                         this.state.statusChart.data.datasets[0].data = statusData;
                         this.state.statusChart.update('none'); // 'none' mode for faster updates
-                    }
+                    });
+                }
 
-                    // Update Time Buckets Chart
-                    if (stats.time_buckets && this.state.timeBucketChart) {
+                // Update Time Buckets Chart in next frame
+                if (stats.time_buckets && this.state.timeBucketChart) {
+                    requestAnimationFrame(() => {
                         const timeLabels = Object.keys(stats.time_buckets);
                         const timeData = Object.values(stats.time_buckets);
                         
-                        this.state.timeBucketChart.data.labels = timeLabels;
-                        this.state.timeBucketChart.data.datasets[0].data = timeData;
-                        this.state.timeBucketChart.update('none'); // 'none' mode for faster updates
-                    }
+                        // Limit data points to prevent too many ticks
+                        const maxPoints = 50;
+                        let labels = timeLabels;
+                        let data = timeData;
+                        
+                        if (timeLabels.length > maxPoints) {
+                            // Sample data points evenly
+                            const step = Math.ceil(timeLabels.length / maxPoints);
+                            labels = [];
+                            data = [];
+                            for (let i = 0; i < timeLabels.length; i += step) {
+                                labels.push(timeLabels[i]);
+                                data.push(timeData[i]);
+                            }
+                        }
+                        
+                        this.state.timeBucketChart.data.labels = labels;
+                        this.state.timeBucketChart.data.datasets[0].data = data;
+                        
+                        // Configure y-axis to prevent too many ticks
+                        const maxValue = Math.max(...data, 1);
+                        const stepSize = Math.ceil(maxValue / 20); // Max 20 ticks
+                        this.state.timeBucketChart.options.scales.y.ticks = {
+                            stepSize: stepSize,
+                            maxTicksLimit: 20
+                        };
+                        
+                        this.state.timeBucketChart.update('none');
+                    });
+                }
 
-                    // Update Buyer Chart
-                    if (stats.buyer_distribution && this.state.buyerChart) {
+                // Update Buyer Chart in next frame
+                if (stats.buyer_distribution && this.state.buyerChart) {
+                    requestAnimationFrame(() => {
                         const buyerLabels = Object.keys(stats.buyer_distribution);
                         const buyerData = Object.values(stats.buyer_distribution);
                         
@@ -1157,6 +1191,15 @@
                             
                             this.state.buyerChart.data.labels = buyerEntries.map(e => e.label);
                             this.state.buyerChart.data.datasets[0].data = buyerEntries.map(e => e.count);
+                            
+                            // Configure y-axis to prevent too many ticks
+                            const maxValue = Math.max(...buyerEntries.map(e => e.count), 1);
+                            const stepSize = Math.ceil(maxValue / 20); // Max 20 ticks
+                            this.state.buyerChart.options.scales.y.ticks = {
+                                stepSize: stepSize,
+                                maxTicksLimit: 20
+                            };
+                            
                             this.state.buyerChart.update('none');
                         } else {
                             // Handle empty data
@@ -1164,8 +1207,8 @@
                             this.state.buyerChart.data.datasets[0].data = [0];
                             this.state.buyerChart.update('none');
                         }
-                    }
-                });
+                    });
+                }
             },
 
             showLoading() {
@@ -1240,20 +1283,23 @@
                     })
                     .then(data => {
                         if (data.success) {
-                            // Use requestAnimationFrame for DOM updates to improve INP
-                            requestAnimationFrame(() => {
-                                this.state.data = data.data || [];
-                                this.state.allFilteredData = data.all_filtered_data || [];
-                                this.state.stats = data.stats || {};
-                                this.state.pagination = data.pagination || {};
+                            // Update state synchronously (no DOM access)
+                            this.state.data = data.data || [];
+                            this.state.allFilteredData = data.all_filtered_data || [];
+                            this.state.stats = data.stats || {};
+                            this.state.pagination = data.pagination || {};
 
-                                // Batch DOM updates
-                                requestAnimationFrame(() => {
-                                    this.renderTable();
-                                    this.updateStats();
-                                    this.updateCharts();
-                                    this.renderPagination();
-                                });
+                            // Batch DOM updates in single frame to reduce reflows
+                            requestAnimationFrame(() => {
+                                // Batch all DOM reads first
+                                const tableContainer = document.getElementById('tableContainer');
+                                const statsContainer = document.getElementById('statsContainer');
+                                
+                                // Then perform all DOM writes
+                                this.renderTable();
+                                this.updateStats();
+                                this.updateCharts(); // Charts update in their own frames
+                                this.renderPagination();
                             });
                         } else {
                             this.showError(data.message || 'Failed to load data');

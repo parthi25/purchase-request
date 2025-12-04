@@ -375,17 +375,58 @@ class TableRenderer {
     const tbody = document.querySelector("#dataTable tbody");
     if (!tbody) return;
 
-    tbody.innerHTML = this.data.map((row) => this.createRow(row)).join("");
-    document.querySelectorAll('#dataTable tbody tr').forEach(row => this.observer.observe(row));
-    // Attach edit button listeners
-    document.querySelectorAll('.openEditPRBtn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const id = btn.dataset.prId;
-        if (typeof openPRModal === 'function') {
-          openPRModal(id);
-        }
+    // Clear existing content
+    tbody.innerHTML = '';
+    
+    // Render in chunks to avoid blocking the main thread
+    const chunkSize = 50; // Process 50 rows at a time
+    let index = 0;
+    
+    const renderChunk = () => {
+      const end = Math.min(index + chunkSize, this.data.length);
+      const fragment = document.createDocumentFragment();
+      
+      for (let i = index; i < end; i++) {
+        const row = this.data[i];
+        const tr = document.createElement('tr');
+        tr.innerHTML = this.config.columns.map((col, colIndex) =>
+          `<td${colIndex === 0 ? ' ' : ''}>${this.formatCell(row, col)}</td>`
+        ).join("");
+        tr.setAttribute('data-id', row.id);
+        tr.className = 'opacity-0 transition-opacity duration-500';
+        fragment.appendChild(tr);
+      }
+      
+      tbody.appendChild(fragment);
+      
+      // Observe and attach listeners for this chunk
+      const newRows = tbody.querySelectorAll('tr[data-id]');
+      for (let i = newRows.length - (end - index); i < newRows.length; i++) {
+        this.observer.observe(newRows[i]);
+      }
+      
+      // Attach edit button listeners for this chunk
+      const newButtons = Array.from(tbody.querySelectorAll('.openEditPRBtn'))
+        .slice(-(end - index));
+      newButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.prId;
+          if (typeof openPRModal === 'function') {
+            openPRModal(id);
+          }
+        });
       });
-    });
+      
+      index = end;
+      
+      // Continue rendering if there's more data
+      if (index < this.data.length) {
+        requestAnimationFrame(renderChunk);
+      }
+    };
+    
+    // Start rendering
+    requestAnimationFrame(renderChunk);
   }
 
   appendRows(newData) {
@@ -393,28 +434,59 @@ class TableRenderer {
     const tbody = document.querySelector("#dataTable tbody");
     if (!tbody) return;
 
-    tbody.insertAdjacentHTML(
-      "beforeend",
-      newData.map((row) => this.createRow(row)).join("")
-    );
-    for (let i = 0; i < newData.length; i++) {
-      this.observer.observe(tbody.children[tbody.children.length - newData.length + i]);
-    }
-    // Attach edit button listeners for new rows
-    const newButtons = tbody.querySelectorAll('.openEditPRBtn');
-    newButtons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const id = btn.dataset.prId;
-        if (typeof openPRModal === 'function') {
-          openPRModal(id);
-        }
+    // Render in chunks to avoid blocking the main thread
+    const chunkSize = 50;
+    let index = 0;
+    const startIndex = this.data.length - newData.length;
+    
+    const renderChunk = () => {
+      const end = Math.min(index + chunkSize, newData.length);
+      const fragment = document.createDocumentFragment();
+      
+      for (let i = index; i < end; i++) {
+        const row = newData[i];
+        const tr = document.createElement('tr');
+        tr.innerHTML = this.config.columns.map((col, colIndex) =>
+          `<td${colIndex === 0 ? ' ' : ''}>${this.formatCell(row, col)}</td>`
+        ).join("");
+        tr.setAttribute('data-id', row.id);
+        tr.className = 'opacity-0 transition-opacity duration-500';
+        fragment.appendChild(tr);
+      }
+      
+      tbody.appendChild(fragment);
+      
+      // Observe and attach listeners for this chunk
+      const newRows = tbody.querySelectorAll('tr[data-id]');
+      for (let i = newRows.length - (end - index); i < newRows.length; i++) {
+        this.observer.observe(newRows[i]);
+      }
+      
+      // Attach edit button listeners for this chunk
+      const newButtons = Array.from(tbody.querySelectorAll('.openEditPRBtn'))
+        .slice(-(end - index));
+      newButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.dataset.prId;
+          if (typeof openPRModal === 'function') {
+            openPRModal(id);
+          }
+        });
       });
-    });
+      
+      index = end;
+      
+      // Continue rendering if there's more data
+      if (index < newData.length) {
+        requestAnimationFrame(renderChunk);
+      }
+    };
+    
+    // Start rendering
+    requestAnimationFrame(renderChunk);
   }
 
   createRow(row) {
-    console.log(row);
-
     const cells = this.config.columns.map((col, index) =>
       `<td${index === 0 ? ' ' : ''}>${this.formatCell(row, col)}</td>`
     ).join("");

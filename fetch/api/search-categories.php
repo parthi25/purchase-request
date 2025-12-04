@@ -46,8 +46,9 @@ try {
 
     } elseif (isset($_SESSION['role']) && $_SESSION['role'] === 'buyer') {
         // Buyer role: ALWAYS prioritize buyer categories first, then buyer head categories as fallback
+        // Fetch ALL categories first, then apply search filter in PHP
         $user_id = intval($_SESSION['user_id']);
-        $categories = [];
+        $allCategories = [];
         
         // Get buyer head ID for buyer_name (needed for both buyer and buyer head categories)
         $bheadStmt = $conn->prepare("SELECT b_head FROM buyers_info WHERE buyer = ? LIMIT 1");
@@ -85,20 +86,20 @@ try {
         $tableExists = $tableCheck && $tableCheck->num_rows > 0;
         
         if ($tableExists) {
+            // Fetch ALL categories without search filter
             $stmt = $conn->prepare("
                 SELECT c.maincat AS cat, c.id AS category_id
                 FROM buyer_category_mapping bcm
                 JOIN categories c ON bcm.category_id = c.id
-                WHERE c.maincat LIKE ? AND bcm.buyer_id = ? AND bcm.is_active = 1
-                LIMIT 10
+                WHERE bcm.buyer_id = ? AND bcm.is_active = 1
             ");
             if ($stmt) {
-                $stmt->bind_param("si", $searchTerm, $user_id);
+                $stmt->bind_param("i", $user_id);
                 $stmt->execute();
                 $result = $stmt->get_result();
                 
                 while ($row = $result->fetch_assoc()) {
-                    $categories[] = [
+                    $allCategories[] = [
                         'cat' => $row['cat'],
                         'buyer_name' => $bheadName,
                         'user_id' => $bheadId  // Return buyer head ID for compatibility
@@ -113,22 +114,22 @@ try {
         // PRIORITY 2: ONLY if buyer categories are EMPTY, then show buyer head categories
         // ============================================
         // This ensures buyer categories always take precedence
-        if (empty($categories) && $bheadId > 0) {
+        if (empty($allCategories) && $bheadId > 0) {
+            // Fetch ALL categories without search filter
             $stmt = $conn->prepare("SELECT c.maincat AS cat, u.fullname AS buyer_name, bhc.user_id 
                                     FROM buyer_head_categories bhc
                                     JOIN categories c ON c.id = bhc.cat_id
                                     JOIN users u ON u.id = bhc.user_id
-                                    WHERE c.maincat LIKE ? AND bhc.user_id = ? 
-                                    LIMIT 10");
+                                    WHERE bhc.user_id = ?");
             if (!$stmt) {
                 throw new Exception("Failed to prepare fallback query: " . $conn->error);
             }
-            $stmt->bind_param("si", $searchTerm, $bheadId);
+            $stmt->bind_param("i", $bheadId);
             $stmt->execute();
             $result = $stmt->get_result();
             
             while ($row = $result->fetch_assoc()) {
-                $categories[] = [
+                $allCategories[] = [
                     'cat' => $row['cat'],
                     'buyer_name' => $row['buyer_name'],
                     'user_id' => $row['user_id']
@@ -138,6 +139,25 @@ try {
                 $stmt->close();
                 $stmt = null;
             }
+        }
+        
+        // ============================================
+        // Apply search filter in PHP after fetching all categories
+        // ============================================
+        $categories = [];
+        if (!empty($search)) {
+            $searchLower = strtolower($search);
+            foreach ($allCategories as $category) {
+                // Check if category name starts with search term (case-insensitive)
+                if (stripos($category['cat'], $search) === 0) {
+                    $categories[] = $category;
+                }
+            }
+            // Limit to 10 results after filtering
+            $categories = array_slice($categories, 0, 10);
+        } else {
+            // If no search term, return all categories (limited to 10)
+            $categories = array_slice($allCategories, 0, 10);
         }
         
         // Return results (either buyer categories or buyer head categories, never both)
