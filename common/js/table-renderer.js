@@ -357,17 +357,22 @@ class TableRenderer {
 
     const html = `
             <div class="overflow-x-auto">
-                <table class="${this.config.tableClasses}" id="dataTable">
-                    <thead>
-                        <tr>
-                            ${headers}
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
+                <div class="table-wrapper" style="max-height: calc(100vh - 300px); overflow-y: auto; position: relative;">
+                    <table class="${this.config.tableClasses}" id="dataTable">
+                        <thead style="position: sticky; top: 0; z-index: 10; background-color: hsl(var(--b1));">
+                            <tr>
+                                ${headers}
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
             </div>
         `;
     container.innerHTML = html;
+    
+    // Store reference to scrollable wrapper for infinite scroll
+    this.scrollableWrapper = container.querySelector('.table-wrapper');
   }
 
   renderRows(data) {

@@ -121,32 +121,41 @@ $currentPage = 'analytics.php';
 
 <!-- Data Table Modal -->
 <dialog id="chartDataModal" class="modal">
-    <div class="modal-box w-11/12 max-w-7xl">
-        <h3 class="font-bold text-lg mb-4" id="modalTitle">Chart Data</h3>
-        <div class="overflow-x-auto">
-            <table class="table table-zebra w-full">
-                <thead>
-                    <tr>
-                        <th>Ref ID</th>
-                        <th>Created At</th>
-                        <th>Buyer</th>
-                        <th>Supplier</th>
-                        <th>Purchase Type</th>
-                        <th>Status</th>
-                        <th>Category</th>
-                        <th>Qty</th>
-                        <th>UOM</th>
-                        <th>Remark</th>
-                    </tr>
-                </thead>
-                <tbody id="chartDataTableBody">
-                    <tr>
-                        <td colspan="10" class="text-center">Loading...</td>
-                    </tr>
-                </tbody>
-            </table>
+    <div class="modal-box w-11/12 max-w-7xl p-0 flex flex-col" style="max-height: 90vh;">
+        <!-- Fixed Header -->
+        <div class="sticky top-0 z-10 bg-base-200 px-6 pt-6 pb-4 border-b border-base-300">
+            <h3 class="font-bold text-lg" id="modalTitle">Chart Data</h3>
         </div>
-        <div class="modal-action">
+        
+        <!-- Scrollable Table Container -->
+        <div class="flex-1 px-6 overflow-hidden" id="tableScrollContainer" style="min-height: 0;">
+            <div class="overflow-auto w-full h-full" style="max-height: 100%;">
+                <table class="table table-zebra w-full">
+                    <thead>
+                        <tr>
+                            <th class="sticky-header">Ref ID</th>
+                            <th class="sticky-header">Created At</th>
+                            <th class="sticky-header">Buyer</th>
+                            <th class="sticky-header">Supplier</th>
+                            <th class="sticky-header">Purchase Type</th>
+                            <th class="sticky-header">Status</th>
+                            <th class="sticky-header">Category</th>
+                            <th class="sticky-header">Qty</th>
+                            <th class="sticky-header">UOM</th>
+                            <th class="sticky-header">Remark</th>
+                        </tr>
+                    </thead>
+                    <tbody id="chartDataTableBody">
+                        <tr>
+                            <td colspan="10" class="text-center">Loading...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Fixed Footer -->
+        <div class="sticky bottom-0 z-10 bg-base-200 px-6 py-4 border-t border-base-300 modal-action">
             <form method="dialog">
                 <button class="btn">Close</button>
             </form>
@@ -235,6 +244,76 @@ $currentPage = 'analytics.php';
             right: 10px !important;
             transform: none !important;
         }
+    }
+    
+    /* Modal Table Styles - Fixed Header */
+    #chartDataModal .modal-box {
+        display: flex;
+        flex-direction: column;
+        height: 90vh;
+        max-height: 90vh;
+    }
+    
+    /* Scrollable container */
+    #tableScrollContainer {
+        position: relative;
+        flex: 1;
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    /* Inner scrollable div */
+    #tableScrollContainer > div {
+        flex: 1;
+        overflow-y: auto;
+        overflow-x: auto;
+        min-height: 0;
+    }
+    
+    /* Sticky table header - fully opaque */
+    #chartDataModal .sticky-header {
+        position: sticky !important;
+        top: 0 !important;
+        background-color: #f9fafb !important;
+        background: #f9fafb !important;
+        background-image: none !important;
+        z-index: 20 !important;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+        opacity: 1 !important;
+    }
+    
+    /* Ensure table structure */
+    #chartDataModal table {
+        border-collapse: separate;
+        border-spacing: 0;
+        width: 100%;
+    }
+    
+    /* Make sure thead has proper background - fully opaque */
+    #chartDataModal thead {
+        background-color: #f9fafb !important;
+        background: #f9fafb !important;
+        position: relative;
+        opacity: 1 !important;
+    }
+    
+    #chartDataModal thead tr {
+        background-color: #f9fafb !important;
+        background: #f9fafb !important;
+        opacity: 1 !important;
+    }
+    
+    #chartDataModal thead th {
+        background-color: #f9fafb !important;
+        background: #f9fafb !important;
+        opacity: 1 !important;
+    }
+    
+    /* Override any DaisyUI table styles that might cause transparency */
+    #chartDataModal table.table thead th {
+        background-color: #f9fafb !important;
+        background: #f9fafb !important;
     }
 </style>
 <script>

@@ -113,13 +113,99 @@ const ViewMode = {
     // Bind filter events
     this.bindFilterEvents();
 
-    // Bind infinite scroll
-    window.addEventListener('scroll', () => {
-      if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 100 &&
-          window.state && !window.state.loading && !window.state.noMoreData) {
-        this.loadMoreData();
+    // Bind infinite scroll with throttling
+    this._scrollTimeout = null;
+    this._handleScroll = () => {
+      // Clear existing timeout
+      if (this._scrollTimeout) {
+        clearTimeout(this._scrollTimeout);
       }
-    });
+
+      // Throttle scroll events
+      this._scrollTimeout = setTimeout(() => {
+        // Check if we should load more data
+        if (!window.state || window.state.loading || window.state.noMoreData) {
+          return;
+        }
+
+        let scrollTop, scrollHeight, clientHeight;
+        let scrollContainer = null;
+
+        // Check if we're in table view and have a scrollable table wrapper
+        if (this.currentView === "table") {
+          // Try to get scrollable table wrapper from TableRenderer
+          if (this.tableRenderer && this.tableRenderer.scrollableWrapper) {
+            scrollContainer = this.tableRenderer.scrollableWrapper;
+          } else {
+            // Fallback: find table wrapper in container
+            const tableWrapper = this.dom.tableContainer?.querySelector('.table-wrapper');
+            if (tableWrapper) {
+              scrollContainer = tableWrapper;
+            }
+          }
+
+          if (scrollContainer) {
+            // Table body is scrollable
+            scrollTop = scrollContainer.scrollTop;
+            scrollHeight = scrollContainer.scrollHeight;
+            clientHeight = scrollContainer.clientHeight;
+          }
+        }
+
+        // If not table view or no table wrapper, check window/pageContent
+        if (!scrollContainer) {
+          const pageContent = document.getElementById('pageContent');
+          
+          if (pageContent && pageContent.scrollHeight > pageContent.clientHeight) {
+            // Content is in a scrollable container
+            scrollContainer = pageContent;
+            scrollTop = pageContent.scrollTop;
+            scrollHeight = pageContent.scrollHeight;
+            clientHeight = pageContent.clientHeight;
+          } else {
+            // Content scrolls with window
+            scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            scrollHeight = Math.max(
+              document.body.scrollHeight,
+              document.documentElement.scrollHeight,
+              document.body.offsetHeight,
+              document.documentElement.offsetHeight,
+              document.body.clientHeight,
+              document.documentElement.clientHeight
+            );
+            clientHeight = window.innerHeight || document.documentElement.clientHeight;
+          }
+        }
+
+        // Check if user is near bottom (within 200px)
+        const threshold = 200;
+        const isNearBottom = scrollTop + clientHeight >= scrollHeight - threshold;
+
+        if (isNearBottom) {
+          this.loadMoreData();
+        }
+      }, 150); // Throttle to every 150ms
+    };
+
+    // Listen to scroll on window, pageContent, and table wrapper
+    window.addEventListener('scroll', this._handleScroll, { passive: true });
+    
+    const pageContent = document.getElementById('pageContent');
+    if (pageContent) {
+      pageContent.addEventListener('scroll', this._handleScroll, { passive: true });
+    }
+
+    // Listen to table wrapper scroll (will be attached when table is created)
+    this._attachTableScrollListener = () => {
+      if (this.currentView === "table") {
+        const tableWrapper = this.dom.tableContainer?.querySelector('.table-wrapper') ||
+                           (this.tableRenderer && this.tableRenderer.scrollableWrapper);
+        if (tableWrapper && !tableWrapper.dataset.scrollListenerAttached) {
+          tableWrapper.addEventListener('scroll', this._handleScroll, { passive: true });
+          tableWrapper.dataset.scrollListenerAttached = 'true';
+        }
+      }
+    };
   },
 
   setupView() {
@@ -177,6 +263,14 @@ const ViewMode = {
 
     // Load data for the current view
     this.loadCurrentViewData();
+
+    // Attach table scroll listener if switching to table view
+    if (view === "table" && this._attachTableScrollListener) {
+      // Use setTimeout to ensure table is rendered first
+      setTimeout(() => {
+        this._attachTableScrollListener();
+      }, 100);
+    }
 
     // Call onViewChange callback if provided
     if (this.options.onViewChange) {
@@ -345,10 +439,20 @@ console.log("fall backg");
         // Append new rows
         this.tableRenderer.appendRows(data);
       }
+      
+      // Attach scroll listener to table wrapper
+      if (this._attachTableScrollListener) {
+        this._attachTableScrollListener();
+      }
     } else {
       console.warn('Table renderer not found');
       // Fallback: simple table rendering
       this.renderTableFallback(data);
+      
+      // Attach scroll listener to table wrapper
+      if (this._attachTableScrollListener) {
+        this._attachTableScrollListener();
+      }
     }
   },
 
@@ -360,21 +464,23 @@ console.log("fall backg");
     if (window.state.offset === 0 || !container.querySelector('table')) {
       const tableHtml = `
         <div class="overflow-x-auto">
-          <table class="table table-zebra w-full" id="dataTable">
-            <thead>
-              <tr>
-                <th>Ref ID</th>
-                <th>Status</th>
-                <th>Supplier</th>
-                <th>B Head</th>
-                <th>Buyer</th>
-                <th>Category</th>
-                <th>Quantity</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
+          <div class="table-wrapper" style="max-height: calc(100vh - 300px); overflow-y: auto; position: relative;">
+            <table class="table table-zebra w-full" id="dataTable">
+              <thead style="position: sticky; top: 0; z-index: 10; background-color: hsl(var(--b1));">
+                <tr>
+                  <th>Ref ID</th>
+                  <th>Status</th>
+                  <th>Supplier</th>
+                  <th>B Head</th>
+                  <th>Buyer</th>
+                  <th>Category</th>
+                  <th>Quantity</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
         </div>
       `;
       container.innerHTML = tableHtml;
@@ -446,20 +552,155 @@ console.log("fall backg");
   },
 
   showLoading() {
-    const loader = document.getElementById("loader");
+    // Show loading skeleton cards in the appropriate container
+    if (this.currentView === "cards" && this.dom.cardContainer) {
+      this.renderLoadingCards();
+    } else if (this.currentView === "table" && this.dom.tableContainer) {
+      this.renderLoadingTable();
+    }
+    
+    // Hide no data message if it exists
     const noData = document.getElementById("no-data-message");
-    if (loader) loader.style.display = "block";
     if (noData) noData.style.display = "none";
   },
 
   hideLoading() {
-    const loader = document.getElementById("loader");
-    if (loader) loader.style.display = "none";
+    // Remove loading skeleton cards
+    if (this.currentView === "cards" && this.dom.cardContainer) {
+      const loadingCards = this.dom.cardContainer.querySelectorAll('.loading-skeleton-card');
+      loadingCards.forEach(card => card.remove());
+    } else if (this.currentView === "table" && this.dom.tableContainer) {
+      const loadingRows = this.dom.tableContainer.querySelectorAll('.loading-skeleton-row');
+      loadingRows.forEach(row => row.remove());
+    }
+    
+    // Hide no data message
+    const noData = document.getElementById("no-data-message");
+    if (noData) noData.style.display = "none";
+    
+    // Also hide any no-data message in containers
+    const container = this.currentView === "cards" ? this.dom.cardContainer : this.dom.tableContainer;
+    if (container) {
+      const noDataElement = container.querySelector('.no-data-message');
+      if (noDataElement) noDataElement.style.display = "none";
+    }
+  },
+
+  renderLoadingCards() {
+    const container = this.dom.cardContainer;
+    if (!container) return;
+
+    // Clear existing loading cards first
+    const existingLoadingCards = container.querySelectorAll('.loading-skeleton-card');
+    existingLoadingCards.forEach(card => card.remove());
+
+    // Only show loading cards if we're on first load and there are no actual content cards
+    const hasContentCards = container.querySelectorAll('.card:not(.loading-skeleton-card)').length > 0;
+    if (window.state && window.state.offset === 0 && !hasContentCards) {
+      // Render 6 skeleton cards
+      for (let i = 0; i < 6; i++) {
+        const skeletonCard = `
+          <div class="card w-full min-w-[280px] max-w-[320px] min-h-[400px] bg-base-100 shadow-md border border-gray-200 m-2 rounded-2xl flex flex-col loading-skeleton-card animate-pulse">
+            <div class="card-body p-4 flex flex-col flex-grow relative">
+              <!-- Product Image Skeleton -->
+              <div class="absolute top-2 right-2">
+                <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-lg bg-base-300"></div>
+              </div>
+              
+              <!-- Header Skeleton -->
+              <div class="mb-3 pr-20">
+                <div class="skeleton h-5 w-32 mb-2"></div>
+                <div class="skeleton h-4 w-24"></div>
+              </div>
+
+              <!-- Content Skeleton -->
+              <div class="space-y-1.5 text-sm flex-grow">
+                <div class="skeleton h-4 w-full"></div>
+                <div class="skeleton h-4 w-3/4"></div>
+                <div class="skeleton h-4 w-full"></div>
+                <div class="skeleton h-4 w-5/6"></div>
+                <div class="skeleton h-4 w-4/5"></div>
+                <div class="skeleton h-4 w-full"></div>
+              </div>
+
+              <!-- Divider -->
+              <div class="divider my-3"></div>
+
+              <!-- Footer Actions Skeleton -->
+              <div class="flex flex-nowrap items-center gap-1">
+                <div class="skeleton h-7 w-20"></div>
+                <div class="skeleton h-7 w-20"></div>
+                <div class="skeleton h-7 w-20"></div>
+              </div>
+            </div>
+          </div>
+        `;
+        container.insertAdjacentHTML('beforeend', skeletonCard);
+      }
+    }
+  },
+
+  renderLoadingTable() {
+    const container = this.dom.tableContainer;
+    if (!container) return;
+
+    // Clear existing loading rows first
+    const existingLoadingRows = container.querySelectorAll('.loading-skeleton-row');
+    existingLoadingRows.forEach(row => row.remove());
+
+    // Only show loading rows if we're on first load and there's no table content yet
+    if (window.state && window.state.offset === 0) {
+      const tbody = container.querySelector('tbody');
+      const hasContentRows = tbody && tbody.querySelectorAll('tr:not(.loading-skeleton-row)').length > 0;
+      if (tbody && !hasContentRows) {
+        // Render 6 skeleton rows
+        for (let i = 0; i < 6; i++) {
+          const skeletonRow = `
+            <tr class="loading-skeleton-row animate-pulse">
+              <td><div class="skeleton h-4 w-16"></div></td>
+              <td><div class="skeleton h-4 w-20"></div></td>
+              <td><div class="skeleton h-4 w-24"></div></td>
+              <td><div class="skeleton h-4 w-20"></div></td>
+              <td><div class="skeleton h-4 w-20"></div></td>
+              <td><div class="skeleton h-4 w-24"></div></td>
+              <td><div class="skeleton h-4 w-16"></div></td>
+              <td><div class="skeleton h-8 w-32"></div></td>
+            </tr>
+          `;
+          tbody.insertAdjacentHTML('beforeend', skeletonRow);
+        }
+      }
+    }
   },
 
   showNoData() {
+    // First, remove any loading skeleton cards/rows
+    this.hideLoading();
+    
     const noData = document.getElementById("no-data-message");
-    if (noData) noData.style.display = "block";
+    if (noData) {
+      noData.style.display = "block";
+      return;
+    }
+
+    // Create no data message if it doesn't exist
+    const container = this.currentView === "cards" ? this.dom.cardContainer : this.dom.tableContainer;
+    if (!container) return;
+
+    // Check if no-data message already exists
+    let noDataElement = container.querySelector('.no-data-message');
+    if (!noDataElement) {
+      const noDataHtml = `
+        <div class="no-data-message w-full flex flex-col items-center justify-center py-12">
+          <i class="fas fa-inbox text-6xl text-base-content/30 mb-4"></i>
+          <p class="text-xl font-semibold text-base-content/50">No data found</p>
+          <p class="text-sm text-base-content/40 mt-2">Try adjusting your filters</p>
+        </div>
+      `;
+      container.insertAdjacentHTML('beforeend', noDataHtml);
+    } else {
+      noDataElement.style.display = "block";
+    }
   },
 
   bindFilterEvents() {
