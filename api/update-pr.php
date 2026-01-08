@@ -1,6 +1,7 @@
 <?php
 require '../config/db.php';
 require '../config/response.php';
+require '../config/security.php';
 
 session_start();
 if (!isset($_SESSION["user_id"])) {
@@ -142,7 +143,7 @@ if ($category_id === null) {
 }
 
 // Check if PR exists and is in editable status (status 1 = Open)
-$checkStmt = $conn->prepare("SELECT po_status, created_by FROM purchase_requests WHERE id = ?");
+$checkStmt = $conn->prepare("SELECT po_status, created_by, new_supplier FROM purchase_requests WHERE id = ?");
 $checkStmt->bind_param("i", $id);
 $checkStmt->execute();
 $checkResult = $checkStmt->get_result();
@@ -257,6 +258,27 @@ try {
         throw new Exception("Failed to update purchase_requests: " . $stmt->error);
     }
     $stmt->close();
+    
+    // Handle supplier_requests update if this is a new supplier
+    $isNewSupplier = ($supplier_id === '99999' || (int)$supplier_id === 99999 || $supplier_id === 'NEW SUPPLIER');
+    if ($isNewSupplier && $prData['new_supplier']) {
+        $newsupplier = Security::sanitizeInput(trim($_POST['newsupplier'] ?? $_POST['newSupplierInput'] ?? ''));
+        $agent = Security::sanitizeInput(trim($_POST['agent'] ?? $_POST['agentInput'] ?? ''));
+        $city = Security::sanitizeInput(trim($_POST['city'] ?? $_POST['cityInput'] ?? ''));
+        $gstNo = Security::sanitizeInput(trim($_POST['gstNo'] ?? $_POST['gstNoInput'] ?? ''));
+        $panNo = Security::sanitizeInput(trim($_POST['panNo'] ?? $_POST['panNoInput'] ?? ''));
+        $mobile = Security::sanitizeInput(trim($_POST['mobile'] ?? $_POST['mobileInput'] ?? ''));
+        $email = Security::sanitizeInput(trim($_POST['email'] ?? $_POST['emailInput'] ?? ''));
+        
+        $updateSupplierReq = $conn->prepare("UPDATE supplier_requests SET supplier = ?, agent = ?, city = ?, gst_no = ?, pan_no = ?, mobile = ?, email = ? WHERE id = ?");
+        if ($updateSupplierReq) {
+            $updateSupplierReq->bind_param("sssssssi", $newsupplier, $agent, $city, $gstNo, $panNo, $mobile, $email, $prData['new_supplier']);
+            if (!$updateSupplierReq->execute()) {
+                throw new Exception("Failed to update supplier_requests: " . $updateSupplierReq->error);
+            }
+            $updateSupplierReq->close();
+        }
+    }
     
     // Handle pr_assignments table
     if ($po_team_member !== null || $po_number !== '' || $buyer_name !== '') {

@@ -148,13 +148,17 @@ try {
         $newsupplier = Security::sanitizeInput(trim($_POST['newsupplier'] ?? $_POST['newSupplierInput'] ?? ''));
         $agent = Security::sanitizeInput(trim($_POST['agent'] ?? $_POST['agentInput'] ?? ''));
         $city = Security::sanitizeInput(trim($_POST['city'] ?? $_POST['cityInput'] ?? ''));
+        $gstNo = Security::sanitizeInput(trim($_POST['gstNo'] ?? $_POST['gstNoInput'] ?? ''));
+        $panNo = Security::sanitizeInput(trim($_POST['panNo'] ?? $_POST['panNoInput'] ?? ''));
+        $mobile = Security::sanitizeInput(trim($_POST['mobile'] ?? $_POST['mobileInput'] ?? ''));
+        $email = Security::sanitizeInput(trim($_POST['email'] ?? $_POST['emailInput'] ?? ''));
         
         if (!$validator->validateNewSupplier(['supplier' => $newsupplier, 'agent' => $agent, 'city' => $city])) {
             sendResponse(400, 'error', $validator->getFirstError());
         }
 
-        $stmt = $conn->prepare("INSERT INTO supplier_requests (supplier, created_by, created_at, agent, city) VALUES (?, ?, NOW(), ?, ?)");
-        $stmt->bind_param("siss", $newsupplier, $createdBy, $agent, $city);
+        $stmt = $conn->prepare("INSERT INTO supplier_requests (supplier, created_by, created_at, agent, city, gst_no, pan_no, mobile, email) VALUES (?, ?, NOW(), ?, ?, ?, ?, ?, ?)");
+        $stmt->bind_param("sississs", $newsupplier, $createdBy, $agent, $city, $gstNo, $panNo, $mobile, $email);
         $stmt->execute();
         $newSupplierId = $stmt->insert_id;
         $stmt->close();

@@ -15,11 +15,39 @@
         </div>
     </div>
 
-    <!-- New Supplier (hidden by default) -->
+    <!-- New Supplier Fields (hidden by default) -->
     <div class="hidden" id="newSupplierContainer">
         <label class="label"><span class="label-text">New Supplier Name <span class="text-error">*</span></span></label>
         <input type="text" class="input input-bordered w-full" id="newSupplierInput" name="newSupplierInput"
             placeholder="Enter new supplier name">
+    </div>
+
+    <!-- GST Number (shown when new supplier is selected) -->
+    <div class="hidden form-control" id="gstNoContainer">
+        <label class="label"><span class="label-text">GST Number</span></label>
+        <input type="text" class="input input-bordered w-full" id="gstNoInput" name="gstNoInput"
+            placeholder="Enter GST number" oninput="checkGSTMatch()">
+    </div>
+
+    <!-- PAN Number (shown when new supplier is selected) -->
+    <div class="hidden form-control" id="panNoContainer">
+        <label class="label"><span class="label-text">PAN Number</span></label>
+        <input type="text" class="input input-bordered w-full" id="panNoInput" name="panNoInput"
+            placeholder="Enter PAN number">
+    </div>
+
+    <!-- Mobile (shown when new supplier is selected) -->
+    <div class="hidden form-control" id="mobileContainer">
+        <label class="label"><span class="label-text">Mobile</span></label>
+        <input type="text" class="input input-bordered w-full" id="mobileInput" name="mobileInput"
+            placeholder="Enter mobile number">
+    </div>
+
+    <!-- Email (shown when new supplier is selected) -->
+    <div class="hidden form-control" id="emailContainer">
+        <label class="label"><span class="label-text">Email</span></label>
+        <input type="email" class="input input-bordered w-full" id="emailInput" name="emailInput"
+            placeholder="Enter email address">
     </div>
 
     <!-- Agent Name -->

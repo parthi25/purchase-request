@@ -115,6 +115,10 @@ async function openPRModal(prId = null) {
             const newSupplierInput = document.getElementById("newSupplierInput");
             const supplierId = data.supplier_id;
             const isNewSupplier = supplierId === "99999" || supplierId === 99999 || data.supplier === "NEW SUPPLIER" || data.new_supplier;
+            const gstNoContainer = document.getElementById("gstNoContainer");
+            const panNoContainer = document.getElementById("panNoContainer");
+            const mobileContainer = document.getElementById("mobileContainer");
+            const emailContainer = document.getElementById("emailContainer");
             
             if (isNewSupplier && newSupplierContainer) {
                 newSupplierContainer.classList.remove("hidden");
@@ -126,6 +130,27 @@ async function openPRModal(prId = null) {
                 const cityInput = document.getElementById("cityInput");
                 if (agentInput) agentInput.readOnly = false;
                 if (cityInput) cityInput.readOnly = false;
+                // Show new supplier fields and populate if available
+                if (gstNoContainer) {
+                    gstNoContainer.classList.remove("hidden");
+                    const gstInput = document.getElementById("gstNoInput");
+                    if (gstInput) gstInput.value = data.gst_no || "";
+                }
+                if (panNoContainer) {
+                    panNoContainer.classList.remove("hidden");
+                    const panInput = document.getElementById("panNoInput");
+                    if (panInput) panInput.value = data.pan_no || "";
+                }
+                if (mobileContainer) {
+                    mobileContainer.classList.remove("hidden");
+                    const mobileInput = document.getElementById("mobileInput");
+                    if (mobileInput) mobileInput.value = data.mobile || "";
+                }
+                if (emailContainer) {
+                    emailContainer.classList.remove("hidden");
+                    const emailInput = document.getElementById("emailInput");
+                    if (emailInput) emailInput.value = data.email || "";
+                }
             } else if (newSupplierContainer) {
                 newSupplierContainer.classList.add("hidden");
                 newSupplierContainer.classList.remove("form-control");
@@ -133,6 +158,11 @@ async function openPRModal(prId = null) {
                 const cityInput = document.getElementById("cityInput");
                 if (agentInput) agentInput.readOnly = true;
                 if (cityInput) cityInput.readOnly = true;
+                // Hide new supplier fields
+                if (gstNoContainer) gstNoContainer.classList.add("hidden");
+                if (panNoContainer) panNoContainer.classList.add("hidden");
+                if (mobileContainer) mobileContainer.classList.add("hidden");
+                if (emailContainer) emailContainer.classList.add("hidden");
             }
 
         } catch (err) {
@@ -196,6 +226,10 @@ function resetForm() {
     document.getElementById("supplierDropdown")?.classList.add("hidden");
     document.getElementById("categoryDropdown")?.classList.add("hidden");
     document.getElementById("newSupplierContainer")?.classList.add("hidden");
+    document.getElementById("gstNoContainer")?.classList.add("hidden");
+    document.getElementById("panNoContainer")?.classList.add("hidden");
+    document.getElementById("mobileContainer")?.classList.add("hidden");
+    document.getElementById("emailContainer")?.classList.add("hidden");
     // Show product image upload section when resetting (for create mode)
     const productImageSection = document.getElementById('productImageUploadSection');
     if (productImageSection) productImageSection.style.display = '';
@@ -278,16 +312,31 @@ function selectSupplier(id, name, agent, city) {
 
   // Handle NEW SUPPLIER logic - check by id (99999) or name
   const newSupplierField = document.getElementById("newSupplierContainer");
+  const gstNoContainer = document.getElementById("gstNoContainer");
+  const panNoContainer = document.getElementById("panNoContainer");
+  const mobileContainer = document.getElementById("mobileContainer");
+  const emailContainer = document.getElementById("emailContainer");
+  
   if ((id === 99999 || id === "99999" || name === "NEW SUPPLIER") && newSupplierField) {
     newSupplierField.classList.remove("hidden");
     newSupplierField.classList.add("form-control");
     if (agentInput) agentInput.readOnly = false;
     if (cityInput) cityInput.readOnly = false;
+    // Show new supplier fields
+    if (gstNoContainer) gstNoContainer.classList.remove("hidden");
+    if (panNoContainer) panNoContainer.classList.remove("hidden");
+    if (mobileContainer) mobileContainer.classList.remove("hidden");
+    if (emailContainer) emailContainer.classList.remove("hidden");
   } else if (newSupplierField) {
     newSupplierField.classList.add("hidden");
     newSupplierField.classList.remove("form-control");
     if (agentInput) agentInput.readOnly = true;
     if (cityInput) cityInput.readOnly = true;
+    // Hide new supplier fields
+    if (gstNoContainer) gstNoContainer.classList.add("hidden");
+    if (panNoContainer) panNoContainer.classList.add("hidden");
+    if (mobileContainer) mobileContainer.classList.add("hidden");
+    if (emailContainer) emailContainer.classList.add("hidden");
   }
 }
 
@@ -298,6 +347,10 @@ function checkNewSupplier() {
   const newSupplierField = document.getElementById("newSupplierContainer");
   const agentInput = document.getElementById("agentInput");
   const cityInput = document.getElementById("cityInput");
+  const gstNoContainer = document.getElementById("gstNoContainer");
+  const panNoContainer = document.getElementById("panNoContainer");
+  const mobileContainer = document.getElementById("mobileContainer");
+  const emailContainer = document.getElementById("emailContainer");
   
   if (!input || !newSupplierField) return;
   
@@ -311,12 +364,100 @@ function checkNewSupplier() {
     newSupplierField.classList.add("form-control");
     if (agentInput) agentInput.readOnly = false;
     if (cityInput) cityInput.readOnly = false;
+    // Show new supplier fields
+    if (gstNoContainer) gstNoContainer.classList.remove("hidden");
+    if (panNoContainer) panNoContainer.classList.remove("hidden");
+    if (mobileContainer) mobileContainer.classList.remove("hidden");
+    if (emailContainer) emailContainer.classList.remove("hidden");
   } else if (value !== "" && currentSupplierId && currentSupplierId !== "99999" && currentSupplierId !== 99999) {
     // Only hide if it's not a new supplier
     newSupplierField.classList.add("hidden");
     newSupplierField.classList.remove("form-control");
     if (agentInput) agentInput.readOnly = true;
     if (cityInput) cityInput.readOnly = true;
+    // Hide new supplier fields
+    if (gstNoContainer) gstNoContainer.classList.add("hidden");
+    if (panNoContainer) panNoContainer.classList.add("hidden");
+    if (mobileContainer) mobileContainer.classList.add("hidden");
+    if (emailContainer) emailContainer.classList.add("hidden");
+  }
+}
+
+// Check GST number match with suppliers table
+async function checkGSTMatch() {
+  const gstInput = document.getElementById("gstNoInput");
+  if (!gstInput) return;
+  
+  const gstNo = gstInput.value.trim();
+  
+  // Only check if GST number has at least 5 characters
+  if (gstNo.length < 5) return;
+  
+  try {
+    const res = await fetch("../fetch/api/check-gst.php", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ gst_no: gstNo })
+    });
+    
+    if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+    
+    const json = await res.json();
+    
+    if (json.status === "success" && json.data && json.data.found && json.data.supplier) {
+      const supplier = json.data.supplier;
+      
+      // Match found - switch back to existing supplier form
+      const supplierInput = document.getElementById("supplierInput");
+      const supplierId = document.getElementById("supplierId");
+      const agentInput = document.getElementById("agentInput");
+      const cityInput = document.getElementById("cityInput");
+      const newSupplierField = document.getElementById("newSupplierContainer");
+      const gstNoContainer = document.getElementById("gstNoContainer");
+      const panNoContainer = document.getElementById("panNoContainer");
+      const mobileContainer = document.getElementById("mobileContainer");
+      const emailContainer = document.getElementById("emailContainer");
+      
+      // Set supplier details
+      if (supplierInput) supplierInput.value = supplier.supplier || "";
+      if (supplierId) supplierId.value = supplier.id || "";
+      if (agentInput) {
+        agentInput.value = supplier.agent || "";
+        agentInput.readOnly = true;
+      }
+      if (cityInput) {
+        cityInput.value = supplier.city || "";
+        cityInput.readOnly = true;
+      }
+      
+      // Hide new supplier fields
+      if (newSupplierField) {
+        newSupplierField.classList.add("hidden");
+        newSupplierField.classList.remove("form-control");
+      }
+      if (gstNoContainer) gstNoContainer.classList.add("hidden");
+      if (panNoContainer) panNoContainer.classList.add("hidden");
+      if (mobileContainer) mobileContainer.classList.add("hidden");
+      if (emailContainer) emailContainer.classList.add("hidden");
+      
+      // Clear new supplier input fields
+      const newSupplierInput = document.getElementById("newSupplierInput");
+      const gstNoInput = document.getElementById("gstNoInput");
+      const panNoInput = document.getElementById("panNoInput");
+      const mobileInput = document.getElementById("mobileInput");
+      const emailInput = document.getElementById("emailInput");
+      
+      if (newSupplierInput) newSupplierInput.value = "";
+      if (gstNoInput) gstNoInput.value = "";
+      if (panNoInput) panNoInput.value = "";
+      if (mobileInput) mobileInput.value = "";
+      if (emailInput) emailInput.value = "";
+      
+      showToast("Supplier found with matching GST number. Details auto-filled.", "success");
+    }
+  } catch (err) {
+    console.error("GST check error:", err);
+    // Silently fail - don't show error to user
   }
 }
 
