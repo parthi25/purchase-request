@@ -90,6 +90,14 @@ else
     SKIP_ALTER_MIGRATION=0
 fi
 
+if [ ! -f "migration/create_buyer_category_mapping.sql" ]; then
+    echo "[WARNING] migration/create_buyer_category_mapping.sql not found!"
+    echo "This migration will be skipped."
+    SKIP_BUYER_CATEGORY_MAPPING=1
+else
+    SKIP_BUYER_CATEGORY_MAPPING=0
+fi
+
 # Check for proforma item columns migration
 if [ -f "database/migrations/add_proforma_item_columns_simple.sql" ]; then
     SKIP_PROFORMA_COLUMNS=0
@@ -142,11 +150,42 @@ if mysql "${MYSQL_ARGS[@]}" < "migration/complete_migration.sql"; then
     if [ "$SKIP_ALTER_MIGRATION" -eq 0 ]; then
         echo ""
         echo "[INFO] Running buyer_head_categories structure migration..."
-        if mysql "${MYSQL_ARGS[@]}" < "database/migrations/alter_buyer_head_categories_structure.sql"; then
+        ALTER_OUTPUT=$(mysql "${MYSQL_ARGS[@]}" < "database/migrations/alter_buyer_head_categories_structure.sql" 2>&1)
+        ALTER_EXIT_CODE=$?
+        
+        if [ $ALTER_EXIT_CODE -eq 0 ]; then
             echo "[INFO] buyer_head_categories structure migration completed successfully."
+        else
+            # Check if error is due to duplicate column (expected if columns already exist)
+            if echo "$ALTER_OUTPUT" | grep -q "Duplicate column name"; then
+                echo "[WARNING] buyer_head_categories structure migration: Columns may already exist (safe to ignore)."
+                # Don't set MIGRATION_SUCCESS=1 for duplicate column errors
         else
             echo "[WARNING] buyer_head_categories structure migration had errors, but continuing..."
             MIGRATION_SUCCESS=1
+            fi
+        fi
+    fi
+    
+    # Run migration for buyer_category_mapping table
+    if [ "$SKIP_BUYER_CATEGORY_MAPPING" -eq 0 ]; then
+        echo ""
+        echo "[INFO] Running buyer_category_mapping table creation..."
+        BUYER_CAT_OUTPUT=$(mysql "${MYSQL_ARGS[@]}" < "migration/create_buyer_category_mapping.sql" 2>&1)
+        BUYER_CAT_EXIT_CODE=$?
+        
+        if [ $BUYER_CAT_EXIT_CODE -eq 0 ]; then
+            echo "[INFO] buyer_category_mapping table creation completed successfully."
+        else
+            # Check if error is due to foreign key constraint incompatibility (may be expected)
+            if echo "$BUYER_CAT_OUTPUT" | grep -q "incompatible\|Duplicate\|already exists"; then
+                echo "[WARNING] buyer_category_mapping table creation: Foreign key constraint or table may already exist (safe to ignore)."
+                # Don't set MIGRATION_SUCCESS=1 for expected errors
+            else
+                echo "[ERROR] buyer_category_mapping table creation failed with exit code: $BUYER_CAT_EXIT_CODE"
+                echo "[WARNING] Continuing with other migrations..."
+                MIGRATION_SUCCESS=1
+            fi
         fi
     fi
     
@@ -154,10 +193,20 @@ if mysql "${MYSQL_ARGS[@]}" < "migration/complete_migration.sql"; then
     if [ "$SKIP_PROFORMA_COLUMNS" -eq 0 ]; then
         echo ""
         echo "[INFO] Running proforma item columns migration..."
-        if mysql "${MYSQL_ARGS[@]}" < "$PROFORMA_SQL_FILE"; then
+        echo "[INFO] Using SQL file: $PROFORMA_SQL_FILE"
+        PROFORMA_OUTPUT=$(mysql "${MYSQL_ARGS[@]}" < "$PROFORMA_SQL_FILE" 2>&1)
+        PROFORMA_EXIT_CODE=$?
+        
+        if [ $PROFORMA_EXIT_CODE -eq 0 ]; then
             echo "[INFO] Proforma item columns migration completed successfully."
         else
-            echo "[WARNING] Proforma item columns migration had errors (columns may already exist - safe to ignore)."
+            # Check if error is due to duplicate column (expected if columns already exist)
+            if echo "$PROFORMA_OUTPUT" | grep -q "Duplicate column name"; then
+                echo "[WARNING] Proforma item columns migration: Columns may already exist (safe to ignore)."
+            else
+                echo "[WARNING] Proforma item columns migration had errors (exit code: $PROFORMA_EXIT_CODE)"
+                echo "[WARNING] Columns may already exist - safe to ignore."
+            fi
             # Don't set MIGRATION_SUCCESS=1 here as "Duplicate column name" errors are expected if columns exist
         fi
     fi
@@ -182,8 +231,11 @@ if [ $MIGRATION_SUCCESS -eq 0 ]; then
     if [ "$SKIP_ALTER_MIGRATION" -eq 0 ]; then
         echo "  6. Altered buyer_head_categories table structure (removed Name and cat columns, added cat_id)"
     fi
+    if [ "$SKIP_BUYER_CATEGORY_MAPPING" -eq 0 ]; then
+        echo "  7. Created buyer_category_mapping table (direct buyer to category mapping)"
+    fi
     if [ "$SKIP_PROFORMA_COLUMNS" -eq 0 ]; then
-        echo "  7. Added item_details_url and item_info columns to proforma table"
+        echo "  8. Added item_details_url and item_info columns to proforma table"
     fi
     echo ""
     echo "Next steps:"

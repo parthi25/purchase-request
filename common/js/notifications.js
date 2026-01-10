@@ -15,9 +15,16 @@ function initToastContainer() {
       toastContainer = document.createElement('div');
       toastContainer.className = 'toast toast-top toast-end';
       toastContainer.id = 'daisy-toast-container';
-      toastContainer.style.cssText = 'z-index: 9999999 !important; position: fixed !important;';
+      // Use extremely high z-index to appear above modals (DaisyUI modals typically use ~9999)
+      toastContainer.style.cssText = 'z-index: 99999999 !important; position: fixed !important; top: 1rem !important; right: 1rem !important; pointer-events: none !important;';
       document.body.appendChild(toastContainer);
     }
+  }
+  // Ensure toast container is always at the end of body to maintain stacking order above modals
+  // Only move if it's not already a direct child of body or if there are modals open
+  const hasOpenModal = document.querySelector('dialog[open]');
+  if (toastContainer.parentNode !== document.body || (hasOpenModal && toastContainer !== document.body.lastElementChild)) {
+    document.body.appendChild(toastContainer);
   }
   return toastContainer;
 }
@@ -25,6 +32,10 @@ function initToastContainer() {
 // Show toast notification
 function showToast(message, type = 'info', duration = 3000) {
   initToastContainer();
+  
+  // Always move container to end of body when showing toast to ensure it's above any open modals
+  // This maintains proper stacking order
+  document.body.appendChild(toastContainer);
   
   const alertTypes = {
     success: 'alert-success',
@@ -42,7 +53,8 @@ function showToast(message, type = 'info', duration = 3000) {
   
   const toast = document.createElement('div');
   toast.className = `alert ${alertTypes[type] || 'alert-info'} shadow-lg mb-2 animate-in slide-in-from-top`;
-  toast.style.cssText = 'z-index: 9999999 !important; position: relative !important;';
+  // Ensure toast appears above everything including modals
+  toast.style.cssText = 'z-index: 99999999 !important; position: relative !important; pointer-events: auto !important; min-width: 300px !important; max-width: 500px !important;';
   toast.innerHTML = `
     <div class="flex items-center gap-2">
       <span class="text-lg">${icons[type] || 'ℹ'}</span>

@@ -153,7 +153,14 @@ try {
         $mobile = Security::sanitizeInput(trim($_POST['mobile'] ?? $_POST['mobileInput'] ?? ''));
         $email = Security::sanitizeInput(trim($_POST['email'] ?? $_POST['emailInput'] ?? ''));
         
-        if (!$validator->validateNewSupplier(['supplier' => $newsupplier, 'agent' => $agent, 'city' => $city])) {
+        // Validate new supplier - New Supplier Name, GST Number, and Mobile are required
+        if (!$validator->validateNewSupplier([
+            'supplier' => $newsupplier, 
+            'gst_no' => $gstNo, 
+            'mobile' => $mobile,
+            'agent' => $agent, 
+            'city' => $city
+        ])) {
             sendResponse(400, 'error', $validator->getFirstError());
         }
 

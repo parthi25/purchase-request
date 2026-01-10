@@ -11,7 +11,14 @@ if (!isset($_SESSION['user_id'])) {
 $user_id = (int) $_SESSION['user_id'];
 $user_role =  $_SESSION['role'] ?? '';
 
-$buyer_id = $_SESSION['role'] == 'B_Head' ? $_GET['buyer_id'] : $_SESSION['user_id'];
+// Get buyer_id from GET parameter for B_Head and PO_Head roles, otherwise use user_id
+if ($user_role == 'B_Head' || $user_role == 'PO_Head') {
+    $buyer_id = isset($_GET['buyer_id']) && $_GET['buyer_id'] !== '' && $_GET['buyer_id'] !== '0' 
+        ? (int) $_GET['buyer_id'] 
+        : $user_id;
+} else {
+    $buyer_id = $user_id;
+}
 
 try {
     // Base query
@@ -30,17 +37,46 @@ try {
         $statusQuery .= " GROUP BY s.id ORDER BY FIELD(s.id, 1,2,3,4,5,6,9,7,8)";
     } elseif ($user_role === 'poteam') {
         $statusQuery .= " WHERE p.po_status IN (9, 7) GROUP BY s.id ORDER BY FIELD(s.id, 9,7)";
-    } elseif ($buyer_id) {
-        $statusQuery .= " WHERE p.buyer = ? OR p.created_by = ?";
-        $bindTypes .= "ii";
-        $bindValues[] = $buyer_id;
-        $bindValues[] = $buyer_id;
-        $statusQuery .= " GROUP BY s.id ORDER BY s.id";
     } elseif ($user_role === 'B_Head') {
-        $statusQuery .= " WHERE p.b_head = ? OR p.created_by = ?";
+        // Buyer Head: if buyer_id is provided and different from user_id, show that buyer's counts
+        // Otherwise show counts for buyer head's own records
+        if ($buyer_id && $buyer_id != $user_id) {
+            // Selected buyer: show counts for that buyer
+            $statusQuery .= " WHERE (p.buyer = ? OR p.created_by = ?)";
+            $bindTypes .= "ii";
+            $bindValues[] = $buyer_id;
+            $bindValues[] = $buyer_id;
+        } else {
+            // No buyer selected: show counts for buyer head's own records
+            $statusQuery .= " WHERE (p.b_head = ? OR p.created_by = ?)";
+            $bindTypes .= "ii";
+            $bindValues[] = $user_id;
+            $bindValues[] = $user_id;
+        }
+        $statusQuery .= " GROUP BY s.id ORDER BY s.id";
+    } elseif ($user_role === 'PO_Head') {
+        // PO Head: if buyer_id is provided and different from user_id, show that user's counts
+        // Otherwise show counts for PO head's own records
+        if ($buyer_id && $buyer_id != $user_id) {
+            // Selected user: show counts for that user (as buyer or creator)
+            $statusQuery .= " WHERE (p.buyer = ? OR p.created_by = ?)";
+            $bindTypes .= "ii";
+            $bindValues[] = $buyer_id;
+            $bindValues[] = $buyer_id;
+        } else {
+            // No user selected: show counts for PO head's own records
+            $statusQuery .= " WHERE (p.po_team = ? OR p.created_by = ?)";
+            $bindTypes .= "ii";
+            $bindValues[] = $user_id;
+            $bindValues[] = $user_id;
+        }
+        $statusQuery .= " GROUP BY s.id ORDER BY s.id";
+    } elseif ($buyer_id) {
+        // Regular users: show their own counts
+        $statusQuery .= " WHERE (p.buyer = ? OR p.created_by = ?)";
         $bindTypes .= "ii";
-        $bindValues[] = $user_id;
-        $bindValues[] = $user_id;
+        $bindValues[] = $buyer_id;
+        $bindValues[] = $buyer_id;
         $statusQuery .= " GROUP BY s.id ORDER BY s.id";
     } else {
         $statusQuery .= " GROUP BY s.id ORDER BY s.id";

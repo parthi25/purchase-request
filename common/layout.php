@@ -78,8 +78,87 @@ try {
     <script src="../assets/js/flatpickr.min.js"></script>
     <script src="../common/js/status-badges.js"></script>
     <script src="../common/js/page-loader.js"></script>
+    <script src="../common/js/drawer.js"></script>
     <!-- Favicon -->
     <link rel="shortcut icon" href="../assets/brand/favicon.ico" type="image/x-icon">
+    
+    <!-- Select2 Theme Overrides -->
+    <style>
+        /* Select2 overrides for black theme */
+        [data-theme="black"] .select2-container--default .select2-selection--multiple {
+            background-color: black !important;
+            border-color: hsl(var(--bc) / 0.2) !important;
+        }
+        
+        [data-theme="black"] .select2-container--default .select2-selection--multiple .select2-selection__choice {
+            background-color: hsl(var(--p)) !important;
+            border-color: hsl(var(--p)) !important;
+            color: hsl(var(--pc)) !important;
+        }
+        
+        [data-theme="black"] .select2-container--default .select2-selection--multiple .select2-selection__choice__remove {
+            color: hsl(var(--pc)) !important;
+        }
+        
+        [data-theme="black"] .select2-container--default .select2-selection--multiple .select2-selection__rendered {
+            background-color: black !important;
+        }
+        
+        [data-theme="black"] .select2-container--default .select2-selection--multiple .select2-search--inline .select2-search__field {
+            background-color: black !important;
+            color: hsl(var(--bc)) !important;
+        }
+        
+        /* Results dropdown - black background */
+        [data-theme="black"] .select2-container--default .select2-results > .select2-results__options {
+            background-color: black !important;
+            color: white !important;
+        }
+        
+        [data-theme="black"] .select2-container--default .select2-results__option {
+            background-color: black !important;
+            color: white !important;
+        }
+        
+        [data-theme="black"] .select2-container--default .select2-results__option--highlighted {
+            background-color: hsl(var(--p)) !important;
+            color: hsl(var(--pc)) !important;
+        }
+        
+        [data-theme="black"] .select2-container--default .select2-results__option[aria-selected="true"] {
+            background-color: hsl(var(--p) / 0.5) !important;
+            color: hsl(var(--pc)) !important;
+        }
+        
+        [data-theme="black"] .select2-container--default .select2-dropdown {
+            background-color: black !important;
+            border-color: hsl(var(--bc) / 0.2) !important;
+        }
+        
+        [data-theme="black"] .select2-container--default .select2-search--dropdown .select2-search__field {
+            background-color: hsl(var(--b1)) !important;
+            color: hsl(var(--bc)) !important;
+            border-color: hsl(var(--bc) / 0.2) !important;
+        }
+        
+        /* Single select styling for black theme */
+        [data-theme="black"] .select2-container--default .select2-selection--single {
+            background-color: black !important;
+            border-color: hsl(var(--bc) / 0.2) !important;
+        }
+        
+        [data-theme="black"] .select2-container--default .select2-selection--single .select2-selection__rendered {
+            color: hsl(var(--bc)) !important;
+        }
+        
+        [data-theme="black"] .select2-container--default .select2-selection--single .select2-selection__arrow {
+            background-color:   black !important;
+        }
+        
+        [data-theme="black"] .select2-container--default .select2-selection--single .select2-selection__arrow b {
+            border-color: hsl(var(--bc)) transparent transparent transparent !important;
+        }
+    </style>
 </head>
 <body class="h-screen overflow-hidden">
     <div class="drawer lg:drawer-open h-full">
@@ -131,7 +210,10 @@ try {
         </div>
 
         <!-- Main Content -->
-        <div class="drawer-content flex flex-col h-full overflow-hidden">
+        <div class="drawer-content h-full">
+            <div class="drawer drawer-end h-full">
+                <input id="right-drawer-toggle" type="checkbox" class="drawer-toggle" />
+                <div class="drawer-content flex flex-col h-full overflow-hidden">
             <!-- Top Navbar -->
             <div class="navbar bg-base-200 shadow-sm z-50 flex-shrink-0">
                 <div class="flex-none lg:hidden">

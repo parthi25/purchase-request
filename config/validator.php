@@ -258,11 +258,12 @@ class Validator {
     public function validateNewSupplier($data) {
         $this->errors = [];
         
-        // Required fields
-        $requiredFields = ['supplier', 'city', 'agent'];
+        // Required fields - New Supplier Name, GST Number, and Mobile are required
+        $requiredFields = ['supplier', 'gst_no', 'mobile'];
         foreach ($requiredFields as $field) {
             if (empty($data[$field])) {
-                $this->errors[] = ucfirst($field) . ' is required';
+                $fieldLabel = $field === 'supplier' ? 'New Supplier Name' : ($field === 'gst_no' ? 'GST Number' : 'Mobile');
+                $this->errors[] = $fieldLabel . ' is required';
             }
         }
         
@@ -273,14 +274,28 @@ class Validator {
             }
         }
         
-        // Validate city
+        // Validate GST number
+        if (!empty($data['gst_no'])) {
+            if (!Security::validateString($data['gst_no'], 1, 50, '/^[a-zA-Z0-9\s\-]+$/')) {
+                $this->errors[] = 'GST number contains invalid characters';
+            }
+        }
+        
+        // Validate mobile number
+        if (!empty($data['mobile'])) {
+            if (!Security::validateString($data['mobile'], 1, 20, '/^[0-9\s\-\+\(\)]+$/')) {
+                $this->errors[] = 'Mobile number contains invalid characters';
+            }
+        }
+        
+        // Validate city (optional but validate format if provided)
         if (!empty($data['city'])) {
             if (!Security::validateString($data['city'], 1, 100, '/^[a-zA-Z\s\-\.]+$/')) {
                 $this->errors[] = 'City name contains invalid characters';
             }
         }
         
-        // Validate agent
+        // Validate agent (optional but validate format if provided)
         if (!empty($data['agent'])) {
             if (!Security::validateString($data['agent'], 1, 255, '/^[a-zA-Z0-9\s\-\.&,()]+$/')) {
                 $this->errors[] = 'Agent name contains invalid characters';

@@ -2,6 +2,7 @@
 require '../config/db.php';
 require '../config/response.php';
 require '../config/security.php';
+require '../config/validator.php';
 
 session_start();
 if (!isset($_SESSION["user_id"])) {
@@ -269,6 +270,18 @@ try {
         $panNo = Security::sanitizeInput(trim($_POST['panNo'] ?? $_POST['panNoInput'] ?? ''));
         $mobile = Security::sanitizeInput(trim($_POST['mobile'] ?? $_POST['mobileInput'] ?? ''));
         $email = Security::sanitizeInput(trim($_POST['email'] ?? $_POST['emailInput'] ?? ''));
+        
+        // Validate new supplier - New Supplier Name, GST Number, and Mobile are required
+        $validator = new Validator();
+        if (!$validator->validateNewSupplier([
+            'supplier' => $newsupplier, 
+            'gst_no' => $gstNo, 
+            'mobile' => $mobile,
+            'agent' => $agent, 
+            'city' => $city
+        ])) {
+            throw new Exception($validator->getFirstError());
+        }
         
         $updateSupplierReq = $conn->prepare("UPDATE supplier_requests SET supplier = ?, agent = ?, city = ?, gst_no = ?, pan_no = ?, mobile = ?, email = ? WHERE id = ?");
         if ($updateSupplierReq) {

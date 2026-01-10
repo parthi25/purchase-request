@@ -125,6 +125,7 @@ async function openPRModal(prId = null) {
                 newSupplierContainer.classList.add("form-control");
                 if (newSupplierInput) {
                     newSupplierInput.value = data.supplier || "";
+                    newSupplierInput.required = true;
                 }
                 const agentInput = document.getElementById("agentInput");
                 const cityInput = document.getElementById("cityInput");
@@ -134,7 +135,10 @@ async function openPRModal(prId = null) {
                 if (gstNoContainer) {
                     gstNoContainer.classList.remove("hidden");
                     const gstInput = document.getElementById("gstNoInput");
-                    if (gstInput) gstInput.value = data.gst_no || "";
+                    if (gstInput) {
+                        gstInput.value = data.gst_no || "";
+                        gstInput.required = true;
+                    }
                 }
                 if (panNoContainer) {
                     panNoContainer.classList.remove("hidden");
@@ -144,7 +148,10 @@ async function openPRModal(prId = null) {
                 if (mobileContainer) {
                     mobileContainer.classList.remove("hidden");
                     const mobileInput = document.getElementById("mobileInput");
-                    if (mobileInput) mobileInput.value = data.mobile || "";
+                    if (mobileInput) {
+                        mobileInput.value = data.mobile || "";
+                        mobileInput.required = true;
+                    }
                 }
                 if (emailContainer) {
                     emailContainer.classList.remove("hidden");
@@ -158,11 +165,21 @@ async function openPRModal(prId = null) {
                 const cityInput = document.getElementById("cityInput");
                 if (agentInput) agentInput.readOnly = true;
                 if (cityInput) cityInput.readOnly = true;
-                // Hide new supplier fields
-                if (gstNoContainer) gstNoContainer.classList.add("hidden");
+                // Hide new supplier fields and remove required attribute
+                if (gstNoContainer) {
+                    gstNoContainer.classList.add("hidden");
+                    const gstInput = document.getElementById("gstNoInput");
+                    if (gstInput) gstInput.required = false;
+                }
                 if (panNoContainer) panNoContainer.classList.add("hidden");
-                if (mobileContainer) mobileContainer.classList.add("hidden");
+                if (mobileContainer) {
+                    mobileContainer.classList.add("hidden");
+                    const mobileInput = document.getElementById("mobileInput");
+                    if (mobileInput) mobileInput.required = false;
+                }
                 if (emailContainer) emailContainer.classList.add("hidden");
+                const newSupplierInput = document.getElementById("newSupplierInput");
+                if (newSupplierInput) newSupplierInput.required = false;
             }
 
         } catch (err) {
@@ -187,6 +204,54 @@ if (form) {
         if (!formData.get('supplierId') || !formData.get('categoryId')) {
             showToast('Please fill all required fields', 'warning');
             return;
+        }
+
+        // Validate new supplier fields if new supplier is selected
+        const supplierId = formData.get('supplierId');
+        const isNewSupplier = supplierId === '99999' || supplierId === 99999 || formData.get('supplierInput') === 'NEW SUPPLIER';
+        
+        if (isNewSupplier) {
+            const newSupplierName = formData.get('newSupplierInput') || formData.get('newsupplier') || '';
+            const gstNoInput = document.getElementById('gstNoInput');
+            const mobileInput = document.getElementById('mobileInput');
+            const panNoInput = document.getElementById('panNoInput');
+            
+            if (!newSupplierName.trim()) {
+                showToast('New Supplier Name is required', 'warning');
+                document.getElementById('newSupplierInput')?.focus();
+                return;
+            }
+            
+            if (!gstNoInput || !gstNoInput.value.trim()) {
+                showToast('GST Number is required', 'warning');
+                gstNoInput?.focus();
+                return;
+            }
+            
+            if (!validateGST(gstNoInput)) {
+                showToast('Please enter a valid GST number', 'warning');
+                gstNoInput.focus();
+                return;
+            }
+            
+            if (!mobileInput || !mobileInput.value.trim()) {
+                showToast('Mobile number is required', 'warning');
+                mobileInput?.focus();
+                return;
+            }
+            
+            if (!validateMobile(mobileInput)) {
+                showToast('Please enter a valid mobile number', 'warning');
+                mobileInput.focus();
+                return;
+            }
+            
+            // Validate PAN if provided (optional)
+            if (panNoInput && panNoInput.value.trim() && !validatePAN(panNoInput)) {
+                showToast('Please enter a valid PAN number', 'warning');
+                panNoInput.focus();
+                return;
+            }
         }
 
         let url = '../api/create-pr.php';
@@ -230,6 +295,15 @@ function resetForm() {
     document.getElementById("panNoContainer")?.classList.add("hidden");
     document.getElementById("mobileContainer")?.classList.add("hidden");
     document.getElementById("emailContainer")?.classList.add("hidden");
+    
+    // Remove required attribute from hidden fields
+    const newSupplierInput = document.getElementById("newSupplierInput");
+    const gstNoInput = document.getElementById("gstNoInput");
+    const mobileInput = document.getElementById("mobileInput");
+    if (newSupplierInput) newSupplierInput.required = false;
+    if (gstNoInput) gstNoInput.required = false;
+    if (mobileInput) mobileInput.required = false;
+    
     // Show product image upload section when resetting (for create mode)
     const productImageSection = document.getElementById('productImageUploadSection');
     if (productImageSection) productImageSection.style.display = '';
@@ -322,21 +396,41 @@ function selectSupplier(id, name, agent, city) {
     newSupplierField.classList.add("form-control");
     if (agentInput) agentInput.readOnly = false;
     if (cityInput) cityInput.readOnly = false;
-    // Show new supplier fields
-    if (gstNoContainer) gstNoContainer.classList.remove("hidden");
+    // Show new supplier fields and add required attribute
+    if (gstNoContainer) {
+      gstNoContainer.classList.remove("hidden");
+      const gstInput = document.getElementById("gstNoInput");
+      if (gstInput) gstInput.required = true;
+    }
     if (panNoContainer) panNoContainer.classList.remove("hidden");
-    if (mobileContainer) mobileContainer.classList.remove("hidden");
+    if (mobileContainer) {
+      mobileContainer.classList.remove("hidden");
+      const mobileInput = document.getElementById("mobileInput");
+      if (mobileInput) mobileInput.required = true;
+    }
     if (emailContainer) emailContainer.classList.remove("hidden");
+    const newSupplierInput = document.getElementById("newSupplierInput");
+    if (newSupplierInput) newSupplierInput.required = true;
   } else if (newSupplierField) {
     newSupplierField.classList.add("hidden");
     newSupplierField.classList.remove("form-control");
     if (agentInput) agentInput.readOnly = true;
     if (cityInput) cityInput.readOnly = true;
-    // Hide new supplier fields
-    if (gstNoContainer) gstNoContainer.classList.add("hidden");
+    // Hide new supplier fields and remove required attribute
+    if (gstNoContainer) {
+      gstNoContainer.classList.add("hidden");
+      const gstInput = document.getElementById("gstNoInput");
+      if (gstInput) gstInput.required = false;
+    }
     if (panNoContainer) panNoContainer.classList.add("hidden");
-    if (mobileContainer) mobileContainer.classList.add("hidden");
+    if (mobileContainer) {
+      mobileContainer.classList.add("hidden");
+      const mobileInput = document.getElementById("mobileInput");
+      if (mobileInput) mobileInput.required = false;
+    }
     if (emailContainer) emailContainer.classList.add("hidden");
+    const newSupplierInput = document.getElementById("newSupplierInput");
+    if (newSupplierInput) newSupplierInput.required = false;
   }
 }
 
@@ -364,23 +458,175 @@ function checkNewSupplier() {
     newSupplierField.classList.add("form-control");
     if (agentInput) agentInput.readOnly = false;
     if (cityInput) cityInput.readOnly = false;
-    // Show new supplier fields
-    if (gstNoContainer) gstNoContainer.classList.remove("hidden");
+    // Show new supplier fields and add required attribute
+    if (gstNoContainer) {
+      gstNoContainer.classList.remove("hidden");
+      const gstInput = document.getElementById("gstNoInput");
+      if (gstInput) gstInput.required = true;
+    }
     if (panNoContainer) panNoContainer.classList.remove("hidden");
-    if (mobileContainer) mobileContainer.classList.remove("hidden");
+    if (mobileContainer) {
+      mobileContainer.classList.remove("hidden");
+      const mobileInput = document.getElementById("mobileInput");
+      if (mobileInput) mobileInput.required = true;
+    }
     if (emailContainer) emailContainer.classList.remove("hidden");
+    const newSupplierInput = document.getElementById("newSupplierInput");
+    if (newSupplierInput) newSupplierInput.required = true;
   } else if (value !== "" && currentSupplierId && currentSupplierId !== "99999" && currentSupplierId !== 99999) {
     // Only hide if it's not a new supplier
     newSupplierField.classList.add("hidden");
     newSupplierField.classList.remove("form-control");
     if (agentInput) agentInput.readOnly = true;
     if (cityInput) cityInput.readOnly = true;
-    // Hide new supplier fields
-    if (gstNoContainer) gstNoContainer.classList.add("hidden");
+    // Hide new supplier fields and remove required attribute
+    if (gstNoContainer) {
+      gstNoContainer.classList.add("hidden");
+      const gstInput = document.getElementById("gstNoInput");
+      if (gstInput) gstInput.required = false;
+    }
     if (panNoContainer) panNoContainer.classList.add("hidden");
-    if (mobileContainer) mobileContainer.classList.add("hidden");
+    if (mobileContainer) {
+      mobileContainer.classList.add("hidden");
+      const mobileInput = document.getElementById("mobileInput");
+      if (mobileInput) mobileInput.required = false;
+    }
     if (emailContainer) emailContainer.classList.add("hidden");
+    const newSupplierInput = document.getElementById("newSupplierInput");
+    if (newSupplierInput) newSupplierInput.required = false;
   }
+}
+
+// Validate GST Number format
+function validateGST(input) {
+  const gstNo = input.value.trim().toUpperCase();
+  const errorElement = document.getElementById('gstNoError');
+  
+  // GST format: 15 characters - 2 digits (state) + 10 chars (PAN) + 1 char (entity) + 1 char (Z) + 1 char (check digit)
+  const gstPattern = /^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/;
+  
+  // Update input to uppercase
+  input.value = gstNo;
+  
+  if (gstNo === '') {
+    input.classList.remove('input-error', 'input-success');
+    if (errorElement) errorElement.style.display = 'none';
+    return true;
+  }
+  
+  if (gstNo.length !== 15) {
+    input.classList.add('input-error');
+    input.classList.remove('input-success');
+    if (errorElement) {
+      errorElement.textContent = 'GST number must be exactly 15 characters';
+      errorElement.style.display = 'block';
+    }
+    return false;
+  }
+  
+  if (!gstPattern.test(gstNo)) {
+    input.classList.add('input-error');
+    input.classList.remove('input-success');
+    if (errorElement) {
+      errorElement.textContent = 'Invalid GST format. Format: 27AAAAA0000A1Z5';
+      errorElement.style.display = 'block';
+    }
+    return false;
+  }
+  
+  input.classList.remove('input-error');
+  input.classList.add('input-success');
+  if (errorElement) errorElement.style.display = 'none';
+  return true;
+}
+
+// Validate PAN Number format
+function validatePAN(input) {
+  const panNo = input.value.trim().toUpperCase();
+  const errorElement = document.getElementById('panNoError');
+  
+  // PAN format: 10 characters - 5 letters + 4 digits + 1 letter
+  const panPattern = /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/;
+  
+  // Update input to uppercase
+  input.value = panNo;
+  
+  if (panNo === '') {
+    input.classList.remove('input-error', 'input-success');
+    if (errorElement) errorElement.style.display = 'none';
+    return true;
+  }
+  
+  if (panNo.length !== 10) {
+    input.classList.add('input-error');
+    input.classList.remove('input-success');
+    if (errorElement) {
+      errorElement.textContent = 'PAN number must be exactly 10 characters';
+      errorElement.style.display = 'block';
+    }
+    return false;
+  }
+  
+  if (!panPattern.test(panNo)) {
+    input.classList.add('input-error');
+    input.classList.remove('input-success');
+    if (errorElement) {
+      errorElement.textContent = 'Invalid PAN format. Format: ABCDE1234F';
+      errorElement.style.display = 'block';
+    }
+    return false;
+  }
+  
+  input.classList.remove('input-error');
+  input.classList.add('input-success');
+  if (errorElement) errorElement.style.display = 'none';
+  return true;
+}
+
+// Validate Mobile Number format
+function validateMobile(input) {
+  const mobile = input.value.trim();
+  const errorElement = document.getElementById('mobileError');
+  
+  // Indian mobile format: 10 digits starting with 6-9
+  const mobilePattern = /^[6-9][0-9]{9}$/;
+  
+  if (mobile === '') {
+    input.classList.remove('input-error', 'input-success');
+    if (errorElement) errorElement.style.display = 'none';
+    return true;
+  }
+  
+  // Remove any non-digit characters
+  const digitsOnly = mobile.replace(/\D/g, '');
+  if (digitsOnly !== mobile) {
+    input.value = digitsOnly;
+  }
+  
+  if (digitsOnly.length !== 10) {
+    input.classList.add('input-error');
+    input.classList.remove('input-success');
+    if (errorElement) {
+      errorElement.textContent = 'Mobile number must be exactly 10 digits';
+      errorElement.style.display = 'block';
+    }
+    return false;
+  }
+  
+  if (!mobilePattern.test(digitsOnly)) {
+    input.classList.add('input-error');
+    input.classList.remove('input-success');
+    if (errorElement) {
+      errorElement.textContent = 'Invalid mobile number. Must start with 6, 7, 8, or 9';
+      errorElement.style.display = 'block';
+    }
+    return false;
+  }
+  
+  input.classList.remove('input-error');
+  input.classList.add('input-success');
+  if (errorElement) errorElement.style.display = 'none';
+  return true;
 }
 
 // Check GST number match with suppliers table
@@ -390,8 +636,8 @@ async function checkGSTMatch() {
   
   const gstNo = gstInput.value.trim();
   
-  // Only check if GST number has at least 5 characters
-  if (gstNo.length < 5) return;
+  // Only check if GST number has at least 5 characters and is valid
+  if (gstNo.length < 5 || !validateGST(gstInput)) return;
   
   try {
     const res = await fetch("../fetch/api/check-gst.php", {
@@ -430,14 +676,22 @@ async function checkGSTMatch() {
         cityInput.readOnly = true;
       }
       
-      // Hide new supplier fields
+      // Hide new supplier fields and remove required attribute
       if (newSupplierField) {
         newSupplierField.classList.add("hidden");
         newSupplierField.classList.remove("form-control");
       }
-      if (gstNoContainer) gstNoContainer.classList.add("hidden");
+      if (gstNoContainer) {
+        gstNoContainer.classList.add("hidden");
+        const gstInput = document.getElementById("gstNoInput");
+        if (gstInput) gstInput.required = false;
+      }
       if (panNoContainer) panNoContainer.classList.add("hidden");
-      if (mobileContainer) mobileContainer.classList.add("hidden");
+      if (mobileContainer) {
+        mobileContainer.classList.add("hidden");
+        const mobileInput = document.getElementById("mobileInput");
+        if (mobileInput) mobileInput.required = false;
+      }
       if (emailContainer) emailContainer.classList.add("hidden");
       
       // Clear new supplier input fields
@@ -447,7 +701,10 @@ async function checkGSTMatch() {
       const mobileInput = document.getElementById("mobileInput");
       const emailInput = document.getElementById("emailInput");
       
-      if (newSupplierInput) newSupplierInput.value = "";
+      if (newSupplierInput) {
+        newSupplierInput.value = "";
+        newSupplierInput.required = false;
+      }
       if (gstNoInput) gstNoInput.value = "";
       if (panNoInput) panNoInput.value = "";
       if (mobileInput) mobileInput.value = "";

@@ -1,4 +1,22 @@
             </main>
+                </div> 
+                <!-- Right Drawer Sidebar -->
+                <div class="drawer-side z-50">
+                    <label for="right-drawer-toggle" aria-label="close sidebar" class="drawer-overlay"></label>
+                    <div class="menu p-4 w-96 min-h-full bg-base-200 text-base-content flex flex-col">
+                        <div class="flex justify-between items-center mb-4 border-b border-base-300 pb-2">
+                            <h3 class="text-lg font-bold" id="right-drawer-title">Details</h3>
+                            <label for="right-drawer-toggle" class="btn btn-sm btn-circle btn-ghost">✕</label>
+                        </div>
+                        <div id="right-drawer-content" class="flex-1 overflow-y-auto">
+                            <!-- Dynamic content loads here -->
+                            <div class="flex justify-center items-center h-full text-base-content/50">
+                                No content loaded
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     
