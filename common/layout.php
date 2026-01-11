@@ -54,7 +54,7 @@ try {
 ?>
 
 <!DOCTYPE html>
-<html lang="en" data-theme="corporate">
+<html lang="en" data-theme="black">
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -158,78 +158,272 @@ try {
         [data-theme="black"] .select2-container--default .select2-selection--single .select2-selection__arrow b {
             border-color: hsl(var(--bc)) transparent transparent transparent !important;
         }
+        
+        /* Sidebar width and text visibility - Mobile: Expand when drawer is open */
+        #my-drawer-4:checked ~ .drawer-side #sidebarContent {
+            width: 16rem !important; /* w-64 = 256px */
+        }
+        
+        #my-drawer-4:checked ~ .drawer-side #sidebarContent .menu a > span:not(.flex-none) {
+            opacity: 1 !important;
+            width: auto !important;
+            overflow: visible !important;
+        }
+        
+        /* Sidebar text visibility - Desktop: Show text only when sidebar is expanded */
+        @media (min-width: 1024px) {
+            /* Default: Hide all text spans (except icons) */
+            .drawer-side #sidebarContent .menu a > span:not(.flex-none) {
+                opacity: 0 !important;
+                width: 0 !important;
+                overflow: hidden !important;
+            }
+            
+            /* When sidebar is expanded (has sidebar-expanded class), show text */
+            .drawer-side #sidebarContent.sidebar-expanded .menu a > span:not(.flex-none),
+            .drawer-side #sidebarContent.w-64.sidebar-expanded .menu a > span:not(.flex-none) {
+                opacity: 1 !important;
+                width: auto !important;
+                overflow: visible !important;
+            }
+            
+            /* When sidebar is collapsed (w-20 and not expanded), hide text - MUST be important */
+            .drawer-side #sidebarContent.w-20 .menu a > span:not(.flex-none),
+            .drawer-side #sidebarContent:not(.sidebar-expanded):not(.w-64) .menu a > span:not(.flex-none) {
+                opacity: 0 !important;
+                width: 0 !important;
+                overflow: hidden !important;
+            }
+            
+            /* On hover, show text even when collapsed (but only temporarily) */
+            .drawer-side #sidebarContent.group\/sidebar:hover:not(.sidebar-expanded) .menu a > span:not(.flex-none) {
+                opacity: 1 !important;
+                width: auto !important;
+                overflow: visible !important;
+            }
+        }
+        
+        /* ============================================
+           GLOBAL MOBILE RESPONSIVE STYLES
+           ============================================ */
+        
+        /* Mobile: Fix search inputs and form controls */
+        @media (max-width: 768px) {
+            /* Make fixed-width inputs responsive */
+            input[class*="w-64"],
+            input[class*="w-48"],
+            .input.w-64,
+            .input.w-48 {
+                width: 100% !important;
+                max-width: 100% !important;
+            }
+            
+            /* Form controls should stack on mobile */
+            .form-control {
+                width: 100% !important;
+                min-width: 100% !important;
+            }
+            
+            /* Flex containers should stack */
+            .flex.flex-wrap {
+                flex-direction: column;
+            }
+            
+            /* Buttons in forms should be full width on mobile */
+            form .btn,
+            .form-control .btn {
+                width: 100%;
+            }
+            
+            /* Table actions should stack */
+            .table td .flex.gap-2,
+            .table th .flex.gap-2 {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            /* Card headers and actions */
+            .card-body > .flex.justify-between,
+            .card-body > .flex.flex-wrap {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            /* Modal improvements */
+            .modal-box {
+                margin: 0.5rem !important;
+                max-width: calc(100% - 1rem) !important;
+                width: calc(100% - 1rem) !important;
+            }
+            
+            /* Dropdown menus */
+            .dropdown-content {
+                max-width: calc(100vw - 2rem);
+            }
+        }
+        
+        /* Small mobile devices */
+        @media (max-width: 640px) {
+            /* Reduce padding on mobile */
+            .card-body {
+                padding: 1rem !important;
+            }
+            
+            /* Smaller text on very small screens */
+            h1 {
+                font-size: 1.5rem !important;
+            }
+            
+            h2 {
+                font-size: 1.25rem !important;
+            }
+            
+            /* Table improvements */
+            .table {
+                font-size: 0.875rem;
+            }
+            
+            .table th,
+            .table td {
+                padding: 0.5rem 0.25rem !important;
+            }
+            
+            /* Button groups */
+            .join,
+            .btn-group {
+                width: 100%;
+            }
+            
+            /* Input groups */
+            .input-group {
+                width: 100%;
+            }
+            
+            /* Form controls - remove min-width constraints on mobile */
+            .form-control[class*="min-w"],
+            .form-control.min-w-\[150px\],
+            .form-control.min-w-\[200px\] {
+                min-width: 100% !important;
+                width: 100% !important;
+            }
+            
+            /* Form button groups should stack */
+            form .flex.gap-2 {
+                flex-direction: column;
+            }
+            
+            form .btn {
+                width: 100%;
+            }
+        }
+        
+        /* Tablet and up - ensure proper spacing */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .card-body {
+                padding: 1.5rem;
+            }
+        }
+        
+        /* Ensure tables are scrollable on mobile */
+        .overflow-x-auto {
+            -webkit-overflow-scrolling: touch;
+        }
+        
+        /* Fix for modals on mobile */
+        @media (max-width: 768px) {
+            .modal.modal-middle .modal-box {
+                max-height: 90vh;
+                margin: 1rem;
+            }
+            
+            .modal-backdrop {
+                background-color: rgba(0, 0, 0, 0.5);
+            }
+        }
+        
+        /* Ensure viewport doesn't cause horizontal scroll */
+        body {
+            overflow-x: hidden;
+        }
+        
+        /* Fix for negative margins on mobile */
+        @media (max-width: 768px) {
+            .-mx-4 {
+                margin-left: -0.5rem !important;
+                margin-right: -0.5rem !important;
+            }
+            
+            .px-4 {
+                padding-left: 0.5rem !important;
+                padding-right: 0.5rem !important;
+            }
+        }
+        
+        /* Filter section improvements for mobile */
+        @media (max-width: 768px) {
+            /* Filter buttons and view toggle in single row on mobile */
+            .flex.flex-wrap.items-center.gap-2 {
+                width: 100%;
+            }
+            
+            /* Ensure Apply, Reset, Table, Card buttons are in a row */
+            .flex.flex-wrap.items-center.gap-2 > div.flex.items-center.gap-2,
+            .flex.flex-wrap.items-center.gap-2 > div.join {
+                flex: 1 1 auto;
+                min-width: 0;
+            }
+            
+            /* Filter buttons - equal width on mobile */
+            .flex.items-center.gap-2 button,
+            .join button {
+                flex: 1 1 auto;
+                min-width: 0;
+            }
+        }
+        
+        /* Very small screens - stack filter and view toggle */
+        @media (max-width: 480px) {
+            .flex.flex-wrap.items-center.gap-2 {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .flex.flex-wrap.items-center.gap-2 > div {
+                width: 100%;
+            }
+        }
     </style>
 </head>
 <body class="h-screen overflow-hidden">
+    <!-- Drawer / Layout Wrapper -->
     <div class="drawer lg:drawer-open h-full">
-        <input id="drawer-toggle" type="checkbox" class="drawer-toggle" />
+        <input id="my-drawer-4" type="checkbox" class="drawer-toggle" />
         
-        <!-- Sidebar -->
-        <div class="drawer-side">
-            <label for="drawer-toggle" class="drawer-overlay"></label>
-            <aside class="w-64 h-full bg-base-200 overflow-y-auto">
-                <div class="">
-                    <!-- <h2 class="text-2xl font-bold mb-6">Purchase Tracker</h2> -->
-                     <img src="../assets/brand/jtlogo.png" alt="Purchase Tracker" class="w-full">
-                    <ul class="menu p-0 w-full">
-                        <?php
-                        // Render dynamic menu items from database
-                        $previousGroup = '';
-                        foreach ($menuGroups as $groupName => $groupMenus) {
-                            // Add menu group title if not 'main' and different from previous
-                            if ($groupName !== 'main' && $previousGroup !== $groupName) {
-                                echo '<li class="menu-title"><span>' . htmlspecialchars(ucwords(str_replace('_', ' ', $groupName))) . '</span></li>';
-                            }
-                            
-                            foreach ($groupMenus as $menuItem) {
-                                $isActive = ($currentPage === $menuItem['menu_item_url']);
-                                $icon = !empty($menuItem['menu_item_icon']) ? $menuItem['menu_item_icon'] : '<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>';
-                                
-                                echo '<li>';
-                                echo '<a href="' . htmlspecialchars($menuItem['menu_item_url']) . '" class=text-xl "' . ($isActive ? 'active bg-primary text-primary-content' : '') . '">';
-                                echo $icon;
-                                echo htmlspecialchars($menuItem['menu_item_label']);
-                                echo '</a>';
-                                echo '</li>';
-                            }
-                            
-                            $previousGroup = $groupName;
-                        }
-                        
-                        // Fallback: If no menu items found, show basic menu
-                        if (empty($menuGroups)) {
-                            // Log for debugging
-                            error_log("No menu items found for role: " . htmlspecialchars($role ?? 'unknown'));
-                            echo '<li><a href="dashboard.php">Dashboard</a></li>';
-                            echo '<li><a href="profile.php">Profile</a></li>';
-                        }
-                        ?>
-                    </ul>
-                </div>
-            </aside>
-        </div>
-
-        <!-- Main Content -->
-        <div class="drawer-content h-full">
-            <div class="drawer drawer-end h-full">
-                <input id="right-drawer-toggle" type="checkbox" class="drawer-toggle" />
-                <div class="drawer-content flex flex-col h-full overflow-hidden">
-            <!-- Top Navbar -->
-            <div class="navbar bg-base-200 shadow-sm z-50 flex-shrink-0">
-                <div class="flex-none lg:hidden">
-                    <label for="drawer-toggle" class="btn btn-square btn-ghost">
-                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" class="inline-block w-5 h-5 stroke-current">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+        <!-- Drawer Content -->
+        <div class="drawer-content flex flex-col h-full min-h-0">
+            <!-- Navbar -->
+            <nav class="navbar w-full bg-base-200 z-40 shadow-sm border-b border-base-300 sticky top-0">
+                <div class="flex-none">
+                    <label for="my-drawer-4" aria-label="open sidebar" class="btn btn-square btn-ghost lg:hidden">
+                        <!-- Mobile sidebar toggle icon - Hamburger menu -->
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
                     </label>
+                    <button type="button" aria-label="toggle sidebar" class="btn btn-square btn-ghost hidden lg:inline-flex" id="desktop-sidebar-toggle">
+                        <!-- Desktop sidebar toggle icon - Hamburger menu -->
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" class="w-6 h-6">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
                 </div>
                 
-                <div class="flex-1">
-                    <a class="btn btn-ghost text-xl">Purchase Tracker</a>
+                <div class="flex-1 px-4">
+                    <span class="text-lg font-bold">Purchase Tracker</span>
                 </div>
                 
                 <div class="flex-none gap-2">
-                    <!-- Theme Toggle -->
+                     <!-- Theme Toggle -->
                     <button id="themeToggle" class="btn btn-ghost btn-square">
                         <span id="themeIcon" class="text-xl">🌙</span>
                     </button>
@@ -247,96 +441,37 @@ try {
                             </li>
                             <li><hr class="my-1"></li>
                             <li>
-                                <a href="profile.php">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                    </svg>
-                                    Profile Settings
-                                </a>
+                                <a href="profile.php">Profile Settings</a>
                             </li>
                             <li><hr class="my-1"></li>
                             <li>
-                                <a href="../update/logout.php">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                                    </svg>
-                                    Logout
-                                </a>
+                                <a href="../update/logout.php">Logout</a>
                             </li>
                         </ul>
                     </div>
                 </div>
-            </div>
+            </nav>
 
-            <!-- Page Loader (Skeleton) -->
-            <div id="pageLoader" class="flex-1 p-4 lg:p-6 overflow-y-auto">
-                <div class="space-y-6 animate-pulse">
-                    <!-- Header Skeleton -->
-                    <div class="flex justify-between items-center mb-6">
-                        <div class="skeleton h-10 w-48"></div>
-                        <div class="skeleton h-10 w-32"></div>
-                    </div>
-                    
-                    <!-- Filter/Controls Skeleton -->
-                    <div class="card bg-base-100 shadow-xl">
-                        <div class="card-body">
-                            <div class="flex flex-wrap gap-4">
-                                <div class="skeleton h-12 w-48"></div>
-                                <div class="skeleton h-12 w-64"></div>
-                                <div class="skeleton h-12 w-32"></div>
-                                <div class="skeleton h-12 w-24"></div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Card/Stats Skeletons -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                        <div class="card bg-base-100 shadow-xl">
-                            <div class="card-body">
-                                <div class="skeleton h-6 w-32 mb-2"></div>
-                                <div class="skeleton h-8 w-24 mb-2"></div>
-                                <div class="skeleton h-4 w-20"></div>
-                            </div>
+            <!-- Page Content Wrapper -->
+            <!-- Note: h-full and overflow-y-auto are important for scrolling content independently -->
+            <div class="flex-1 overflow-y-auto p-4 lg:p-6 scroll-smooth min-h-0">
+                <!-- Loader -->
+                <div id="pageLoader" class="w-full">
+                    <div class="space-y-6 animate-pulse">
+                        <div class="flex justify-between items-center mb-6">
+                            <div class="skeleton h-10 w-48"></div>
+                            <div class="skeleton h-10 w-32"></div>
                         </div>
                         <div class="card bg-base-100 shadow-xl">
                             <div class="card-body">
-                                <div class="skeleton h-6 w-32 mb-2"></div>
-                                <div class="skeleton h-8 w-24 mb-2"></div>
-                                <div class="skeleton h-4 w-20"></div>
-                            </div>
-                        </div>
-                        <div class="card bg-base-100 shadow-xl">
-                            <div class="card-body">
-                                <div class="skeleton h-6 w-32 mb-2"></div>
-                                <div class="skeleton h-8 w-24 mb-2"></div>
-                                <div class="skeleton h-4 w-20"></div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <!-- Table/Content Skeleton -->
-                    <div class="card bg-base-100 shadow-xl">
-                        <div class="card-body">
-                            <div class="skeleton h-8 w-64 mb-4"></div>
-                            <div class="space-y-3">
-                                <div class="skeleton h-12 w-full"></div>
-                                <div class="skeleton h-12 w-full"></div>
-                                <div class="skeleton h-12 w-full"></div>
-                                <div class="skeleton h-12 w-full"></div>
-                                <div class="skeleton h-12 w-full"></div>
-                                <div class="skeleton h-12 w-full"></div>
-                            </div>
-                            <div class="flex justify-center gap-2 mt-4">
-                                <div class="skeleton h-10 w-10"></div>
-                                <div class="skeleton h-10 w-10"></div>
-                                <div class="skeleton h-10 w-10"></div>
+                                <div class="flex flex-wrap gap-4">
+                                    <div class="skeleton h-12 w-full"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <!-- Page Content (Hidden initially) -->
-            <main id="pageContent" class="flex-1 p-4 lg:p-6 hidden overflow-y-auto">
+                
+                <!-- Main Content (Hidden Initially) -->
+                <main id="pageContent" class="hidden">
 

@@ -90,9 +90,10 @@ document.addEventListener('DOMContentLoaded', () => {
       };
       fileModalTitle.textContent = 'Proforma Files';
       // Show new item fields for proforma
-      if (newItemFields) {
-        newItemFields.classList.remove('hidden');
-      }
+      // TEMPORARILY HIDDEN - Will be unhidden in future
+      // if (newItemFields) {
+      //   newItemFields.classList.remove('hidden');
+      // }
     } else if (btn.classList.contains('po')) {
       currentType = 'po';
       currentUrls = {

@@ -9,8 +9,8 @@ function toTitleCase(str) {
 const CardConfigs = {
     buyer: {
         role: 'buyer',
-        showFields: { refId:true, poNumber:true, poHead:true, poTeam:true, supplier:true, category:true, purchType:false, qty:true, createdBy:true, createdOn:true, remarks:false },
-        showButtons: { edit:true, proforma:true, po:true },
+        showFields: { refId: true, poNumber: true, poHead: true, poTeam: true, supplier: true, category: true, purchType: false, qty: true, createdBy: true, createdOn: true, remarks: false },
+        showButtons: { edit: true, proforma: true, po: true },
         statusBadges: {
             "1": '<span class="text-sm font-semibold text-green-600 capitalize">Open</span>',
             "2": '<span class="text-sm font-semibold text-blue-600 capitalize">Forwarded to Buyer</span>',
@@ -25,8 +25,8 @@ const CardConfigs = {
     },
     admin: {
         role: 'admin',
-        showFields: { refId:true, poNumber:true, poHead:true, poTeam:true, supplier:true, category:true, purchType:true, qty:true, createdBy:true, createdOn:true, remarks:false },
-        showButtons: { edit:true, proforma:true, po:true },
+        showFields: { refId: true, poNumber: true, poHead: true, poTeam: true, supplier: true, category: true, purchType: true, qty: true, createdBy: true, createdOn: true, remarks: false },
+        showButtons: { edit: true, proforma: true, po: true },
         statusBadges: {
             "1": '<span class="text-sm font-semibold text-green-600 capitalize">Open</span>',
             "2": '<span class="text-sm font-semibold text-blue-600 capitalize">Forwarded to Buyer</span>',
@@ -41,8 +41,8 @@ const CardConfigs = {
     },
     bhead: {
         role: 'bhead',
-        showFields: { refId:true, poNumber:true, poHead:true, poTeam:true, supplier:true, category:true, purchType:false, qty:true, createdBy:true, createdOn:true, remarks:false },
-        showButtons: { edit:true, proforma:true, po:true },
+        showFields: { refId: true, poNumber: true, poHead: true, poTeam: true, supplier: true, category: true, purchType: false, qty: true, createdBy: true, createdOn: true, remarks: false },
+        showButtons: { edit: true, proforma: true, po: true },
         statusBadges: {
             "1": '<span class="text-sm font-semibold text-green-600 capitalize">Open</span>',
             "2": '<span class="text-sm font-semibold text-blue-600 capitalize">Forwarded to Buyer</span>',
@@ -57,8 +57,8 @@ const CardConfigs = {
     },
     pohead: {
         role: 'pohead',
-        showFields: { refId:true, poNumber:true, poHead:true, poTeam:true, supplier:true, category:true, purchType:true, qty:true, createdBy:true, createdOn:true, remarks:false },
-        showButtons: { edit:false, proforma:true, po:true },
+        showFields: { refId: true, poNumber: true, poHead: true, poTeam: true, supplier: true, category: true, purchType: true, qty: true, createdBy: true, createdOn: true, remarks: false },
+        showButtons: { edit: false, proforma: true, po: true },
         statusBadges: {
             "1": '<span class="text-sm font-semibold text-green-600 capitalize">Open</span>',
             "2": '<span class="text-sm font-semibold text-blue-600 capitalize">Forwarded to Buyer</span>',
@@ -73,8 +73,8 @@ const CardConfigs = {
     },
     poteammember: {
         role: 'poteammember',
-        showFields: { refId:true, poNumber:true, poHead:true, poTeam:true, supplier:true, category:true, purchType:true, qty:true, createdBy:true, createdOn:true, remarks:false },
-        showButtons: { edit:false, proforma:true, po:true },
+        showFields: { refId: true, poNumber: true, poHead: true, poTeam: true, supplier: true, category: true, purchType: true, qty: true, createdBy: true, createdOn: true, remarks: false },
+        showButtons: { edit: false, proforma: true, po: true },
         statusBadges: {
             "1": '<span class="text-sm font-semibold text-green-600 capitalize">Open</span>',
             "2": '<span class="text-sm font-semibold text-blue-600 capitalize">Forwarded to Buyer</span>',
@@ -89,8 +89,8 @@ const CardConfigs = {
     },
     dashboard: {
         role: 'dashboard',
-        showFields: { refId:true, poNumber:true, poHead:true, poTeam:true, supplier:true, category:true, purchType:true, qty:true, createdBy:true, createdOn:true, remarks:false },
-        showButtons: { edit:false, proforma:true, po:true },
+        showFields: { refId: true, poNumber: true, poHead: true, poTeam: true, supplier: true, category: true, purchType: true, qty: true, createdBy: true, createdOn: true, remarks: false },
+        showButtons: { edit: false, proforma: true, po: true },
         statusBadges: {
             "1": '<span class="text-sm font-semibold text-green-600 capitalize">Open</span>',
             "2": '<span class="text-sm font-semibold text-blue-600 capitalize">Forwarded to Buyer</span>',
@@ -124,10 +124,10 @@ function renderCards(dataArray, role = 'buyer', containerId = 'cardContainer') {
     // Render cards in chunks to avoid blocking the main thread
     const chunkSize = 20; // Process 20 cards at a time
     let index = 0;
-    
+
     const renderChunk = () => {
         const end = Math.min(index + chunkSize, dataArray.length);
-        
+
         for (let i = index; i < end; i++) {
             const item = dataArray[i];
             // Use database statuses if available, otherwise fallback to config
@@ -152,9 +152,9 @@ function renderCards(dataArray, role = 'buyer', containerId = 'cardContainer') {
                 createdOn: item.created_at ? new Date(item.created_at).toLocaleDateString() : '-',
                 remarks: item.remark || '-',
                 buyerHead: item.b_head,
-                proforma : item.proforma_ids[0],
-                po_url : item.po_url,
-                product : item.images[0],
+                proforma: item.proforma_ids[0],
+                po_url: item.po_url,
+                product: item.images[0],
             };
 
             // Icon mapping for fields
@@ -194,7 +194,7 @@ function renderCards(dataArray, role = 'buyer', containerId = 'cardContainer') {
             let buttonsHtml = '';
             buttonsHtml += `<button class="btn btn-sm btn-outline h-7 min-h-7 px-2 text-xs read-more-toggle" data-id='${mappedItem.refId}'><i class="fas fa-comment text-blue-500 text-xs"></i> <span class="hidden sm:inline">remarks</span></button>`;
             if (config.showButtons.edit && item.po_status === 1) buttonsHtml += `<button class="btn btn-sm btn-outline h-7 min-h-7 px-2 text-xs openEditPRBtn" data-pr-id='${mappedItem.refId}'><i class="fas fa-edit text-blue-500 text-xs"></i> <span class="hidden sm:inline">Edit</span></button>`;
-            
+
             if (config.showButtons.proforma) {
                 const hasProforma = item.proforma_ids && item.proforma_ids[0] ? true : false;
                 buttonsHtml += `
@@ -217,11 +217,11 @@ function renderCards(dataArray, role = 'buyer', containerId = 'cardContainer') {
                     </button>
                 `;
             }
-            if(config.role === 'admin' ? [1].includes(item.po_status) :
-               config.role === 'bhead' ? [1, 5].includes(item.po_status) :
-               config.role === 'buyer' ? [2, 3, 4].includes(item.po_status) :
-               config.role === 'pohead' ? [6].includes(item.po_status) :
-               false) buttonsHtml += `<button class="btn btn-sm btn-outline h-7 min-h-7 px-2 text-xs update-status" data-id='${mappedItem.refId}' data-status='${item.po_status}'><i class="fas fa-arrow-right text-blue-500 text-xs"></i></button>`;
+            if (config.role === 'admin' ? [1].includes(item.po_status) :
+                config.role === 'bhead' ? [1, 5].includes(item.po_status) :
+                    config.role === 'buyer' ? [2, 3, 4].includes(item.po_status) :
+                        config.role === 'pohead' ? [6].includes(item.po_status) :
+                            false) buttonsHtml += `<button class="btn btn-sm btn-outline h-7 min-h-7 px-2 text-xs update-status" data-id='${mappedItem.refId}' data-status='${item.po_status}'><i class="fas fa-arrow-right text-blue-500 text-xs"></i></button>`;
             if (config.role === 'poteammember' && item.po_status === 9) buttonsHtml += `<button class="btn btn-sm btn-info h-7 min-h-7 px-2 text-xs insert-po" data-id='${mappedItem.refId}'><i class="fas fa-plus text-white text-xs"></i> <span class="hidden sm:inline">Insert PO</span></button>`;
 
             const cardHtml = `
@@ -282,15 +282,15 @@ function renderCards(dataArray, role = 'buyer', containerId = 'cardContainer') {
             }
             window.cardObserver.observe(container.lastElementChild);
         }
-        
+
         index = end;
-        
+
         // Continue rendering if there's more data
         if (index < dataArray.length) {
             requestAnimationFrame(renderChunk);
         }
     };
-    
+
     // Start rendering
     requestAnimationFrame(renderChunk);
 }

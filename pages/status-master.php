@@ -86,7 +86,7 @@ $currentPage = 'status-master.php';
                     <button id="refreshBtn" class="btn btn-outline btn-sm sm:btn-md">
                         <i class="fas fa-sync-alt"></i>
                     </button>
-                    <input type="text" id="searchInput" placeholder="Search statuses..." class="input input-bordered w-64">
+                    <input type="text" id="searchInput" placeholder="Search statuses..." class="input input-bordered w-full sm:w-64">
                 </div>
             </div>
             

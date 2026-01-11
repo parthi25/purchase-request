@@ -13,14 +13,14 @@ $userid = $_SESSION['user_id'] ?? 0;
 $currentPage = 'analytics.php';
 ?>
 <?php include '../common/layout.php'; ?>
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold">Analytics Dashboard</h1>
-        <div class="flex gap-2">
-            <button id="exportCSV" class="btn btn-success">
-                <i class="fas fa-file-csv"></i> Export CSV
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+        <h1 class="text-2xl sm:text-3xl font-bold">Analytics Dashboard</h1>
+        <div class="flex flex-wrap gap-2 w-full sm:w-auto">
+            <button id="exportCSV" class="btn btn-success btn-sm sm:btn-md flex-1 sm:flex-none">
+                <i class="fas fa-file-csv"></i> <span class="hidden sm:inline">Export</span> CSV
             </button>
-            <button id="exportExcel" class="btn btn-success">
-                <i class="fas fa-file-excel"></i> Export Excel
+            <button id="exportExcel" class="btn btn-success btn-sm sm:btn-md flex-1 sm:flex-none">
+                <i class="fas fa-file-excel"></i> <span class="hidden sm:inline">Export</span> Excel
             </button>
         </div>
     </div>
@@ -64,11 +64,11 @@ $currentPage = 'analytics.php';
                 </select>
             </div>
         </div>
-        <div class="flex gap-2">
-            <button id="applyFiltersBtn" class="btn btn-primary">
+        <div class="flex flex-wrap gap-2">
+            <button id="applyFiltersBtn" class="btn btn-primary btn-sm sm:btn-md flex-1 sm:flex-none">
                 <i class="fas fa-filter"></i> Apply Filters
             </button>
-            <button id="resetFiltersBtn" class="btn btn-outline">
+            <button id="resetFiltersBtn" class="btn btn-outline btn-sm sm:btn-md flex-1 sm:flex-none">
                 <i class="fas fa-undo"></i> Reset
             </button>
         </div>
@@ -314,6 +314,68 @@ $currentPage = 'analytics.php';
     #chartDataModal table.table thead th {
         background-color: #f9fafb !important;
         background: #f9fafb !important;
+    }
+    
+    /* Mobile Responsive Styles */
+    @media (max-width: 768px) {
+        /* Analytics Dashboard Header */
+        .analytics-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+        
+        /* Filter section - better spacing on mobile */
+        .bg-base-200.p-4 {
+            padding: 1rem;
+        }
+        
+        /* Charts grid - single column on mobile */
+        .grid.lg\\:grid-cols-2 {
+            grid-template-columns: 1fr !important;
+        }
+        
+        /* Chart containers - better padding on mobile */
+        .bg-base-200.p-6 {
+            padding: 1rem;
+        }
+        
+        /* Modal improvements for mobile */
+        #chartDataModal .modal-box {
+            max-width: calc(100vw - 1rem) !important;
+            margin: 0.5rem !important;
+            max-height: 95vh !important;
+        }
+        
+        /* Table in modal - smaller text on mobile */
+        #chartDataModal table {
+            font-size: 0.875rem;
+        }
+        
+        #chartDataModal table th,
+        #chartDataModal table td {
+            padding: 0.5rem 0.25rem !important;
+        }
+    }
+    
+    /* Small mobile devices */
+    @media (max-width: 640px) {
+        /* Export buttons - stack on very small screens */
+        .flex.flex-wrap.gap-2 {
+            width: 100%;
+        }
+        
+        /* Filter buttons - full width on very small screens */
+        .flex.flex-wrap.gap-2 button {
+            flex: 1 1 auto;
+            min-width: 0;
+        }
+        
+        /* Chart containers - reduce padding */
+        .bg-base-200.p-6 h3 {
+            font-size: 1rem;
+            margin-bottom: 0.75rem;
+        }
     }
 </style>
 <script>

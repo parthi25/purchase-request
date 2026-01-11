@@ -19,6 +19,8 @@
       <input type="file" id="fileInput" class="file-input file-input-bordered w-full" />
       
       <!-- New Item Upload and Info (only for proforma) -->
+      <!-- TEMPORARILY HIDDEN - Will be unhidden in future -->
+      <!--
       <div id="newItemFields" class="hidden space-y-2">
         <div class="divider my-2">New Item Details</div>
         <div>
@@ -40,6 +42,7 @@
           </label>
         </div>
       </div>
+      -->
       
       <button id="uploadFileBtn" class="btn btn-primary w-full">Upload New File</button>
     </div>

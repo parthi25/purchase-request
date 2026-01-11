@@ -1,60 +1,64 @@
 <?php include '../common/layout.php'; ?>
     <!-- Create PR Button - Sticky Top Right -->
-    <div class="hidden lg:block fixed top-20 right-6 z-40 pt-2">
-        <button id="openCreatePRBtn" class="btn btn-accent shadow-lg">Create PR</button>
-    </div>
-    <div class="bg-base-200 border-base-300 collapse border mt-1 lg:mt-15">
-  <input type="checkbox" class="peer" />
-  <div
-    class="collapse-title bg-base-200 text-base-content font-semibold flex items-center justify-between"
-  >
-   <span>FILTERS</span>
-   <i class="fas fa-filter ml-auto"></i>
-  </div>
-  <div
-    class="collapse-content bg-base-200"
-  >
-  <div class="lg:sticky lg:top-16 z-40 bg-base-100">
-        <!-- Filter bar -->
-        <div class="bg-base-200 rounded-xl shadow border border-base-300">
-            <div class="p-4 flex flex-wrap items-center justify-between gap-3">
-                    <!-- Search + Date Range + Filter Buttons -->
-                    <div class="flex flex-wrap items-center gap-3">
-                        <input type="text" id="searchInput" placeholder="Search..." class="input input-bordered w-48 md:w-64" />
-                        <input type="text" id="dateRange" placeholder="Select Date Range" class="input input-bordered w-64" />
-                        <button id="applyFilters" class="btn btn-outline btn-primary">Apply</button>
-                        <button id="clearFilters" class="btn btn-outline btn-secondary">Clear</button>
+<style>
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-scroll-in {
+        animation: fadeInUp 0.5s ease-out forwards;
+    }
+</style>
+    <!-- Modern Filter Bar (Not Sticky) -->
+    <div class="mb-6 -mx-4 px-4 py-3 bg-base-100 border-b border-base-200 shadow-sm transition-all duration-300">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4 max-w-7xl mx-auto">
+            
+            <!-- Left: Search & Date -->
+            <div class="flex flex-wrap items-center gap-2 w-full md:w-auto flex-1">
+                <div class="join shadow-sm w-full md:w-auto">
+                    <div class="join-item flex items-center bg-base-100 px-3 border border-base-300 rounded-l-lg">
+                        <i class="fas fa-search text-base-content/50"></i>
                     </div>
-
-                    <!-- Buttons -->
-                    <div class="flex flex-wrap items-center gap-3">
-                        <div class="btn-group">
-                            <button class="btn btn-outline view-toggle-btn active" data-view="table">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M3 10h18M3 14h18m-9-4v8m-7 0h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                                </svg>
-                                Table
-                            </button>
-                            <button class="btn btn-outline view-toggle-btn" data-view="cards">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
-                                    stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
-                                </svg>
-                                Cards
-                            </button>
-                        </div>
-                    </div>
+                    <input type="text" id="searchInput" placeholder="Search PO, Vendor..." class="join-item input input-sm input-bordered border-l-0 focus:outline-none w-full md:w-48" />
                 </div>
-            <!-- Status Counts -->
-            <div id="statusCounts" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-4 p-2 sm:p-4 border-t border-base-300"></div>
-            <div id="activeStatus" class="text-center text-sm text-gray-500 mb-2 px-4 pb-2"></div>
+                
+                <input type="text" id="dateRange" placeholder="Date Range" class="input input-sm input-bordered shadow-sm w-full md:w-40" />
+            </div>
+
+            <!-- Right: Actions & View Toggle -->
+            <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
+                <!-- Filter Buttons & View Toggle in Single Row on Mobile -->
+                <div class="flex items-center gap-2 flex-1 sm:flex-none">
+                    <button id="applyFilters" class="btn btn-sm btn-primary shadow-sm px-3 sm:px-4 font-medium flex-1 sm:flex-none">Apply</button>
+                    <button id="clearFilters" class="btn btn-sm btn-outline btn-error shadow-sm px-3 sm:px-4 font-medium flex-1 sm:flex-none">Reset</button>
+                </div>
+
+                <!-- Create PR Button (Desktop) -->
+                <button id="openCreatePRBtn" class="hidden lg:flex btn btn-sm btn-accent shadow-sm gap-2">
+                    <i class="fas fa-plus"></i> Create PR
+                </button>
+
+                <div class="divider divider-horizontal mx-0 hidden lg:flex"></div>
+
+                <div class="join shadow-sm flex-1 sm:flex-none">
+                    <button class="join-item btn btn-sm btn-outline view-toggle-btn active px-3 sm:px-4 font-medium flex-1 sm:flex-none" data-view="table" title="Table View">
+                        Table
+                    </button>
+                    <button class="join-item btn btn-sm btn-outline view-toggle-btn px-3 sm:px-4 font-medium flex-1 sm:flex-none" data-view="cards" title="Card View">
+                        Card
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Quick Status Pills (Horizontal Scroll) -->
+        <div id="statusCounts" class="flex items-center gap-2 overflow-x-auto py-2 mt-2 no-scrollbar">
+             <!-- Populated by JS -->
         </div>
     </div>
-  </div>
-</div>
 
     <!-- Mobile-only sticky Create PR button -->
     <div class="lg:hidden fixed bottom-6 right-6 z-50">
@@ -63,7 +67,7 @@
         </button>
     </div>
 
-        <div id="view-container" class="p-2 sm:p-4"></div>
+    <div id="view-container" class="p-2 sm:p-4 animate-scroll-in"></div>
         <?php include '../common/read-more-modal.php'; ?>
         <?php include '../common/file-upload.php'; ?>
         <?php include '../common/create-pr-modal.php'; ?>

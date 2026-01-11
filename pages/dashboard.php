@@ -222,9 +222,6 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Details Modal -->
     <dialog id="detailsModal" class="modal">

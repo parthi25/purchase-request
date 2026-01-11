@@ -109,11 +109,12 @@ function renderCountBox(counts) {
                  data-status="${item.status_id}" 
                  data-key="${item.status_key}">
                 <span class="text-sm font-semibold text-center hidden">${displayLabel}</span>
-                <button class="btn btn-outline btn-sm count-box" 
+                <button class="btn btn-outline btn-sm count-box gap-2 whitespace-nowrap" 
                      data-status="${item.status_id}" 
                      data-key="${item.status_key}" 
                      title="Click to filter by ${displayLabel}">
                     ${displayLabel}
+                    <div class="badge badge-sm badge-ghost border-current opacity-75">${item.count}</div>
                 </button>
             </div>
         `;
@@ -159,13 +160,13 @@ function handleCountBoxClick(event) {
     countBoxConfig.activeStatus = statusId;
 
     if (countBoxConfig.onStatusClick && typeof countBoxConfig.onStatusClick === 'function') {
-        try { 
+        try {
             console.log('Calling onStatusClick callback with:', statusId, statusKey);
-            countBoxConfig.onStatusClick(statusId, statusKey); 
-        } 
-        catch (error) { 
-          console.error(error); 
-          showToast('Status filter failed: ' + error.message, 'error');
+            countBoxConfig.onStatusClick(statusId, statusKey);
+        }
+        catch (error) {
+            console.error(error);
+            showToast('Status filter failed: ' + error.message, 'error');
         }
     }
 }
@@ -179,11 +180,11 @@ function setActiveStatus(statusId) {
         });
         box.classList.add('btn-active');
         countBoxConfig.activeStatus = statusId;
-        
+
         // Find the count for this status
         const statusData = countBoxConfig.countData.find(item => item.status_id == statusId);
         const count = statusData ? statusData.count : 0;
-        
+
         const activeStatusElement = document.getElementById('activeStatus');
         if (activeStatusElement) {
             activeStatusElement.textContent = count;
