@@ -225,7 +225,7 @@ function renderCards(dataArray, role = 'buyer', containerId = 'cardContainer') {
             if (config.role === 'poteammember' && item.po_status === 9) buttonsHtml += `<button class="btn btn-sm btn-info h-7 min-h-7 px-2 text-xs insert-po" data-id='${mappedItem.refId}'><i class="fas fa-plus text-white text-xs"></i> <span class="hidden sm:inline">Insert PO</span></button>`;
 
             const cardHtml = `
-                <div class="card w-full min-w-[280px] max-w-[320px] min-h-[400px] bg-base-100 shadow-md border border-gray-200 m-2 opacity-0 translate-y-4 scale-95 transition-all duration-500 ease-in-out hover:shadow-lg hover:scale-105 rounded-2xl flex flex-col">
+                <div class="card w-full min-w-[280px] max-w-[320px] min-h-[400px] bg-base-200 shadow-md border border-gray-200 m-2 opacity-0 translate-y-4 scale-95 transition-all duration-500 ease-in-out hover:shadow-lg hover:scale-105 rounded-2xl flex flex-col">
                     <div class="card-body p-4 flex flex-col flex-grow relative">
                         <div class="absolute top-2 right-2 product cursor-pointer" data-pr-id='${mappedItem.refId}' data-status-id='${item.po_status}' data-role='${config.role}'>
                             <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden flex justify-center items-center bg-base-200">

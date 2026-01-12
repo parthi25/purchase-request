@@ -114,7 +114,7 @@ while ($statusRow = $statusResult->fetch_assoc()) {
 $stmt->close();
 $conn->close();
 
-sendResponse(200, "success", [
+sendResponse(200, "success", "Status report retrieved successfully", [
     'data' => $data,
     'status_names' => $statusNames
 ]);

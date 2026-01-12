@@ -138,7 +138,6 @@ function getBuyerStageCounts($pdo, $dateFrom = null, $dateTo = null, $plantFilte
             MAX(se.createdAt) AS last_entry_date
             
         FROM sir_entries se
-        USE INDEX (idx_sir_entries_buyer_id, idx_sir_entries_status, idx_sir_entries_created_at, idx_sir_entries_order_type, idx_sir_entries_plant)
         {$whereClause}
         GROUP BY se.buyerName, se.buyer_id
         ORDER BY se.buyerName ASC
@@ -192,7 +191,6 @@ function getSummaryTotals($pdo, $dateFrom = null, $dateTo = null, $plantFilter =
             COALESCE(SUM(se.invoiceQty), 0) AS total_quantity,
             COALESCE(SUM(se.invoiceAmount), 0) AS total_amount
         FROM sir_entries se
-        USE INDEX (idx_sir_entries_buyer_id, idx_sir_entries_status, idx_sir_entries_created_at)
         {$whereClause}
     ";
     

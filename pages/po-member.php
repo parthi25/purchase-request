@@ -12,7 +12,7 @@
     }
 </style>
     <!-- Modern Filter Bar (Not Sticky) -->
-    <div class="mb-6 -mx-4 px-4 py-3 bg-base-100 border-b border-base-200 shadow-sm transition-all duration-300">
+    <div class="mb-6 -mx-4 px-4 py-3 bg-base-200 border-b border-base-200 shadow-sm transition-all duration-300">
         <div class="flex flex-col md:flex-row items-center justify-between gap-4 max-w-7xl mx-auto">
             
             <!-- Left: Search & Date -->
