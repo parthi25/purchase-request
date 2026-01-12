@@ -19,7 +19,7 @@ $userid = $_SESSION['user_id'] ?? 0;
 $currentPage = 'status-master.php';
 ?>
 <?php include '../common/layout.php'; ?>
-    <div class="flex justify-between items-center mb-4 sm:mb-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
         <h1 class="text-2xl sm:text-3xl font-bold">Status Master</h1>
     </div>
 
@@ -110,7 +110,6 @@ $currentPage = 'status-master.php';
             <!-- Pagination -->
             <div class="flex flex-col sm:flex-row justify-center items-center gap-2 mt-4" id="paginationContainer">
             </div>
-        </div>
     </div>
     
     <!-- Hidden table for exports -->
@@ -277,10 +276,10 @@ function loadStatuses(page = 1, search = '') {
                     <td><strong>${status.status}</strong></td>
                     <td>
                         <div class="flex gap-2">
-                            <button class="btn btn-sm btn-primary edit-btn" data-id="${status.id}">
+                            <button class="btn btn-ghost btn-sm text-primary hover:bg-transparent edit-btn" data-id="${status.id}" title="Edit">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="btn btn-sm btn-error delete-btn" data-id="${status.id}">
+                            <button class="btn btn-ghost btn-sm text-error hover:bg-transparent delete-btn" data-id="${status.id}" title="Delete">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>

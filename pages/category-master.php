@@ -254,10 +254,10 @@ function loadCategories() {
                     <td><strong>${category.maincat}</strong></td>
                     <td>
                         <div class="flex gap-2">
-                            <button class="btn btn-sm btn-primary edit-btn" data-id="${category.id}">
+                            <button class="btn btn-ghost btn-sm text-primary hover:bg-transparent edit-btn" data-id="${category.id}" title="Edit">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="btn btn-sm btn-error delete-btn" data-id="${category.id}">
+                            <button class="btn btn-ghost btn-sm text-error hover:bg-transparent delete-btn" data-id="${category.id}" title="Delete">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -453,10 +453,10 @@ function loadCategories(page = 1, search = '') {
                     <td><strong>${category.maincat}</strong></td>
                     <td>
                         <div class="flex gap-2">
-                            <button class="btn btn-sm btn-primary edit-btn" data-id="${category.id}">
+                            <button class="btn btn-ghost btn-sm text-primary hover:bg-transparent edit-btn" data-id="${category.id}" title="Edit">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="btn btn-sm btn-error delete-btn" data-id="${category.id}">
+                            <button class="btn btn-ghost btn-sm text-error hover:bg-transparent delete-btn" data-id="${category.id}" title="Delete">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>

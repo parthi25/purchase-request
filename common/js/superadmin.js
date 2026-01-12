@@ -252,8 +252,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     </span>
                 </td>
                 <td>
-                    <button class="btn btn-sm btn-primary" onclick="editPermission(${perm.id})">Edit</button>
-                    <button class="btn btn-sm btn-error" onclick="deletePermission(${perm.id})">Delete</button>
+                    <div class="flex gap-2">
+                        <button class="btn btn-ghost btn-sm text-primary hover:bg-transparent" onclick="editPermission(${perm.id})" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-ghost btn-sm text-error hover:bg-transparent" onclick="deletePermission(${perm.id})" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
                 </td>
             </tr>
         `).join('');
@@ -297,8 +303,8 @@ document.addEventListener('DOMContentLoaded', function () {
                 <td>${flow.to_status_id} - ${flow.to_status_name || 'N/A'}</td>
                 <td>${flow.role}</td>
                 <td>
-                    <span class="badge ${flow.requires_proforma == 1 ? 'badge-warning' : 'badge-info'}">
-                        ${flow.requires_proforma == 1 ? 'Yes' : 'No'}
+                    <span class="badge ${flow.requires_proforma === 1 ? 'badge-warning' : 'badge-info'}">
+                        ${flow.requires_proforma === 1 ? 'Yes' : 'No'}
                     </span>
                 </td>
                 <td>${flow.priority}</td>
@@ -308,8 +314,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     </span>
                 </td>
                 <td>
-                    <button class="btn btn-sm btn-primary" onclick="editFlow(${flow.id})">Edit</button>
-                    <button class="btn btn-sm btn-error" onclick="deleteFlow(${flow.id})">Delete</button>
+                    <div class="flex gap-2">
+                        <button class="btn btn-ghost btn-sm text-primary hover:bg-transparent" onclick="editFlow(${flow.id})" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-ghost btn-sm text-error hover:bg-transparent" onclick="deleteFlow(${flow.id})" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
                 </td>
             </tr>
         `).join('');
@@ -386,8 +398,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     </span>
                 </td>
                 <td>
-                    <button class="btn btn-sm btn-primary" onclick="editPRPermission(${perm.id})">Edit</button>
-                    <button class="btn btn-sm btn-error" onclick="deletePRPermission(${perm.id})">Delete</button>
+                    <div class="flex gap-2">
+                        <button class="btn btn-ghost btn-sm text-primary hover:bg-transparent" onclick="editPRPermission(${perm.id})" title="Edit">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-ghost btn-sm text-error hover:bg-transparent" onclick="deletePRPermission(${perm.id})" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
                 </td>
             </tr>
         `).join('');
@@ -786,8 +804,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     <td>${field.field_order}</td>
                     <td>${field.db_column_name || '<span class="text-gray-400">-</span>'}</td>
                     <td>
-                        <button class="btn btn-sm btn-primary" onclick="editModalField(${field.id})">Edit</button>
-                        <button class="btn btn-sm btn-error" onclick="deleteModalField(${field.id})">Delete</button>
+                        <div class="flex gap-2">
+                            <button class="btn btn-ghost btn-sm text-primary hover:bg-transparent" onclick="editModalField(${field.id})" title="Edit">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-ghost btn-sm text-error hover:bg-transparent" onclick="deleteModalField(${field.id})" title="Delete">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
                     </td>
                 </tr>
             `;

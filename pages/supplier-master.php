@@ -245,11 +245,11 @@ function loadSuppliers(page = 1, search = '') {
                         <td>${supplier.city || '-'}</td>
                         <td>
                             <div class="flex gap-2">
-                                <button class="btn btn-sm btn-warning" onclick='editSupplier(${JSON.stringify(supplier)})'>
-                                    <i class="fas fa-edit"></i> Edit
+                                <button class="btn btn-ghost btn-sm text-primary hover:bg-transparent" onclick='editSupplier(${JSON.stringify(supplier)})' title="Edit">
+                                    <i class="fas fa-edit"></i>
                                 </button>
-                                <button class="btn btn-sm btn-error" onclick="deleteSupplier(${supplier.id})">
-                                    <i class="fas fa-trash"></i> Delete
+                                <button class="btn btn-ghost btn-sm text-error hover:bg-transparent" onclick="deleteSupplier(${supplier.id})" title="Delete">
+                                    <i class="fas fa-trash"></i>
                                 </button>
                             </div>
                         </td>

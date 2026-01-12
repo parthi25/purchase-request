@@ -263,14 +263,14 @@ function loadUsers(page = 1, search = '') {
                     <td>${statusBadge}</td>
                     <td>
                         <div class="flex gap-2">
-                            <button class="btn btn-sm btn-warning" onclick='editUser(${JSON.stringify(user)})'>
-                                <i class="fas fa-edit"></i> Edit
+                            <button class="btn btn-ghost btn-sm text-primary hover:bg-transparent" onclick='editUser(${JSON.stringify(user)})' title="Edit">
+                                <i class="fas fa-edit"></i>
                             </button>
                             <button class="btn btn-sm ${isActive ? 'btn-error' : 'btn-success'}" onclick="toggleUserStatus(${user.id}, ${isActive ? 0 : 1})">
                                 <i class="fas fa-${isActive ? 'ban' : 'check'}"></i> ${isActive ? 'Deactivate' : 'Activate'}
                             </button>
-                            <button class="btn btn-sm btn-error" onclick="deleteUser(${user.id})">
-                                <i class="fas fa-trash"></i> Delete
+                            <button class="btn btn-ghost btn-sm text-error hover:bg-transparent" onclick="deleteUser(${user.id})" title="Delete">
+                                <i class="fas fa-trash"></i>
                             </button>
                         </div>
                     </td>

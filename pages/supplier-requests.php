@@ -285,8 +285,8 @@ $currentPage = 'supplier-requests.php';
                         <td>${escapeHtml(supplier.created_by_name || 'N/A')}</td>
                         <td>${formatDate(supplier.created_at)}</td>
                         <td>
-                            <button class="btn btn-sm btn-primary" onclick="editSupplierCode(${supplier.id}, '${escapeHtml(supplier.supplier || '')}', '${escapeHtml(supplier.supplier_code || '')}')">
-                                <i class="fas fa-edit"></i> ${supplier.supplier_code ? 'Edit' : 'Add'}
+                            <button class="btn btn-ghost btn-sm text-primary hover:bg-transparent" onclick="editSupplierCode(${supplier.id}, '${escapeHtml(supplier.supplier || '')}', '${escapeHtml(supplier.supplier_code || '')}')" title="${supplier.supplier_code ? 'Edit' : 'Add'}">
+                                <i class="fas fa-edit"></i>
                             </button>
                         </td>
                     </tr>

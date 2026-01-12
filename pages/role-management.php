@@ -183,10 +183,10 @@ include '../common/layout.php';
                     </td>
                     <td>
                         <div class="flex gap-2">
-                            <button class="btn btn-sm btn-primary edit-btn" data-id="${role.id}">
+                            <button class="btn btn-ghost btn-sm text-primary hover:bg-transparent edit-btn" data-id="${role.id}" title="Edit">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="btn btn-sm btn-error delete-btn" data-id="${role.id}" data-role-code="${role.role_code}" ${role.role_code === 'super_admin' || role.role_code === 'master' ? 'disabled title="Cannot delete system roles"' : ''}>
+                            <button class="btn btn-ghost btn-sm text-error hover:bg-transparent delete-btn" data-id="${role.id}" data-role-code="${role.role_code}" ${role.role_code === 'super_admin' || role.role_code === 'master' ? 'disabled title="Cannot delete system roles"' : 'title="Delete"'}>
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>

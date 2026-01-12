@@ -715,8 +715,8 @@ async function loadPRsTable(page = 1, search = '') {
                 <td>${pr.uom}</td>
                 <td>${new Date(pr.created_at).toLocaleDateString()}</td>
                 <td>
-                    <button class="btn btn-sm btn-primary" onclick="event.stopPropagation(); selectPRFromTable(${pr.id})">
-                        <i class="fas fa-edit"></i> Edit
+                    <button class="btn btn-ghost btn-sm text-primary hover:bg-transparent" onclick="event.stopPropagation(); selectPRFromTable(${pr.id})" title="Edit">
+                        <i class="fas fa-edit"></i>
                     </button>
                 </td>
             </tr>

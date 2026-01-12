@@ -51,6 +51,19 @@ try {
             
             $data = [];
             while ($row = $result->fetch_assoc()) {
+                // Cast numeric fields to integers for proper frontend handling
+                if (isset($row['id'])) $row['id'] = (int)$row['id'];
+                if (isset($row['from_status_id'])) $row['from_status_id'] = (int)$row['from_status_id'];
+                if (isset($row['to_status_id'])) $row['to_status_id'] = (int)$row['to_status_id'];
+                if (isset($row['status_id'])) $row['status_id'] = (int)$row['status_id'];
+                if (isset($row['requires_proforma'])) $row['requires_proforma'] = (int)$row['requires_proforma'];
+                if (isset($row['is_active'])) $row['is_active'] = (int)$row['is_active'];
+                if (isset($row['is_required'])) $row['is_required'] = (int)$row['is_required'];
+                if (isset($row['priority'])) $row['priority'] = (int)$row['priority'];
+                if (isset($row['field_order'])) $row['field_order'] = (int)$row['field_order'];
+                if (isset($row['can_create'])) $row['can_create'] = (int)$row['can_create'];
+                if (isset($row['can_edit'])) $row['can_edit'] = (int)$row['can_edit'];
+                if (isset($row['can_edit_status'])) $row['can_edit_status'] = (int)$row['can_edit_status'];
                 $data[] = $row;
             }
             
