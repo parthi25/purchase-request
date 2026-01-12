@@ -71,7 +71,7 @@ try {
                 }
                 $status_id = intval($_POST['status_id']);
                 $field_name = Security::sanitizeInput($_POST['field_name']);
-                $is_required = isset($_POST['is_required']) ? 1 : 0;
+                $is_required = (isset($_POST['is_required']) && $_POST['is_required'] == 1) ? 1 : 0;
                 $field_order = intval($_POST['field_order'] ?? 0);
                 $db_column_name = !empty($_POST['db_column_name']) ? Security::sanitizeInput($_POST['db_column_name']) : null;
                 
@@ -83,10 +83,10 @@ try {
                     sendResponse(400, "error", "Missing required field: role is required");
                 }
                 $role = Security::sanitizeInput($_POST['role']);
-                $can_create = isset($_POST['can_create']) ? 1 : 0;
-                $can_edit = isset($_POST['can_edit']) ? 1 : 0;
+                $can_create = (isset($_POST['can_create']) && $_POST['can_create'] == 1) ? 1 : 0;
+                $can_edit = (isset($_POST['can_edit']) && $_POST['can_edit'] == 1) ? 1 : 0;
                 $can_edit_status = !empty($_POST['can_edit_status']) ? intval($_POST['can_edit_status']) : null;
-                $is_active = isset($_POST['is_active']) ? 1 : 0;
+                $is_active = (isset($_POST['is_active']) && $_POST['is_active'] == 1) ? 1 : 0;
                 
                 if ($can_edit_status === null) {
                     $stmt = $conn->prepare("INSERT INTO role_pr_permissions (role, can_create, can_edit, can_edit_status, is_active) 
@@ -104,8 +104,8 @@ try {
                 $from_status_id = intval($_POST['from_status_id']);
                 $to_status_id = intval($_POST['to_status_id']);
                 $role = Security::sanitizeInput($_POST['role']);
-                $requires_proforma = isset($_POST['requires_proforma']) ? 1 : 0;
-                $is_active = isset($_POST['is_active']) ? 1 : 0;
+                $requires_proforma = (isset($_POST['requires_proforma']) && $_POST['requires_proforma'] == 1) ? 1 : 0;
+                $is_active = (isset($_POST['is_active']) && $_POST['is_active'] == 1) ? 1 : 0;
                 $priority = intval($_POST['priority'] ?? 0);
                 
                 $stmt = $conn->prepare("INSERT INTO status_transitions (from_status_id, to_status_id, role, requires_proforma, is_active, priority) 
@@ -119,7 +119,7 @@ try {
                 
                 $role = Security::sanitizeInput($_POST['role']);
                 $status_id = intval($_POST['status_id']);
-                $is_active = isset($_POST['is_active']) ? 1 : 0;
+                $is_active = (isset($_POST['is_active']) && $_POST['is_active'] == 1) ? 1 : 0;
                 
                 $stmt = $conn->prepare("INSERT INTO role_status_permissions (role, status_id, is_active) 
                                        VALUES (?, ?, ?)");
@@ -129,7 +129,7 @@ try {
             if ($stmt->execute()) {
                 sendResponse(200, "success", "Record created successfully", ['id' => $conn->insert_id]);
             } else {
-                sendResponse(500, "error", "Failed to create record: " . $stmt->error);
+                sendResponse(500, "error", "Database Error [Create]: " . $stmt->error);
             }
             $stmt->close();
             break;
@@ -143,12 +143,12 @@ try {
                 $putData = $_POST;
             }
             // Validate CSRF token
-            $csrfToken = $putData['csrf_token'] ?? $_POST['csrf_token'] ?? '';
-            if (empty($csrfToken) || !Security::validateCSRFToken($csrfToken)) {
+            $csrfToken = $putData['csrf_token'] ?? '';
+                if (empty($csrfToken) || !Security::validateCSRFToken($csrfToken)) {
                 sendResponse(403, "error", "Invalid CSRF token");
             }
             $type = $putData['type'] ?? 'permission';
-            $id = intval($putData['id']);
+            $id = intval($putData['id'] ?? 0);
             
             if ($type === 'status_modal_fields') {
                 if (!isset($putData['status_id']) || !isset($putData['field_name'])) {
@@ -156,7 +156,7 @@ try {
                 }
                 $status_id = intval($putData['status_id']);
                 $field_name = Security::sanitizeInput($putData['field_name']);
-                $is_required = isset($putData['is_required']) ? 1 : 0;
+                $is_required = (isset($putData['is_required']) && $putData['is_required'] == 1) ? 1 : 0;
                 $field_order = intval($putData['field_order'] ?? 0);
                 $db_column_name = !empty($putData['db_column_name']) ? Security::sanitizeInput($putData['db_column_name']) : null;
                 
@@ -169,10 +169,10 @@ try {
                     sendResponse(400, "error", "Missing required field: role is required");
                 }
                 $role = Security::sanitizeInput($putData['role']);
-                $can_create = isset($putData['can_create']) ? 1 : 0;
-                $can_edit = isset($putData['can_edit']) ? 1 : 0;
+                $can_create = (isset($putData['can_create']) && $putData['can_create'] == 1) ? 1 : 0;
+                $can_edit = (isset($putData['can_edit']) && $putData['can_edit'] == 1) ? 1 : 0;
                 $can_edit_status = !empty($putData['can_edit_status']) ? intval($putData['can_edit_status']) : null;
-                $is_active = isset($putData['is_active']) ? 1 : 0;
+                $is_active = (isset($putData['is_active']) && $putData['is_active'] == 1) ? 1 : 0;
                 
                 if ($can_edit_status === null) {
                     $stmt = $conn->prepare("UPDATE role_pr_permissions 
@@ -192,8 +192,8 @@ try {
                 $from_status_id = intval($putData['from_status_id']);
                 $to_status_id = intval($putData['to_status_id']);
                 $role = Security::sanitizeInput($putData['role']);
-                $requires_proforma = isset($putData['requires_proforma']) ? 1 : 0;
-                $is_active = isset($putData['is_active']) ? 1 : 0;
+                $requires_proforma = (isset($putData['requires_proforma']) && $putData['requires_proforma'] == 1) ? 1 : 0;
+                $is_active = (isset($putData['is_active']) && $putData['is_active'] == 1) ? 1 : 0;
                 $priority = intval($putData['priority'] ?? 0);
                 
                 $stmt = $conn->prepare("UPDATE status_transitions 
@@ -209,7 +209,7 @@ try {
                 
                 $role = Security::sanitizeInput($putData['role']);
                 $status_id = intval($putData['status_id']);
-                $is_active = isset($putData['is_active']) ? 1 : 0;
+                $is_active = (isset($putData['is_active']) && $putData['is_active'] == 1) ? 1 : 0;
                 
                 $stmt = $conn->prepare("UPDATE role_status_permissions 
                                        SET role = ?, status_id = ?, is_active = ?
@@ -218,9 +218,9 @@ try {
             }
             
             if ($stmt->execute()) {
-                sendResponse(200, "success", "Record updated successfully");
+                sendResponse(200, "success", "Record updated successfully", ['id' => $id]);
             } else {
-                sendResponse(500, "error", "Failed to update record: " . $stmt->error);
+                sendResponse(500, "error", "Database Error [Update]: " . $stmt->error);
             }
             $stmt->close();
             break;
@@ -254,9 +254,9 @@ try {
             $stmt->bind_param("i", $id);
             
             if ($stmt->execute()) {
-                sendResponse(200, "success", "Record deleted successfully");
+                sendResponse(200, "success", "Record deleted successfully", ['id' => $id]);
             } else {
-                sendResponse(500, "error", "Failed to delete record: " . $stmt->error);
+                sendResponse(500, "error", "Database Error [Delete]: " . $stmt->error);
             }
             $stmt->close();
             break;
@@ -265,8 +265,8 @@ try {
             sendResponse(405, "error", "Method not allowed");
     }
 } catch (Exception $e) {
-    error_log("Error in status-permissions.php: " . $e->getMessage());
-    sendResponse(500, "error", "Internal server error");
+    error_log("Error in status-permissions.php: " . $e->getMessage() . " at " . $e->getFile() . ":" . $e->getLine());
+    sendResponse(500, "error", "Server Exception: " . $e->getMessage());
 } finally {
     $conn->close();
 }

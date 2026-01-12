@@ -1,20 +1,13 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-if (!isset($_SESSION["user_id"])) {
-    header("Location: ../index.php");
-    exit;
-}
-
 // Only super_admin and master can access
-if (!in_array($_SESSION['role'], ['super_admin', 'master'])) {
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+if (!in_array($_SESSION['role'] ?? '', ['super_admin', 'master'])) {
     header("Location: ../index.php");
     exit;
 }
-
-include '../common/layout.php'; ?>
-    <div class="flex justify-between items-center mb-4 sm:mb-6">
+include '../common/layout.php'; 
+?>
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 sm:mb-6">
         <h1 class="text-2xl sm:text-3xl font-bold">Role Management</h1>
     </div>
 
@@ -184,8 +177,8 @@ include '../common/layout.php'; ?>
                     <td>${role.description || '-'}</td>
                     <td>${role.display_order}</td>
                     <td>
-                        <span class="badge ${role.is_active ? 'badge-success' : 'badge-error'}">
-                            ${role.is_active ? 'Active' : 'Inactive'}
+                        <span class="badge ${role.is_active == 1 ? 'badge-success' : 'badge-error'}">
+                            ${role.is_active == 1 ? 'Active' : 'Inactive'}
                         </span>
                     </td>
                     <td>

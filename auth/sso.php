@@ -61,12 +61,33 @@ try {
         sendResponse(404, "error", "User data not found");
     }
 
-    // Extract role from identity service response
-    $firstApp = $data['data']['applications'][0] ?? null;
-    $roleName = $firstApp['organizations'][0]['roles'][0]['name'] ?? null;
+    // Find correct application (PR Tracking)
+    $applications = $data['data']['applications'] ?? [];
+    $prTrackerApp = null;
+    foreach ($applications as $app) {
+        if (($app['id'] ?? '') == 3 || strpos(strtolower($app['name'] ?? ''), 'pr tracking') !== false) {
+            $prTrackerApp = $app;
+            break;
+        }
+    }
+
+    // Fallback if not specifically found
+    if (!$prTrackerApp && !empty($applications)) {
+        $prTrackerApp = $applications[0];
+    }
+
+    if (!$prTrackerApp) {
+        sendResponse(403, "error", "Application access not authorized");
+    }
+
+    // Extract role and organization info
+    $org = $prTrackerApp['organizations'][0] ?? null;
+    $roleName = $org['roles'][0]['name'] ?? null;
+    $orgId = $org['id'] ?? null;
+    $plantId = $org['plants'][0]['id'] ?? null;
+    $plantName = $org['plants'][0]['name'] ?? null;
     
     // Map identity service role to local role_code
-    // You may need to adjust this mapping based on your role naming convention
     $roleMapping = [
         'admin' => 'admin',
         'buyer' => 'buyer',
@@ -74,10 +95,11 @@ try {
         'PO_Head' => 'PO_Head',
         'PO_Team_Member' => 'PO_Team_Member',
         'super_admin' => 'super_admin',
+        'super admin' => 'super_admin', // Handle space from identity service
         'master' => 'master'
     ];
     
-    $roleCode = $roleMapping[$roleName] ?? $roleName ?? 'buyer'; // Default to buyer if no match
+    $roleCode = $roleMapping[$roleName] ?? $roleName ?? 'buyer'; 
     
     // Get user email (handle different possible structures)
     $email = $user['email'] ?? $user['supplier']['email'] ?? null;
@@ -169,6 +191,9 @@ try {
     $_SESSION['role'] = $finalRoleCode;
     $_SESSION['role_name'] = $finalRoleName;
     $_SESSION['fullname'] = $fullname;
+    $_SESSION['org_id'] = $orgId;
+    $_SESSION['plant_id'] = $plantId;
+    $_SESSION['plant_name'] = $plantName;
     $_SESSION['last_activity'] = time();
     
     // Generate CSRF token for the session
@@ -192,22 +217,22 @@ try {
     }
 
     // Determine redirect URL
-    $redirectUrl = '/pages/po-head.php'; // Default fallback
+    $redirectUrl = '/chn/pages/po-head.php'; // Default fallback
     
     if ($initialPageUrl) {
-        $redirectUrl = '/pages/' . $initialPageUrl;
+        $redirectUrl = '/chn/pages/' . $initialPageUrl;
     } else if ($finalRoleCode) {
         // Fallback to default based on role
         $defaultUrls = [
-            'admin' => '/pages/admin.php',
-            'buyer' => '/pages/buyer.php',
-            'B_Head' => '/pages/buyer-head.php',
-            'PO_Head' => '/pages/po-head.php',
-            'PO_Team_Member' => '/pages/po-member.php',
-            'super_admin' => '/pages/admin.php',
-            'master' => '/pages/admin.php'
-        ];
-        $redirectUrl = $defaultUrls[$finalRoleCode] ?? '/pages/po-head.php';
+            'admin' => '/chn/pages/admin.php',
+            'buyer' => '/chn/pages/buyer.php',
+            'B_Head' => '/chn/pages/buyer-head.php',
+            'PO_Head' => '/chn/pages/po-head.php',
+            'PO_Team_Member' => '/chn/pages/po-member.php',
+            'super_admin' => '/chn/pages/admin.php',
+            'master' => '/chn/pages/admin.php'
+            ];  
+        $redirectUrl = $defaultUrls[$finalRoleCode] ?? '/chn/pages/po-head.php';
     }
 
     // Redirect to the appropriate page

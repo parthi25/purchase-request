@@ -1,20 +1,15 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-if (!isset($_SESSION["user_id"])) {
+// Restricted to super_admin and master for PR editing
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+if (!in_array($_SESSION['role'] ?? '', ['super_admin', 'master'])) {
     header("Location: ../index.php");
     exit;
 }
-
-$role = $_SESSION['role'] ?? '';
-$username = $_SESSION['username'] ?? 'User';
-$userid = $_SESSION['user_id'] ?? 0;
 $currentPage = 'edit-pr.php';
+include '../common/layout.php'; 
 ?>
-<?php include '../common/layout.php'; ?>
-    <div class="flex justify-between items-center mb-6">
-        <h1 class="text-3xl font-bold">Edit Purchase Request</h1>
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 sm:mb-6">
+        <h1 class="text-2xl sm:text-3xl font-bold">Edit Purchase Request</h1>
     </div>
     
     <!-- Search Card -->
@@ -290,8 +285,7 @@ $currentPage = 'edit-pr.php';
             </form>
         </div>
     </div>
-</div>
-
+    
 <script src="../common/js/create-pr.js"></script>
 <script>
 let currentPRData = null;

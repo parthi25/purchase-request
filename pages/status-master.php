@@ -30,10 +30,10 @@ $currentPage = 'status-master.php';
                 <i class="fas fa-flag"></i>
                 <span id="formTitle">Add Status</span>
             </h2>
-            <form id="statusForm" class="flex flex-wrap items-end gap-3">
+            <form id="statusForm" class="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-end gap-3">
                 <input type="hidden" name="id" id="statusId">
                 
-                <div class="form-control flex-1 min-w-[200px]">
+                <div class="form-control w-full sm:flex-1">
                     <label class="label">
                         <span class="label-text">Status Name <span class="text-error">*</span></span>
                     </label>
@@ -43,20 +43,20 @@ $currentPage = 'status-master.php';
                     </div>
                 </div>
                 
-                <div class="form-control">
-                    <div class="flex gap-2">
-                        <button type="submit" class="btn btn-primary">
+                <div class="form-control w-full sm:w-auto">
+                    <div class="flex flex-wrap gap-2">
+                        <button type="submit" class="btn btn-primary btn-sm sm:btn-md flex-1 sm:flex-none">
                             <i class="fas fa-save"></i>
                             <span id="submitBtnText">Add Status</span>
                         </button>
-                        <button type="button" class="btn btn-ghost" id="cancelBtn" style="display: none;">
+                        <button type="button" class="btn btn-ghost btn-sm sm:btn-md" id="cancelBtn" style="display: none;">
                             <i class="fas fa-times"></i>
                             Cancel
                         </button>
-                        <button type="button" id="resetBtn" class="btn btn-outline">
+                        <button type="button" id="resetBtn" class="btn btn-outline btn-sm sm:btn-md flex-1 sm:flex-none">
                             <i class="fas fa-undo"></i> Reset
                         </button>
-                        <button type="button" id="deleteBtn" class="btn btn-error" style="display: none;">
+                        <button type="button" id="deleteBtn" class="btn btn-error btn-sm sm:btn-md" style="display: none;">
                             <i class="fas fa-trash"></i> Delete
                         </button>
                     </div>
@@ -108,7 +108,7 @@ $currentPage = 'status-master.php';
             </div>
             
             <!-- Pagination -->
-            <div class="flex justify-center items-center gap-2 mt-4" id="paginationContainer">
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-2 mt-4" id="paginationContainer">
             </div>
         </div>
     </div>
@@ -332,7 +332,17 @@ function renderPagination(pagination) {
     const total = pagination.total_pages || 1;
     const totalItems = pagination.total_items || 0;
     
-    let paginationHTML = '<div class="join">';
+    // Use fewer pages on mobile
+    const isMobile = window.innerWidth < 640;
+    const maxPages = isMobile ? 3 : 5;
+    let startPage = Math.max(1, current - Math.floor(maxPages / 2));
+    let endPage = Math.min(total, startPage + maxPages - 1);
+    
+    if (endPage - startPage < maxPages - 1) {
+        startPage = Math.max(1, endPage - maxPages + 1);
+    }
+    
+    let paginationHTML = '<div class="overflow-x-auto w-full flex justify-center"><div class="join">';
     
     // Previous button
     if (current > 1) {
@@ -341,16 +351,8 @@ function renderPagination(pagination) {
         paginationHTML += `<button class="join-item btn btn-sm btn-disabled">«</button>`;
     }
     
-    // Page numbers
-    const maxPages = 5;
-    let startPage = Math.max(1, current - Math.floor(maxPages / 2));
-    let endPage = Math.min(total, startPage + maxPages - 1);
-    
-    if (endPage - startPage < maxPages - 1) {
-        startPage = Math.max(1, endPage - maxPages + 1);
-    }
-    
-    if (startPage > 1) {
+    // Page numbers - show first page only if not in range
+    if (startPage > 1 && !isMobile) {
         paginationHTML += `<button class="join-item btn btn-sm" onclick="loadStatuses(1)">1</button>`;
         if (startPage > 2) {
             paginationHTML += `<button class="join-item btn btn-sm btn-disabled">...</button>`;
@@ -365,7 +367,8 @@ function renderPagination(pagination) {
         }
     }
     
-    if (endPage < total) {
+    // Show last page only if not in range and not on mobile
+    if (endPage < total && !isMobile) {
         if (endPage < total - 1) {
             paginationHTML += `<button class="join-item btn btn-sm btn-disabled">...</button>`;
         }
@@ -379,8 +382,8 @@ function renderPagination(pagination) {
         paginationHTML += `<button class="join-item btn btn-sm btn-disabled">»</button>`;
     }
     
-    paginationHTML += '</div>';
-    paginationHTML += `<div class="ml-4 text-sm opacity-70">Showing ${((current - 1) * itemsPerPage) + 1}-${Math.min(current * itemsPerPage, totalItems)} of ${totalItems}</div>`;
+    paginationHTML += '</div></div>';
+    paginationHTML += `<div class="text-sm opacity-70 text-center sm:text-left sm:ml-4 mt-2 sm:mt-0">Showing ${((current - 1) * itemsPerPage) + 1}-${Math.min(current * itemsPerPage, totalItems)} of ${totalItems}</div>`;
     
     container.html(paginationHTML);
 }

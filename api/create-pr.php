@@ -165,7 +165,7 @@ try {
         }
 
         $stmt = $conn->prepare("INSERT INTO supplier_requests (supplier, created_by, created_at, agent, city, gst_no, pan_no, mobile, email) VALUES (?, ?, NOW(), ?, ?, ?, ?, ?, ?)");
-        $stmt->bind_param("sississs", $newsupplier, $createdBy, $agent, $city, $gstNo, $panNo, $mobile, $email);
+        $stmt->bind_param("sissssss", $newsupplier, $createdBy, $agent, $city, $gstNo, $panNo, $mobile, $email);
         $stmt->execute();
         $newSupplierId = $stmt->insert_id;
         $stmt->close();

@@ -203,193 +203,19 @@ try {
             }
         }
         
-        /* ============================================
-           GLOBAL MOBILE RESPONSIVE STYLES
-           ============================================ */
-        
-        /* Mobile: Fix search inputs and form controls */
-        @media (max-width: 768px) {
-            /* Make fixed-width inputs responsive */
-            input[class*="w-64"],
-            input[class*="w-48"],
-            .input.w-64,
-            .input.w-48 {
-                width: 100% !important;
-                max-width: 100% !important;
-            }
-            
-            /* Form controls should stack on mobile */
-            .form-control {
-                width: 100% !important;
-                min-width: 100% !important;
-            }
-            
-            /* Flex containers should stack */
-            .flex.flex-wrap {
-                flex-direction: column;
-            }
-            
-            /* Buttons in forms should be full width on mobile */
-            form .btn,
-            .form-control .btn {
-                width: 100%;
-            }
-            
-            /* Table actions should stack */
-            .table td .flex.gap-2,
-            .table th .flex.gap-2 {
-                flex-direction: column;
-                gap: 0.5rem;
-            }
-            
-            /* Card headers and actions */
-            .card-body > .flex.justify-between,
-            .card-body > .flex.flex-wrap {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            
-            /* Modal improvements */
-            .modal-box {
-                margin: 0.5rem !important;
-                max-width: calc(100% - 1rem) !important;
-                width: calc(100% - 1rem) !important;
-            }
-            
-            /* Dropdown menus */
-            .dropdown-content {
-                max-width: calc(100vw - 2rem);
-            }
-        }
-        
-        /* Small mobile devices */
-        @media (max-width: 640px) {
-            /* Reduce padding on mobile */
-            .card-body {
-                padding: 1rem !important;
-            }
-            
-            /* Smaller text on very small screens */
-            h1 {
-                font-size: 1.5rem !important;
-            }
-            
-            h2 {
-                font-size: 1.25rem !important;
-            }
-            
-            /* Table improvements */
-            .table {
-                font-size: 0.875rem;
-            }
-            
-            .table th,
-            .table td {
-                padding: 0.5rem 0.25rem !important;
-            }
-            
-            /* Button groups */
-            .join,
-            .btn-group {
-                width: 100%;
-            }
-            
-            /* Input groups */
-            .input-group {
-                width: 100%;
-            }
-            
-            /* Form controls - remove min-width constraints on mobile */
-            .form-control[class*="min-w"],
-            .form-control.min-w-\[150px\],
-            .form-control.min-w-\[200px\] {
-                min-width: 100% !important;
-                width: 100% !important;
-            }
-            
-            /* Form button groups should stack */
-            form .flex.gap-2 {
-                flex-direction: column;
-            }
-            
-            form .btn {
-                width: 100%;
-            }
-        }
-        
-        /* Tablet and up - ensure proper spacing */
-        @media (min-width: 768px) and (max-width: 1023px) {
-            .card-body {
-                padding: 1.5rem;
-            }
-        }
-        
-        /* Ensure tables are scrollable on mobile */
-        .overflow-x-auto {
-            -webkit-overflow-scrolling: touch;
-        }
-        
-        /* Fix for modals on mobile */
-        @media (max-width: 768px) {
-            .modal.modal-middle .modal-box {
-                max-height: 90vh;
-                margin: 1rem;
-            }
-            
-            .modal-backdrop {
-                background-color: rgba(0, 0, 0, 0.5);
-            }
-        }
-        
         /* Ensure viewport doesn't cause horizontal scroll */
         body {
             overflow-x: hidden;
         }
-        
-        /* Fix for negative margins on mobile */
+
+        /* Responsive utilities for page content */
         @media (max-width: 768px) {
-            .-mx-4 {
-                margin-left: -0.5rem !important;
-                margin-right: -0.5rem !important;
+            .table-container {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
             }
-            
-            .px-4 {
-                padding-left: 0.5rem !important;
-                padding-right: 0.5rem !important;
-            }
-        }
-        
-        /* Filter section improvements for mobile */
-        @media (max-width: 768px) {
-            /* Filter buttons and view toggle in single row on mobile */
-            .flex.flex-wrap.items-center.gap-2 {
-                width: 100%;
-            }
-            
-            /* Ensure Apply, Reset, Table, Card buttons are in a row */
-            .flex.flex-wrap.items-center.gap-2 > div.flex.items-center.gap-2,
-            .flex.flex-wrap.items-center.gap-2 > div.join {
-                flex: 1 1 auto;
-                min-width: 0;
-            }
-            
-            /* Filter buttons - equal width on mobile */
-            .flex.items-center.gap-2 button,
-            .join button {
-                flex: 1 1 auto;
-                min-width: 0;
-            }
-        }
-        
-        /* Very small screens - stack filter and view toggle */
-        @media (max-width: 480px) {
-            .flex.flex-wrap.items-center.gap-2 {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .flex.flex-wrap.items-center.gap-2 > div {
-                width: 100%;
+            .res-grid-1 {
+                grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
             }
         }
     </style>
@@ -474,4 +300,3 @@ try {
                 
                 <!-- Main Content (Hidden Initially) -->
                 <main id="pageContent" class="hidden">
-

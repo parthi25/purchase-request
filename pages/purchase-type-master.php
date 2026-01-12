@@ -30,10 +30,10 @@ $currentPage = 'purchase-type-master.php';
                 <i class="fas fa-tag"></i>
                 <span id="formTitle">Add Purchase Type</span>
             </h2>
-            <form id="purchaseTypeForm" class="flex flex-wrap items-end gap-3">
+            <form id="purchaseTypeForm" class="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-end gap-3">
                 <input type="hidden" name="id" id="purchaseTypeId">
                 
-                <div class="form-control flex-1 min-w-[200px]">
+                <div class="form-control w-full sm:flex-1">
                     <label class="label">
                         <span class="label-text">Purchase Type Name <span class="text-error">*</span></span>
                     </label>
@@ -43,20 +43,20 @@ $currentPage = 'purchase-type-master.php';
                     </div>
                 </div>
                 
-                <div class="form-control">
-                    <div class="flex gap-2">
-                        <button type="submit" class="btn btn-primary">
+                <div class="form-control w-full sm:w-auto">
+                    <div class="flex flex-wrap gap-2">
+                        <button type="submit" class="btn btn-primary btn-sm sm:btn-md flex-1 sm:flex-none">
                             <i class="fas fa-save"></i>
                             <span id="submitBtnText">Add Purchase Type</span>
                         </button>
-                        <button type="button" class="btn btn-ghost" id="cancelBtn" style="display: none;">
+                        <button type="button" class="btn btn-ghost btn-sm sm:btn-md" id="cancelBtn" style="display: none;">
                             <i class="fas fa-times"></i>
                             Cancel
                         </button>
-                        <button type="button" id="resetBtn" class="btn btn-outline">
+                        <button type="button" id="resetBtn" class="btn btn-outline btn-sm sm:btn-md flex-1 sm:flex-none">
                             <i class="fas fa-undo"></i> Reset
                         </button>
-                        <button type="button" id="deleteBtn" class="btn btn-error" style="display: none;">
+                        <button type="button" id="deleteBtn" class="btn btn-error btn-sm sm:btn-md" style="display: none;">
                             <i class="fas fa-trash"></i> Delete
                         </button>
                     </div>
@@ -68,25 +68,27 @@ $currentPage = 'purchase-type-master.php';
     <!-- Purchase Types Table -->
     <div class="card bg-base-100 shadow-xl">
         <div class="card-body">
-            <div class="flex flex-wrap justify-between items-center gap-4 mb-4">
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                 <h2 class="card-title capitalize">
                     <i class="fas fa-list"></i>
                     Purchase Types
                 </h2>
-                <div class="flex gap-2">
-                    <div class="dropdown dropdown-end">
-                        <label tabindex="0" class="btn btn-success btn-sm sm:btn-md">
-                            <i class="fas fa-file-export"></i> <span class="hidden sm:inline">Export</span>
-                        </label>
-                        <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
-                            <li><a id="exportExcel"><i class="fas fa-file-excel text-success"></i> Export as Excel</a></li>
-                            <li><a id="exportCSV"><i class="fas fa-file-csv text-primary"></i> Export as CSV</a></li>
-                        </ul>
-                    </div>
-                    <button id="refreshBtn" class="btn btn-outline btn-sm sm:btn-md">
-                        <i class="fas fa-sync-alt"></i>
-                    </button>
+                <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
                     <input type="text" id="searchInput" placeholder="Search purchase types..." class="input input-bordered w-full sm:w-64">
+                    <div class="flex gap-2">
+                        <div class="dropdown dropdown-end">
+                            <label tabindex="0" class="btn btn-success btn-sm sm:btn-md">
+                                <i class="fas fa-file-export"></i> <span class="hidden sm:inline">Export</span>
+                            </label>
+                            <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+                                <li><a id="exportExcel"><i class="fas fa-file-excel text-success"></i> Export as Excel</a></li>
+                                <li><a id="exportCSV"><i class="fas fa-file-csv text-primary"></i> Export as CSV</a></li>
+                            </ul>
+                        </div>
+                        <button id="refreshBtn" class="btn btn-outline btn-sm sm:btn-md">
+                            <i class="fas fa-sync-alt"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
             
@@ -108,7 +110,7 @@ $currentPage = 'purchase-type-master.php';
             </div>
             
             <!-- Pagination -->
-            <div class="flex justify-center items-center gap-2 mt-4" id="paginationContainer">
+            <div class="flex flex-col sm:flex-row justify-center items-center gap-2 mt-4" id="paginationContainer">
             </div>
         </div>
     </div>
@@ -121,9 +123,8 @@ $currentPage = 'purchase-type-master.php';
                 <th>Purchase Type Name</th>
             </tr>
         </thead>
-        <tbody></tbody>
+        <tbody>        </tbody>
     </table>
-</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
@@ -304,15 +305,9 @@ function renderPagination(pagination) {
     const total = pagination.total_pages || 1;
     const totalItems = pagination.total_items || 0;
     
-    let paginationHTML = '<div class="join">';
-    
-    if (current > 1) {
-        paginationHTML += `<button class="join-item btn btn-sm" onclick="loadPurchaseTypes(${current - 1})">«</button>`;
-    } else {
-        paginationHTML += `<button class="join-item btn btn-sm btn-disabled">«</button>`;
-    }
-    
-    const maxPages = 5;
+    // Use fewer pages on mobile
+    const isMobile = window.innerWidth < 640;
+    const maxPages = isMobile ? 3 : 5;
     let startPage = Math.max(1, current - Math.floor(maxPages / 2));
     let endPage = Math.min(total, startPage + maxPages - 1);
     
@@ -320,7 +315,16 @@ function renderPagination(pagination) {
         startPage = Math.max(1, endPage - maxPages + 1);
     }
     
-    if (startPage > 1) {
+    let paginationHTML = '<div class="overflow-x-auto w-full flex justify-center"><div class="join">';
+    
+    if (current > 1) {
+        paginationHTML += `<button class="join-item btn btn-sm" onclick="loadPurchaseTypes(${current - 1})">«</button>`;
+    } else {
+        paginationHTML += `<button class="join-item btn btn-sm btn-disabled">«</button>`;
+    }
+    
+    // Page numbers - show first page only if not in range
+    if (startPage > 1 && !isMobile) {
         paginationHTML += `<button class="join-item btn btn-sm" onclick="loadPurchaseTypes(1)">1</button>`;
         if (startPage > 2) {
             paginationHTML += `<button class="join-item btn btn-sm btn-disabled">...</button>`;
@@ -335,7 +339,8 @@ function renderPagination(pagination) {
         }
     }
     
-    if (endPage < total) {
+    // Show last page only if not in range and not on mobile
+    if (endPage < total && !isMobile) {
         if (endPage < total - 1) {
             paginationHTML += `<button class="join-item btn btn-sm btn-disabled">...</button>`;
         }
@@ -348,8 +353,8 @@ function renderPagination(pagination) {
         paginationHTML += `<button class="join-item btn btn-sm btn-disabled">»</button>`;
     }
     
-    paginationHTML += '</div>';
-    paginationHTML += `<div class="ml-4 text-sm opacity-70">Showing ${((current - 1) * itemsPerPage) + 1}-${Math.min(current * itemsPerPage, totalItems)} of ${totalItems}</div>`;
+    paginationHTML += '</div></div>';
+    paginationHTML += `<div class="text-sm opacity-70 text-center sm:text-left sm:ml-4 mt-2 sm:mt-0">Showing ${((current - 1) * itemsPerPage) + 1}-${Math.min(current * itemsPerPage, totalItems)} of ${totalItems}</div>`;
     
     container.html(paginationHTML);
 }

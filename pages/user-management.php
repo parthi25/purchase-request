@@ -19,14 +19,14 @@ $userid = $_SESSION['user_id'] ?? 0;
 $currentPage = 'user-management.php';
 ?>
 <?php include '../common/layout.php'; ?>
-    <div class="flex justify-between items-center mb-4 sm:mb-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 sm:mb-6">
         <h1 class="text-2xl sm:text-3xl font-bold">User Management</h1>
         <input type="hidden" id="currentRole" value="<?= htmlspecialchars($role) ?>">
     </div>
 
     <!-- Form Card -->
     <div class="card bg-base-100 shadow-xl mb-6">
-        <div class="card-body">
+        <div class="card-body p-4 sm:p-8">
             <h2 class="card-title mb-4 capitalize">
                 <i class="fas fa-user-plus"></i>
                 <span id="formTitle">Add New User</span>
@@ -40,7 +40,7 @@ $currentPage = 'user-management.php';
                     </label>
                     <div class="join w-full">
                         <span class="join-item btn btn-disabled bg-base-200"><i class="fas fa-user"></i></span>
-                        <input type="text" name="fullname" id="fullname" class="input input-bordered join-item flex-1" placeholder="Enter full name" required>
+                        <input type="text" name="fullname" id="fullname" class="input input-bordered join-item flex-1 min-w-0" placeholder="Enter full name" required>
                     </div>
                 </div>
                 
@@ -50,7 +50,7 @@ $currentPage = 'user-management.php';
                     </label>
                     <div class="join w-full">
                         <span class="join-item btn btn-disabled bg-base-200"><i class="fas fa-envelope"></i></span>
-                        <input type="email" name="email" id="email" class="input input-bordered join-item flex-1" placeholder="Enter email address">
+                        <input type="email" name="email" id="email" class="input input-bordered join-item flex-1 min-w-0" placeholder="Enter email address">
                     </div>
                 </div>
                 
@@ -60,7 +60,7 @@ $currentPage = 'user-management.php';
                     </label>
                     <div class="join w-full">
                         <span class="join-item btn btn-disabled bg-base-200"><i class="fas fa-phone"></i></span>
-                        <input type="text" name="phone" id="phone" class="input input-bordered join-item flex-1" placeholder="Enter phone number">
+                        <input type="text" name="phone" id="phone" class="input input-bordered join-item flex-1 min-w-0" placeholder="Enter phone number">
                     </div>
                 </div>
                 
@@ -70,7 +70,7 @@ $currentPage = 'user-management.php';
                     </label>
                     <div class="join w-full">
                         <span class="join-item btn btn-disabled bg-base-200"><i class="fas fa-at"></i></span>
-                        <input type="text" name="username" id="username" class="input input-bordered join-item flex-1" placeholder="Enter username" required>
+                        <input type="text" name="username" id="username" class="input input-bordered join-item flex-1 min-w-0" placeholder="Enter username" required>
                     </div>
                 </div>
                 
@@ -80,7 +80,7 @@ $currentPage = 'user-management.php';
                     </label>
                     <div class="join w-full">
                         <span class="join-item btn btn-disabled bg-base-200"><i class="fas fa-lock"></i></span>
-                        <input type="password" name="password" id="password" class="input input-bordered join-item flex-1" placeholder="Required for new users">
+                        <input type="password" name="password" id="password" class="input input-bordered join-item flex-1 min-w-0" placeholder="Required for new users">
                     </div>
                 </div>
                 
@@ -90,14 +90,14 @@ $currentPage = 'user-management.php';
                     </label>
                     <div class="join w-full">
                         <span class="join-item btn btn-disabled bg-base-200"><i class="fas fa-user-shield"></i></span>
-                        <select name="role" id="roleSelect" class="select select-bordered join-item flex-1" required>
+                        <select name="role" id="roleSelect" class="select select-bordered join-item flex-1 min-w-0" required>
                             <option value="">Select Role</option>
                         </select>
                     </div>
                 </div>
                 
                 <div class="form-control">
-                    <label class="label cursor-pointer">
+                    <label class="label cursor-pointer justify-start gap-4">
                         <span class="label-text">Active Status</span>
                         <input type="checkbox" name="is_active" id="is_active" class="toggle toggle-primary" checked>
                     </label>
@@ -117,7 +117,7 @@ $currentPage = 'user-management.php';
 
     <!-- Users Table Card -->
     <div class="card bg-base-100 shadow-xl">
-        <div class="card-body">
+        <div class="card-body p-4 sm:p-8">
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
                 <h2 class="card-title capitalize">
                     <i class="fas fa-users"></i> <span class="hidden sm:inline">User List</span><span class="sm:hidden">Users</span>
@@ -125,7 +125,7 @@ $currentPage = 'user-management.php';
                 <div class="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                     <div class="form-control w-full sm:w-auto">
                         <div class="join w-full sm:w-auto">
-                            <input type="text" id="searchInput" class="input input-bordered join-item flex-1" placeholder="Search users...">
+                            <input type="text" id="searchInput" class="input input-bordered join-item flex-1 min-w-0 sm:w-64" placeholder="Search users...">
                             <button class="btn btn-square join-item">
                                 <i class="fas fa-search"></i>
                             </button>
@@ -133,10 +133,10 @@ $currentPage = 'user-management.php';
                     </div>
                     <div class="flex gap-2">
                         <div class="dropdown dropdown-end">
-                            <label tabindex="0" class="btn btn-success btn-sm sm:btn-md">
+                            <label tabindex="0" class="btn btn-success btn-sm sm:btn-md text-white">
                                 <i class="fas fa-file-export"></i> <span class="hidden sm:inline">Export</span>
                             </label>
-                            <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52">
+                            <ul tabindex="0" class="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 z-[1]">
                                 <li><a id="exportExcel"><i class="fas fa-file-excel text-success"></i> Export as Excel</a></li>
                                 <li><a id="exportCSV"><i class="fas fa-file-csv text-primary"></i> Export as CSV</a></li>
                             </ul>
@@ -183,7 +183,6 @@ $currentPage = 'user-management.php';
             </div>
         </div>
     </div>
-</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
@@ -613,4 +612,3 @@ $(document).ready(function() {
 </script>
 
 <?php include '../common/layout-footer.php'; ?>
-

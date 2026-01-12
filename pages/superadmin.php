@@ -1,28 +1,25 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-if (!isset($_SESSION["user_id"])) {
-    header("Location: ../index.php");
-    exit;
-}
-
 // Only super_admin and master can access
-if (!in_array($_SESSION['role'], ['super_admin', 'master'])) {
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+if (!in_array($_SESSION['role'] ?? '', ['super_admin', 'master'])) {
     header("Location: ../index.php");
     exit;
 }
-
-include '../common/layout.php'; ?>
-        <h1 class="text-3xl font-bold mb-6">Status Flow Management</h1>
-        
-        <!-- Tabs for Permissions and Flow -->
-        <div class="tabs tabs-boxed mb-6">
+include '../common/layout.php'; 
+?>
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 sm:mb-6">
+        <h1 class="text-2xl sm:text-3xl font-bold">Status Flow Management</h1>
+    </div>
+    
+    <!-- Tabs for Permissions and Flow -->
+    <div class="overflow-x-auto no-scrollbar mb-6">
+        <div class="tabs tabs-boxed whitespace-nowrap">
             <a class="tab tab-active" data-tab="permissions">Status Permissions</a>
             <a class="tab" data-tab="flow">Status Flow</a>
             <a class="tab" data-tab="role_pr_permissions">PR Permissions</a>
             <a class="tab" data-tab="status_modal_fields">Status Modal Fields</a>
         </div>
+    </div>
 
         <!-- Status Permissions Tab -->
         <div id="permissions-tab">
@@ -148,7 +145,6 @@ include '../common/layout.php'; ?>
                         </tr>
                     </tbody>
                 </table>
-            </div>
         </div>
     </div>
 

@@ -1,9 +1,7 @@
 <?php include '../common/layout.php'; ?>
-</style>
 <style>
     .no-scrollbar::-webkit-scrollbar { display: none; }
     .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    /* Removed mask-linear-fade as requested */
     
     @keyframes fadeInUp {
         from { opacity: 0; transform: translateY(20px); }
@@ -13,6 +11,9 @@
         animation: fadeInUp 0.5s ease-out forwards;
     }
 </style>
+<div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 sm:mb-6">
+    <h1 class="text-2xl sm:text-3xl font-bold">Admin Dashboard</h1>
+</div>
     <!-- Create PR Button - Sticky Top Right -->
     <!-- Modern Filter Bar (Not Sticky) -->
     <div class="mb-6 -mx-4 px-4 py-3 bg-base-100 border-b border-base-200 shadow-sm transition-all duration-300">

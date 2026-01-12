@@ -118,15 +118,15 @@ $currentPage = 'supplier-master.php';
                     <input type="text" name="search_term" id="search_term" class="input input-bordered w-full" placeholder="Search term">
                 </div>
                 
-                <div class="form-control md:col-span-2 lg:col-span-3 flex justify-between gap-2 mt-4">
-                    <button type="button" id="resetBtn" class="btn btn-outline">
+                <div class="form-control md:col-span-2 lg:col-span-3 flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-2 mt-4">
+                    <button type="button" id="resetBtn" class="btn btn-outline btn-sm sm:btn-md">
                         <i class="fas fa-undo"></i> Reset
                     </button>
                     <div class="flex gap-2">
-                        <button type="button" id="deleteBtn" class="btn btn-error">
+                        <button type="button" id="deleteBtn" class="btn btn-error btn-sm sm:btn-md">
                             <i class="fas fa-trash"></i> Delete
                         </button>
-                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                        <button type="submit" class="btn btn-primary btn-sm sm:btn-md" id="submitBtn">
                             <i class="fas fa-save"></i> Save
                         </button>
                     </div>
@@ -200,7 +200,6 @@ $currentPage = 'supplier-master.php';
             </div>
         </div>
     </div>
-</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>

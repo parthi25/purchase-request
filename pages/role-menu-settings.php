@@ -1,20 +1,13 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) {
-    session_start();
-}
-if (!isset($_SESSION["user_id"])) {
-    header("Location: ../index.php");
-    exit;
-}
-
 // Only super_admin and master can access
-if (!in_array($_SESSION['role'], ['super_admin', 'master'])) {
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+if (!in_array($_SESSION['role'] ?? '', ['super_admin', 'master'])) {
     header("Location: ../index.php");
     exit;
 }
-
-include '../common/layout.php'; ?>
-    <div class="flex justify-between items-center mb-4 sm:mb-6">
+include '../common/layout.php'; 
+?>
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4 sm:mb-6">
         <h1 class="text-2xl sm:text-3xl font-bold">Role Menu Settings</h1>
     </div>
 
@@ -282,13 +275,13 @@ include '../common/layout.php'; ?>
                     <td>${menu.menu_order}</td>
                     <td><span class="badge badge-ghost">${menu.menu_group || 'main'}</span></td>
                     <td>
-                        <span class="badge ${menu.is_visible ? 'badge-success' : 'badge-error'}">
-                            ${menu.is_visible ? 'Yes' : 'No'}
+                        <span class="badge ${menu.is_visible == 1 ? 'badge-success' : 'badge-error'}">
+                            ${menu.is_visible == 1 ? 'Yes' : 'No'}
                         </span>
                     </td>
                     <td>
-                        <span class="badge ${menu.is_active ? 'badge-success' : 'badge-error'}">
-                            ${menu.is_active ? 'Active' : 'Inactive'}
+                        <span class="badge ${menu.is_active == 1 ? 'badge-success' : 'badge-error'}">
+                            ${menu.is_active == 1 ? 'Active' : 'Inactive'}
                         </span>
                     </td>
                     <td>

@@ -74,4 +74,17 @@ SET @sql_email = IF(
 PREPARE stmt FROM @sql_email;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
+SELECT COUNT(*) INTO @supplier_code_exists
+FROM INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_SCHEMA = 'jcrc_ch'
+AND TABLE_NAME = 'supplier_requests'
+AND COLUMN_NAME = 'supplier_code';
+SET @sql_supplier_code = IF(
+    @supplier_code_exists = 0,
+    'ALTER TABLE supplier_requests ADD COLUMN supplier_code VARCHAR(50) NULL AFTER email',
+    'SELECT "supplier_code already exists"'
+);
 
+PREPARE stmt FROM @sql_supplier_code;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
