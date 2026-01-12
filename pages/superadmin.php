@@ -383,7 +383,7 @@ include '../common/layout.php';
                     <select id="modalFieldDbColumn" name="db_column_name" class="select select-bordered w-full">
                         <option value="">Select Column (Optional)</option>
                         <option value="b_remark">b_remark (Buyer Remark)</option>
-                        <option value="to_bh_rm">to_bh_rm (To Buyer Head Remark)</option>
+                        <option value="to_bh_rm">to_bh_rm (To Category Head Remark)</option>
                         <option value="po_team_rm">po_team_rm (PO Team Remark)</option>
                         <option value="rrm">rrm (Rejection/Response Remark)</option>
                     </select>

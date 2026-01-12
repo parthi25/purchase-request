@@ -71,7 +71,7 @@ try {
         "Forwarded to Buyer" => ['status_id' => 2, 'status_key' => 'Forwarded to Buyer', 'label' => 'To Buyer'],
         "Agent/Supplier contacted and Awaiting PO details" => ['status_id' => 3, 'status_key' => 'awaiting_po', 'label' => 'Awaiting PO'],
         "Received Proforma PO" => ['status_id' => 4, 'status_key' => 'proforma', 'label' => 'Proforma'],
-        "Forwarded to Buyer Head" => ['status_id' => 5, 'status_key' => 'to_buyer_head', 'label' => 'To Buyer Head'],
+        "Forwarded to Buyer Head" => ['status_id' => 5, 'status_key' => 'to_buyer_head', 'label' => 'To Category Head'],
         "Forwarded to PO Team" => ['status_id' => 6, 'status_key' => 'to_po_hed', 'label' => 'To PO Head'],
         "PO generated" => ['status_id' => 7, 'status_key' => 'po_generated', 'label' => 'PO Generated'],
         "Rejected" => ['status_id' => 8, 'status_key' => 'rejected', 'label' => 'Rejected'],

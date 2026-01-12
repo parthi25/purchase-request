@@ -86,7 +86,7 @@ function renderCountBox(counts) {
         { status_id: 2, status_key: 'Forwarded to Buyer', count: 0, label: 'To Buyer' },
         { status_id: 3, status_key: 'awaiting_po', count: 0, label: 'Awaiting PO' },
         { status_id: 4, status_key: 'proforma', count: 0, label: 'Proforma' },
-        { status_id: 5, status_key: 'to_buyer_head', count: 0, label: 'To Buyer Head' },
+        { status_id: 5, status_key: 'to_buyer_head', count: 0, label: 'To Category Head' },
         { status_id: 6, status_key: 'to_po_hed', count: 0, label: 'To PO Head' },
         { status_id: 9, status_key: 'Forwarded to PO Team', count: 0, label: 'To PO Team' },
         { status_id: 7, status_key: 'po_generated', count: 0, label: 'PO Generated' },

@@ -321,7 +321,7 @@ class TableRenderer {
         2: '<span class="text-info">Forwarded</span>',
         3: '<span class="text-warning">Awaiting PO</span>',
         4: '<span class="text-primary">Proforma</span>',
-        5: '<span class="text-error">To Buyer Head</span>',
+        5: '<span class="text-error">To Category Head</span>',
         6: '<span class="text-base-content/70">To PO Team</span>',
         7: '<span class="text-success">PO Generated</span>',
         8: '<span class="text-error">Rejected</span>',

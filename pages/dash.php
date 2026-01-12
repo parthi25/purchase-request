@@ -131,7 +131,7 @@ if (!isset($_SESSION["user_id"])) {
                                 <th>Total Age</th>
                                 <th>Open To Buyer</th>
                                 <th>Buyer To Supplier</th>
-                                <th>Buyer To Buyer Head</th>
+                                <th>Buyer To Category Head</th>
                                 <th>Buyer Head To PO Team</th>
                                 <th>PO Team To PO</th>
                                 <th>PO NO</th>
