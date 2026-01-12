@@ -27,7 +27,9 @@ include '../common/layout.php';
                 <h2 class="text-2xl font-semibold">Status Permissions</h2>
                 <div class="flex gap-2 items-center">
                     <input type="text" id="permissionSearch" placeholder="Search permissions..." class="input input-bordered w-64">
-                    <button id="addPermissionBtn" class="btn btn-primary">Add Permission</button>
+                    <button id="addPermissionBtn" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add Permission
+                    </button>
                 </div>
             </div>
             
@@ -57,7 +59,9 @@ include '../common/layout.php';
                 <h2 class="text-2xl font-semibold">Status Flow</h2>
                 <div class="flex gap-2 items-center">
                     <input type="text" id="flowSearch" placeholder="Search flows..." class="input input-bordered w-64">
-                    <button id="addFlowBtn" class="btn btn-primary">Add Flow</button>
+                    <button id="addFlowBtn" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add Flow
+                    </button>
                 </div>
             </div>
             
@@ -90,7 +94,9 @@ include '../common/layout.php';
                 <h2 class="text-2xl font-semibold">PR Permissions</h2>
                 <div class="flex gap-2 items-center">
                     <input type="text" id="prPermissionSearch" placeholder="Search PR permissions..." class="input input-bordered w-64">
-                    <button id="addPRPermissionBtn" class="btn btn-primary">Add PR Permission</button>
+                    <button id="addPRPermissionBtn" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add PR Permission
+                    </button>
                 </div>
             </div>
             
@@ -122,7 +128,9 @@ include '../common/layout.php';
                 <h2 class="text-2xl font-semibold">Status Modal Fields</h2>
                 <div class="flex gap-2 items-center">
                     <input type="text" id="modalFieldsSearch" placeholder="Search fields..." class="input input-bordered w-64">
-                    <button id="addModalFieldBtn" class="btn btn-primary">Add Field</button>
+                    <button id="addModalFieldBtn" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add Field
+                    </button>
                 </div>
             </div>
             

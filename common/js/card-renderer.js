@@ -245,7 +245,7 @@ function renderCards(dataArray, role = 'buyer', containerId = 'cardContainer') {
                         <div class="divider my-3"></div>
 
                         <!-- Footer Actions -->
-                        <div class="flex flex-nowrap items-center gap-1 overflow-x-auto">
+                        <div class="flex flex-nowrap items-center justify-between gap-1 overflow-x-auto">
                         ${buttonsHtml}
                         </div>
                     </div>
